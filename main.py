@@ -121,19 +121,19 @@ class Arrow:
 class HorizontalGridline:
     instances = {}
 
-    @staticmethod
-    def tick(arrow, dt, screen):
+    @classmethod
+    def tick(cls, arrow, dt, screen):
         on_screen_lines = set()
         for y in range(int(arrow.pos.y / GRID_SPACE.y - WIDTH / GRID_SPACE.y / 2 - 1), int(arrow.pos.y / GRID_SPACE.y + WIDTH / GRID_SPACE.y / 2 + 2)):
             on_screen_lines.add(y)
-            if y not in HorizontalGridline.instances:
-                HorizontalGridline(arrow, y)
-        for y, line in HorizontalGridline.instances.copy().items():
+            if y not in cls.instances:
+                cls(arrow, y)
+        for y, line in cls.instances.copy().items():
             if y in on_screen_lines:
                 line.update(dt)
                 line.draw(screen)
             else:
-                del HorizontalGridline.instances[y]
+                del cls.instances[y]
 
     def __init__(self, arrow, y):
         __class__.instances[y] = self
@@ -152,19 +152,21 @@ class HorizontalGridline:
 class VerticalGridline:
     instances = {}
 
-    @staticmethod
-    def tick(arrow, dt, screen):
+    @classmethod
+    def tick(cls, arrow, dt, screen):
         on_screen_lines = set()
         for x in range(int(arrow.pos.x / GRID_SPACE.x - WIDTH / GRID_SPACE.x / 2 - 1), int(arrow.pos.x / GRID_SPACE.x + WIDTH / GRID_SPACE.x / 2 + 2)):
             on_screen_lines.add(x)
-            if x not in VerticalGridline.instances:
-                VerticalGridline(arrow, x)
-        for x, line in VerticalGridline.instances.copy().items():
+            if x not in cls.instances:
+                cls(arrow, x)
+                if randint(0, 0) == 0 and not Barrier.instance:
+                    Barrier(arrow, x)
+        for x, line in cls.instances.copy().items():
             if x in on_screen_lines:
                 line.update(dt)
                 line.draw(screen)
             else:
-                del VerticalGridline.instances[x]
+                del cls.instances[x]
 
     def __init__(self, arrow, x):
         __class__.instances[x] = self
@@ -186,9 +188,9 @@ class VerticalGridline:
 class Points:
     instances = {}
 
-    @staticmethod
-    def tick(dt, screen):
-        for instance in Points.instances.copy().values():
+    @classmethod
+    def tick(cls, dt, screen):
+        for instance in cls.instances.copy().values():
             instance.update(dt)
             instance.draw(screen)
 
@@ -217,17 +219,17 @@ class Points:
             Particle(self, self.arrow)
         Shockwave(self, self.arrow)
         self.delete()
-        
+
     def delete(self):
         del __class__.instances[inttup(self.pos)]
         del self
 
 class Particle:
     instances = []
-    
-    @staticmethod
-    def tick(dt, screen):
-        for instance in __class__.instances:
+
+    @classmethod
+    def tick(cls, dt, screen):
+        for instance in cls.instances:
             instance.update(dt)
             instance.draw(screen)
 
@@ -251,16 +253,16 @@ class Particle:
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, inttup(self.pos - self.arrow.camera.offset), self.size)
-        
+
 class Shockwave:
     instances = []
-    
-    @staticmethod
-    def tick(dt, screen):
-        for instance in __class__.instances:
+
+    @classmethod
+    def tick(cls, dt, screen):
+        for instance in cls.instances:
             instance.update(dt)
             instance.draw(screen)
-    
+
     def __init__(self, master, arrow):
         __class__.instances.append(self)
         self.arrow = arrow
@@ -268,16 +270,41 @@ class Shockwave:
         self.color = master.color
         self.radius = 0
         self.width = 5
-        
+
     def update(self, dt):
         self.radius += 50 * dt
         self.width -= 6 * dt
         if self.width <= 0.6:
             __class__.instances.remove(self)
             del self
-    
+
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.pos - self.arrow.camera.offset, self.radius, round(self.width))
+
+class Barrier(VerticalGridline):
+    instance = None
+
+    @classmethod
+    def tick(cls, dt, screen):
+        if cls.instance:
+            cls.instance.update(dt)
+        if cls.instance:
+            cls.instance.draw(screen)
+
+    def __init__(self, arrow: Arrow, x):
+        self.__class__.instance = self
+        self.arrow = arrow
+        self.x = x
+
+    def update(self, dt):
+        if self.arrow.pos.x > self.x * GRID_SPACE.x:
+            self.__class__.instance = None
+            del self
+            return
+        super().update(dt)
+
+    def draw(self, screen):
+        pygame.draw.line(screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
 
 arrow = Arrow()
 
@@ -298,7 +325,8 @@ def game():
 
         HorizontalGridline.tick(arrow, dt, screen)
         VerticalGridline.tick(arrow, dt, screen)
-        
+        Barrier.tick(dt, screen)
+
         Points.tick(dt, screen)
 
         Particle.tick(dt, screen)
