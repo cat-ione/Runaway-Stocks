@@ -215,7 +215,7 @@ class Points:
     def kill(self):
         for _ in range(randint(80, 100)):
             Particle(self, self.arrow)
-        Explosion(self, self.arrow)
+        Shockwave(self, self.arrow)
         self.delete()
         
     def delete(self):
@@ -252,7 +252,7 @@ class Particle:
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, inttup(self.pos - self.arrow.camera.offset), self.size)
         
-class Explosion:
+class Shockwave:
     instances = []
     
     @staticmethod
@@ -302,7 +302,7 @@ def game():
         Points.tick(dt, screen)
 
         Particle.tick(dt, screen)
-        Explosion.tick(dt, screen)
+        Shockwave.tick(dt, screen)
 
         arrow.update(dt)
         arrow.draw(screen)
