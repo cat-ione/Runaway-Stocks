@@ -187,10 +187,10 @@ class Points:
     instances = {}
 
     @staticmethod
-    def tick(arrow, dt, screen):
-        for points in Points.instances.copy().values():
-            points.update(dt)
-            points.draw(screen)
+    def tick(dt, screen):
+        for instance in Points.instances.copy().values():
+            instance.update(dt)
+            instance.draw(screen)
 
     def __init__(self, arrow: Arrow, val, pos):
         self.arrow = arrow
@@ -206,20 +206,30 @@ class Points:
             return
         screen_pos = self.pos - self.arrow.camera.offset
         if screen_pos.x < -50:
-            self.kill()
+            self.delete()
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.pos - self.arrow.camera.offset, 4)
         screen.blit(font1.render(str(self.val), True, self.color), self.pos - self.arrow.camera.offset + VEC(3, 1))
 
     def kill(self):
-        for _ in range(randint(30, 50)):
+        for _ in range(randint(80, 100)):
             Particle(self, self.arrow)
+        Explosion(self, self.arrow)
+        self.delete()
+        
+    def delete(self):
         del __class__.instances[inttup(self.pos)]
         del self
 
 class Particle:
     instances = []
+    
+    @staticmethod
+    def tick(dt, screen):
+        for instance in __class__.instances:
+            instance.update(dt)
+            instance.draw(screen)
 
     def __init__(self, master, arrow):
         __class__.instances.append(self)
@@ -227,7 +237,7 @@ class Particle:
         self.pos = VEC(master.pos)
         self.vel = VEC(uniform(-30, 30), uniform(-30, 30))
         while self.vel.x == 0 and self.vel.y == 0:
-            self.vel = VEC(uniform(-30, 30), uniform(-30, 30))
+            self.vel = VEC(uniform(-160, 160), uniform(-160, 160))
         self.size = randint(1, 2)
         self.color = master.color
 
@@ -236,11 +246,38 @@ class Particle:
             __class__.instances.remove(self)
             del self
             return
-        self.vel -= self.vel.normalize() * 15 * dt
+        self.vel -= self.vel.normalize() * 30 * dt
         self.pos += self.vel * dt
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, inttup(self.pos - self.arrow.camera.offset), self.size)
+        
+class Explosion:
+    instances = []
+    
+    @staticmethod
+    def tick(dt, screen):
+        for instance in __class__.instances:
+            instance.update(dt)
+            instance.draw(screen)
+    
+    def __init__(self, master, arrow):
+        __class__.instances.append(self)
+        self.arrow = arrow
+        self.pos = VEC(master.pos)
+        self.color = master.color
+        self.radius = 0
+        self.width = 5
+        
+    def update(self, dt):
+        self.radius += 50 * dt
+        self.width -= 6 * dt
+        if self.width <= 0.6:
+            __class__.instances.remove(self)
+            del self
+    
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, self.pos - self.arrow.camera.offset, self.radius, round(self.width))
 
 arrow = Arrow()
 
@@ -261,15 +298,14 @@ def game():
 
         HorizontalGridline.tick(arrow, dt, screen)
         VerticalGridline.tick(arrow, dt, screen)
+        
+        Points.tick(dt, screen)
 
-        for particle in Particle.instances:
-            particle.update(dt)
-            particle.draw(screen)
+        Particle.tick(dt, screen)
+        Explosion.tick(dt, screen)
 
         arrow.update(dt)
         arrow.draw(screen)
-
-        Points.tick(arrow, dt, screen)
 
         current_time = int(60 - (time.time() - start_time))
         if current_time <= 0:
