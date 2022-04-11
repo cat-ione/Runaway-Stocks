@@ -12,15 +12,15 @@ class Particle(Sprite):
             instance.update(dt)
             instance.draw(screen)
 
-    def __init__(self, master, player):
+    def __init__(self, player, pos, color):
         __class__.instances.append(self)
         self.player = player
-        self.pos = VEC(master.pos)
+        self.pos = VEC(pos)
         self.vel = VEC(uniform(-30, 30), uniform(-30, 30))
         while self.vel.x == 0 and self.vel.y == 0:
             self.vel = VEC(uniform(-160, 160), uniform(-160, 160))
         self.size = randint(1, 2)
-        self.color = master.color
+        self.color = color
 
     def update(self, dt):
         if self.vel.x <= 2 and self.vel.y < 2:
@@ -42,17 +42,19 @@ class Shockwave(Sprite):
             instance.update(dt)
             instance.draw(screen)
 
-    def __init__(self, master, player):
+    def __init__(self, player, pos, color, start_width, expansion_speed, thinnen_speed):
         __class__.instances.append(self)
         self.player = player
-        self.pos = VEC(master.pos)
-        self.color = master.color
+        self.pos = VEC(pos)
+        self.color = color
         self.radius = 0
-        self.width = 5
+        self.width = start_width
+        self.expansion_speed = expansion_speed
+        self.thinnen_speed = thinnen_speed
 
     def update(self, dt):
-        self.radius += 50 * dt
-        self.width -= 6 * dt
+        self.radius += self.expansion_speed * dt
+        self.width -= self.thinnen_speed * dt
         if self.width <= 0.6:
             __class__.instances.remove(self)
             del self

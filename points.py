@@ -35,8 +35,8 @@ class Points(Sprite):
 
     def kill(self):
         for _ in range(randint(80, 100)):
-            Particle(self, self.player)
-        Shockwave(self, self.player)
+            Particle(self.player, self.pos, self.color)
+        Shockwave(self.player, self.pos, self.color, 5, 50, 6)
         self.delete()
 
     def delete(self):
