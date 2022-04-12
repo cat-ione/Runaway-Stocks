@@ -69,7 +69,10 @@ class VerticalGridline(Sprite):
         self.on_screen_start = VEC(self.x * GRID_SPACE.x - self.player.camera.offset.x, 0)
         self.on_screen_end = VEC(self.x * GRID_SPACE.x - self.player.camera.offset.x, HEIGHT)
         if self.on_screen_start.x < -100:
-            del __class__.instances[self.x]
+            try:
+                del __class__.instances[self.x]
+            except KeyError:
+                pass
             del self
 
     def draw(self, screen):

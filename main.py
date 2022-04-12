@@ -1,8 +1,9 @@
-from numpy import True_, cos, sin, radians, ceil, arctan, degrees
+from numpy import cos, sin, radians, ceil, arctan, degrees
 from random import randint, randrange, choices, choice, uniform
 from PIL import Image, ImageFilter
 from enum import Enum, auto
 from pygame.locals import *
+import pygame.gfxdraw
 from math import pi
 import pygame
 import time
