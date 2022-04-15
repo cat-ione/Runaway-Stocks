@@ -1,27 +1,31 @@
 from random import randint, choices
+import pygame
 
-from utils import *
-from constants import *
-from points import Points
+from constants import WIDTH, HEIGHT, GRID_SPACE, VEC
 from barrier_powers import barrier_powers
 from effects import Particle, Shockwave
+from points import Points
+from utils import Sprite
 
 class HorizontalGridline(Sprite):
     instances = {}
 
     @classmethod
-    def tick(cls, player, dt, screen):
+    def update_all(cls, player, dt):
         on_screen_lines = set()
         for y in range(int(player.pos.y / GRID_SPACE.y - WIDTH / GRID_SPACE.y / 2 - 1), int(player.pos.y / GRID_SPACE.y + WIDTH / GRID_SPACE.y / 2 + 2)):
             on_screen_lines.add(y)
             if y not in cls.instances:
                 cls(player, y)
-        for y, line in cls.instances.copy().items():
-            if y in on_screen_lines:
-                line.update(dt)
-                line.draw(screen)
-            else:
-                del cls.instances[y]
+        for unrendered_line in set(cls.instances.keys()) - on_screen_lines:
+            del cls.instances[unrendered_line]
+        for instance in cls.instances.copy().values():
+            instance.update(dt)
+            
+    @classmethod
+    def draw_all(cls, screen):
+        for instance in cls.instances.values():
+            instance.draw(screen)
 
     def __init__(self, player, y):
         __class__.instances[y] = self
@@ -41,7 +45,7 @@ class VerticalGridline(Sprite):
     instances = {}
 
     @classmethod
-    def tick(cls, player, dt, screen):
+    def update_all(cls, player, dt):
         on_screen_lines = set()
         for x in range(int(player.pos.x / GRID_SPACE.x - WIDTH / GRID_SPACE.x / 2 - 1), int(player.pos.x / GRID_SPACE.x + WIDTH / GRID_SPACE.x / 2 + 2)):
             on_screen_lines.add(x)
@@ -49,12 +53,15 @@ class VerticalGridline(Sprite):
                 cls(player, x)
                 if randint(0, 24) == 0 and not Barrier.instance:
                     Barrier(player, x, choices(list(barrier_powers.keys()), list(barrier_powers.values()))[0])
-        for x, line in cls.instances.copy().items():
-            if x in on_screen_lines:
-                line.update(dt)
-                line.draw(screen)
-            else:
-                del cls.instances[x]
+        for unrendered_line in set(cls.instances.keys()) - on_screen_lines:
+            del cls.instances[unrendered_line]
+        for instance in cls.instances.copy().values():
+            instance.update(dt)
+
+    @classmethod
+    def draw_all(cls, screen):
+        for instance in cls.instances.values():
+            instance.draw(screen)
 
     def __init__(self, player, x):
         __class__.instances[x] = self
@@ -82,9 +89,12 @@ class Barrier(VerticalGridline):
     instance = None
 
     @classmethod
-    def tick(cls, dt, screen):
+    def update_all(cls, dt):
         if cls.instance:
             cls.instance.update(dt)
+
+    @classmethod
+    def draw_all(cls, screen):
         if cls.instance:
             cls.instance.draw(screen)
 

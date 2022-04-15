@@ -3,7 +3,7 @@ from numpy import sin, cos, radians
 from abc import abstractmethod
 import pygame.gfxdraw
 
-from constants import *
+from constants import VEC
 
 inttup = lambda tup: tuple(map(int, tuple(tup)))
 intvec = lambda vec: VEC(int(vec.x), int(vec.y))

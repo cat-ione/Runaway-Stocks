@@ -1,9 +1,11 @@
+from numpy import cos, radians, sin
+import pygame
 import time
 
-from numpy import cos, radians, sin
+from pygame.locals import K_UP, K_DOWN
 
-from utils import *
-from constants import *
+from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS
+from utils import intvec, Sprite, inttup
 
 class Camera:
     def __init__(self, master):
@@ -99,5 +101,5 @@ class Player(Sprite):
         for segment in self.segments:
             segment.draw(screen)
         pygame.draw.polygon(screen, self.color, list(map(self.tip_offset_func, self.tip_offsets)))
-        text_surf = FONT2.render(str(self.score), True, (230, 230, 230))
+        text_surf = BOLD_FONTS[18].render(str(self.score), True, (230, 230, 230))
         screen.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))

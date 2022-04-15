@@ -1,16 +1,21 @@
 from random import randint
+import pygame
 
-from utils import *
-from constants import *
 from effects import Particle, Shockwave
+from utils import Sprite, inttup
+from constants import FONTS, VEC
 
 class Points(Sprite):
     instances = {}
-
+    
     @classmethod
-    def tick(cls, dt, screen):
+    def update_all(cls, dt):
         for instance in cls.instances.copy().values():
             instance.update(dt)
+
+    @classmethod
+    def draw_all(cls, screen):
+        for instance in cls.instances.values():
             instance.draw(screen)
 
     def __init__(self, player, val, pos):
@@ -31,7 +36,7 @@ class Points(Sprite):
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.pos - self.player.camera.offset, 4)
-        screen.blit(FONT1.render(str(self.val), True, self.color), self.pos - self.player.camera.offset + VEC(3, 1))
+        screen.blit(FONTS[16].render(str(self.val), True, self.color), self.pos - self.player.camera.offset + VEC(3, 1))
 
     def kill(self):
         for _ in range(randint(80, 100)):

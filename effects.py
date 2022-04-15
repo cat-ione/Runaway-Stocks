@@ -1,15 +1,20 @@
 from random import uniform, randint
+import pygame
 
-from utils import *
-from constants import *
+from utils import Sprite, inttup
+from constants import VEC
 
 class Particle(Sprite):
     instances = []
-
+    
     @classmethod
-    def tick(cls, dt, screen):
+    def update_all(cls, dt):
         for instance in cls.instances:
             instance.update(dt)
+            
+    @classmethod
+    def draw_all(cls, screen):
+        for instance in cls.instances:
             instance.draw(screen)
 
     def __init__(self, player, pos, color):
@@ -35,11 +40,15 @@ class Particle(Sprite):
 
 class Shockwave(Sprite):
     instances = []
-
+    
     @classmethod
-    def tick(cls, dt, screen):
+    def update_all(cls, dt):
         for instance in cls.instances:
             instance.update(dt)
+
+    @classmethod
+    def draw_all(cls, screen):
+        for instance in cls.instances:
             instance.draw(screen)
 
     def __init__(self, player, pos, color, start_width, expansion_speed, thinnen_speed):
