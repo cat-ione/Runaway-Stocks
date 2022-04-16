@@ -4,6 +4,7 @@ import pygame
 from constants import WIDTH, HEIGHT, GRID_SPACE, VEC
 from barrier_powers import barrier_powers
 from effects import Particle, Shockwave
+from elements import TimeIndicator
 from points import Points
 from utils import Sprite
 

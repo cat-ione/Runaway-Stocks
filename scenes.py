@@ -12,10 +12,10 @@ from effects import Particle, Shockwave
 from player import Player
 from points import Points
 
-class Menu:
-    def __init__(self, manager, previous_menu):
+class Scene:
+    def __init__(self, manager, previous_scene):
         self.manager = manager
-        self.previous_menu = previous_menu
+        self.previous_scene = previous_scene
         self.elements = []
 
     def update(self):
@@ -26,9 +26,9 @@ class Menu:
         for element in self.elements:
             element.draw(self.manager.screen)
 
-class MainGame(Menu):
-    def __init__(self, manager, previous_menu):
-        super().__init__(manager, previous_menu)
+class MainGame(Scene):
+    def __init__(self, manager, previous_scene):
+        super().__init__(manager, previous_scene)
 
         MainGameTimer(self)
         self.player = Player()
@@ -65,15 +65,15 @@ class MainGame(Menu):
 
         super().draw()
 
-class EndMenu(Menu):
-    def __init__(self, manager, previous_menu):
-        super().__init__(manager, previous_menu)
+class EndScene(Scene):
+    def __init__(self, manager, previous_scene):
+        super().__init__(manager, previous_scene)
 
-        pygame.image.save(manager.screen, "menu_blur_tmp.png")
-        self.bg_image = open_image(r"menu_blur_tmp.png").filter(BoxBlur(6))
+        pygame.image.save(manager.screen, "scene_blur_tmp.png")
+        self.bg_image = open_image(r"scene_blur_tmp.png").filter(BoxBlur(6))
         self.bg_image = pygame.image.fromstring(self.bg_image.tobytes(), self.bg_image.size, self.bg_image.mode).convert_alpha()
         self.bg_image = Image(self, (0, 0), self.bg_image, anchor=Anchors.TOPLEFT)
-        os.remove("menu_blur_tmp.png")
+        os.remove("scene_blur_tmp.png")
 
         try:
             with open(HIGHSCORE_FILE, "r") as f:
@@ -83,14 +83,14 @@ class EndMenu(Menu):
             self.highscore = 0
         except ValueError:
             self.highscore = 0
-        if previous_menu.player.score > self.highscore:
+        if previous_scene.player.score > self.highscore:
             Label(self, CENTER, "New Highscore!", BOLD_FONTS[64], (230, 230, 230))
             with open(HIGHSCORE_FILE, "w") as f:
-                f.write(str(previous_menu.player.score))
+                f.write(str(previous_scene.player.score))
         else:
             Label(self, CENTER, f"Highscore: {self.highscore}", BOLD_FONTS[64], (230, 230, 230))
 
-        Label(self, CENTER - (0, 100), f"Score: {previous_menu.player.score}", BOLD_FONTS[64], (230, 230, 230))
+        Label(self, CENTER - (0, 100), f"Score: {previous_scene.player.score}", BOLD_FONTS[64], (230, 230, 230))
         Label(self, CENTER + (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
 
         self.running = True
@@ -102,4 +102,4 @@ class EndMenu(Menu):
             if event.type == KEYDOWN:
                 if event.key == K_SPACE:
                     self.running = False
-                    self.manager.new_menu("MainGame")
+                    self.manager.new_scene("MainGame")
