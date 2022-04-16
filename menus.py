@@ -90,8 +90,8 @@ class EndMenu(Menu):
         else:
             Label(self, CENTER, f"Highscore: {self.highscore}", BOLD_FONTS[64], (230, 230, 230))
 
-        Label(self, CENTER + (0, 100), f"Score: {previous_menu.player.score}", BOLD_FONTS[64], (230, 230, 230))
-        Label(self, CENTER - (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
+        Label(self, CENTER - (0, 100), f"Score: {previous_menu.player.score}", BOLD_FONTS[64], (230, 230, 230))
+        Label(self, CENTER + (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
 
         self.running = True
 
