@@ -7,7 +7,6 @@ CENTER = VEC(WIDTH // 2, HEIGHT // 2)
 GRID_SPACE = VEC(48, 30)
 HIGHSCORE_FILE = "highscore.txt"
 
-# Directions
 class Dir(Enum):
     UP = -1
     DOWN = 1

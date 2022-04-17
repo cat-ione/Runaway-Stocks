@@ -32,7 +32,7 @@ class MainGame(Scene):
         
     def setup(self):
         MainGameTimer(self.manager)
-        self.player = Player()
+        self.player = Player(self.manager)
         Points.instances.clear()
         VerticalGridline.instances.clear()
         HorizontalGridline.instances.clear()

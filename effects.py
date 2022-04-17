@@ -8,18 +8,18 @@ class Particle(Sprite):
     instances = []
     
     @classmethod
-    def update_all(cls, dt):
+    def update_all(cls, dt: float) -> None:
         for instance in cls.instances:
             instance.update(dt)
             
     @classmethod
-    def draw_all(cls, screen):
+    def draw_all(cls, screen: pygame.Surface) -> None:
         for instance in cls.instances:
             instance.draw(screen)
 
-    def __init__(self, player, pos, color):
+    def __init__(self, manager, pos, color):
+        super().__init__(manager)
         __class__.instances.append(self)
-        self.player = player
         self.pos = VEC(pos)
         self.vel = VEC(uniform(-30, 30), uniform(-30, 30))
         while self.vel.x == 0 and self.vel.y == 0:
@@ -36,7 +36,7 @@ class Particle(Sprite):
         self.pos += self.vel * dt
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, inttup(self.pos - self.player.camera.offset), self.size)
+        pygame.draw.circle(screen, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
 
 class Shockwave(Sprite):
     instances = []
@@ -51,9 +51,9 @@ class Shockwave(Sprite):
         for instance in cls.instances:
             instance.draw(screen)
 
-    def __init__(self, player, pos, color, start_width, expansion_speed, thinnen_speed):
+    def __init__(self, manager, pos, color, start_width, expansion_speed, thinnen_speed):
+        super().__init__(manager)
         __class__.instances.append(self)
-        self.player = player
         self.pos = VEC(pos)
         self.color = color
         self.radius = 0
@@ -69,4 +69,4 @@ class Shockwave(Sprite):
             del self
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, self.pos - self.player.camera.offset, self.radius, round(self.width))
+        pygame.draw.circle(screen, self.color, self.pos - self.scene.player.camera.offset, self.radius, round(self.width))

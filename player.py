@@ -24,7 +24,8 @@ class Camera:
 
 class Player(Sprite):
     class Segment(Sprite):
-        def __init__(self, player):
+        def __init__(self, manager, player):
+            super().__init__(manager)
             player.segments.append(self)
             self.player = player
             self.speed = player.speed
@@ -42,7 +43,8 @@ class Player(Sprite):
         def draw(self, screen):
             pygame.draw.line(screen, self.color, self.start_pos - self.player.camera.offset, self.end_pos - self.player.camera.offset, 6)
 
-    def __init__(self):
+    def __init__(self, manager):
+        super().__init__(manager)
         self.speed = 200
         self.pos = VEC(0, 0)
         self.camera = Camera(self)
@@ -50,7 +52,7 @@ class Player(Sprite):
         self.color = (232, 87, 87)
         self.angle = 40
         self.segments = []
-        self.Segment(self)
+        self.Segment(self.manager, self)
         self.tip_offsets_upright = [VEC(0, 15), VEC(-6, -5), VEC(6, -5)]
         self.tip_offset_func = lambda c: inttup(self.pos + VEC(c) - self.camera.offset)
         self.tip_rotation_func = lambda c: c.rotate((90 - self.angle) * -self.direction.value) * self.direction.value
@@ -76,13 +78,13 @@ class Player(Sprite):
                 self.direction = Dir.UP
                 self.color = (232, 87, 87)
                 self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
-                self.Segment(self)
+                self.Segment(self.manager, self)
             elif keys[down_key] and self.direction != Dir.DOWN:
                 self.start_time = time.time()
                 self.direction = Dir.DOWN
                 self.color = (12, 120, 38)
                 self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
-                self.Segment(self)
+                self.Segment(self.manager, self)
 
         if time.time() - self.start_time > 1:
             self.score += -self.direction.value
