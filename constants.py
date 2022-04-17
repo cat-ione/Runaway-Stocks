@@ -1,6 +1,9 @@
 from enum import Enum
 import pygame
 
+_pos = tuple[int, int]
+_color = tuple[int, int, int]
+
 VEC = pygame.math.Vector2
 WIDTH, HEIGHT = 828, 512
 CENTER = VEC(WIDTH // 2, HEIGHT // 2)

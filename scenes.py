@@ -1,3 +1,7 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING: from manager import GameManager
+
 from PIL.Image import open as open_image
 from PIL.ImageFilter import BoxBlur
 import pygame
@@ -13,24 +17,24 @@ from player import Player
 from points import Points
 
 class Scene:
-    def __init__(self, manager, previous_scene):
+    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         self.manager = manager
         self.previous_scene = previous_scene
         self.elements = []
 
-    def update(self):
+    def update(self) -> None:
         for element in self.elements:
             element.update()
 
-    def draw(self):
+    def draw(self) -> None:
         for element in self.elements:
             element.draw()
 
 class MainGame(Scene):
-    def __init__(self, manager, previous_scene):
+    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         super().__init__(manager, previous_scene)
         
-    def setup(self):
+    def setup(self) -> None:
         MainGameTimer(self.manager)
         self.player = Player(self.manager)
         Points.instances.clear()
@@ -41,7 +45,7 @@ class MainGame(Scene):
 
         self.running = True
 
-    def update(self):
+    def update(self) -> None:
         HorizontalGridline.update_all(self.manager)
         VerticalGridline.update_all(self.manager)
         Barrier.update_all()
@@ -52,7 +56,7 @@ class MainGame(Scene):
 
         super().update()
 
-    def draw(self):
+    def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
 
         HorizontalGridline.draw_all()
@@ -66,10 +70,10 @@ class MainGame(Scene):
         super().draw()
 
 class EndMenu(Scene):
-    def __init__(self, manager, previous_scene):
+    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         super().__init__(manager, previous_scene)
 
-    def setup(self):
+    def setup(self) -> None:
         pygame.image.save(self.manager.screen, "scene_blur_tmp.png")
         self.bg_image = open_image(r"scene_blur_tmp.png").filter(BoxBlur(6))
         self.bg_image = pygame.image.fromstring(self.bg_image.tobytes(), self.bg_image.size, self.bg_image.mode).convert_alpha()
@@ -96,7 +100,7 @@ class EndMenu(Scene):
 
         self.running = True
 
-    def update(self):
+    def update(self) -> None:
         super().update()
 
         for event in self.manager.events:

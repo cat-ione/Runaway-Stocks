@@ -1,3 +1,7 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING: from manager import GameManager
+
 from numpy import cos, radians, sin
 import pygame
 import time
@@ -8,13 +12,13 @@ from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS
 from utils import intvec, Sprite, inttup
 
 class Camera:
-    def __init__(self, manager, master):
+    def __init__(self, manager: GameManager, master: object) -> None:
         self.manager = manager
         self.master = master
         self.actual_offset = self.master.pos - VEC(WIDTH, HEIGHT) / 2
         self.offset = intvec(self.actual_offset)
 
-    def update(self):
+    def update(self) -> None:
         tick_offset = self.master.pos - self.offset - VEC(WIDTH, HEIGHT) / 2
         if -1 < tick_offset.x < 1:
             tick_offset.x = 0
@@ -25,7 +29,7 @@ class Camera:
 
 class Player(Sprite):
     class Segment(Sprite):
-        def __init__(self, manager, player):
+        def __init__(self, manager: GameManager, player: Player) -> None:
             super().__init__(manager)
             self.player = player
             self.player.segments.append(self)
@@ -36,15 +40,15 @@ class Player(Sprite):
             self.start_pos = player.pos.copy()
             self.end_pos = self.start_pos.copy()
 
-        def update(self):
+        def update(self) -> None:
             if self.start_pos.x - self.player.camera.offset.x < 0:
                 self.player.segments.remove(self)
                 del self
 
-        def draw(self):
+        def draw(self) -> None:
             pygame.draw.line(self.manager.screen, self.color, self.start_pos - self.player.camera.offset, self.end_pos - self.player.camera.offset, 6)
 
-    def __init__(self, manager):
+    def __init__(self, manager: GameManager) -> None:
         super().__init__(manager)
         self.speed = 200
         self.pos = VEC(0, 0)
@@ -64,7 +68,7 @@ class Player(Sprite):
         self.reverse_timer = time.time()
         self.reverse_max_time = 5
 
-    def update(self):
+    def update(self) -> None:
         keys = pygame.key.get_pressed()
         if not self.reverse:
             up_key, down_key = K_UP, K_DOWN
@@ -100,7 +104,7 @@ class Player(Sprite):
 
         self.camera.update()
 
-    def draw(self):
+    def draw(self) -> None:
         for segment in self.segments:
             segment.draw()
         pygame.draw.polygon(self.manager.screen, self.color, list(map(self.tip_offset_func, self.tip_offsets)))

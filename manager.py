@@ -8,7 +8,7 @@ from constants import WIDTH, HEIGHT
 from scenes import MainGame, EndMenu
 
 class GameManager:
-    def __init__(self):
+    def __init__(self) -> None:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), HWSURFACE | DOUBLEBUF)
         self.clock = pygame.time.Clock()
@@ -17,13 +17,13 @@ class GameManager:
         self.scene = MainGame(self, None)
         self.scene.setup()
 
-    def run(self):
+    def run(self) -> None:
         while self.scene.running:
             self.update()
             self.scene.update()
             self.scene.draw()
 
-    def update(self):
+    def update(self) -> None:
         self.dt = self.clock.tick_busy_loop() / 1000
         pygame.display.set_caption(f"游走股票 | FPS: {round(self.clock.get_fps())}")
 
@@ -34,11 +34,11 @@ class GameManager:
 
         pygame.display.flip()
 
-    def quit(self):
+    def quit(self) -> None:
         pygame.quit()
         sys.exit()
         
-    def new_scene(self, scene_class):
+    def new_scene(self, scene_class: type) -> None:
         self.scene = self.Scenes[scene_class].value(self, self.scene)
         self.scene.setup()
         
