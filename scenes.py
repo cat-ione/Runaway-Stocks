@@ -29,12 +29,15 @@ class Scene:
 class MainGame(Scene):
     def __init__(self, manager, previous_scene):
         super().__init__(manager, previous_scene)
-
-        MainGameTimer(self)
+        
+    def setup(self):
+        MainGameTimer(self.manager)
         self.player = Player()
         Points.instances.clear()
         VerticalGridline.instances.clear()
         HorizontalGridline.instances.clear()
+        Particle.instances.clear()
+        Shockwave.instances.clear()
 
         self.running = True
 
@@ -65,14 +68,15 @@ class MainGame(Scene):
 
         super().draw()
 
-class EndScene(Scene):
+class EndMenu(Scene):
     def __init__(self, manager, previous_scene):
         super().__init__(manager, previous_scene)
 
-        pygame.image.save(manager.screen, "scene_blur_tmp.png")
+    def setup(self):
+        pygame.image.save(self.manager.screen, "scene_blur_tmp.png")
         self.bg_image = open_image(r"scene_blur_tmp.png").filter(BoxBlur(6))
         self.bg_image = pygame.image.fromstring(self.bg_image.tobytes(), self.bg_image.size, self.bg_image.mode).convert_alpha()
-        self.bg_image = Image(self, (0, 0), self.bg_image, anchor=Anchors.TOPLEFT)
+        self.bg_image = Image(self.manager, (0, 0), self.bg_image, anchor=Anchors.TOPLEFT)
         os.remove("scene_blur_tmp.png")
 
         try:
@@ -83,15 +87,15 @@ class EndScene(Scene):
             self.highscore = 0
         except ValueError:
             self.highscore = 0
-        if previous_scene.player.score > self.highscore:
-            Label(self, CENTER, "New Highscore!", BOLD_FONTS[64], (230, 230, 230))
+        if self.previous_scene.player.score > self.highscore:
+            Label(self.manager, CENTER, "New Highscore!", BOLD_FONTS[64], (230, 230, 230))
             with open(HIGHSCORE_FILE, "w") as f:
-                f.write(str(previous_scene.player.score))
+                f.write(str(self.previous_scene.player.score))
         else:
-            Label(self, CENTER, f"Highscore: {self.highscore}", BOLD_FONTS[64], (230, 230, 230))
+            Label(self.manager, CENTER, f"Highscore: {self.highscore}", BOLD_FONTS[64], (230, 230, 230))
 
-        Label(self, CENTER - (0, 100), f"Score: {previous_scene.player.score}", BOLD_FONTS[64], (230, 230, 230))
-        Label(self, CENTER + (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
+        Label(self.manager, CENTER - (0, 100), f"Score: {self.previous_scene.player.score}", BOLD_FONTS[64], (230, 230, 230))
+        Label(self.manager, CENTER + (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
 
         self.running = True
 

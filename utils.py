@@ -17,9 +17,9 @@ def pygame_draw_pie(screen, color, center, rad, start_ang, end_ang, step=10):
     pygame.gfxdraw.filled_polygon(screen, vertices, color)
 
 class Sprite(AbstractClass):
-    @abstractmethod
-    def __init__(self) -> None:
-        pass
+    def __init__(self, manager) -> None:
+        self.manager = manager
+        self.scene = self.manager.scene
 
     @abstractmethod
     def update(self, dt) -> None:

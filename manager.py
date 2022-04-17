@@ -5,7 +5,7 @@ import sys
 from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF
 
 from constants import WIDTH, HEIGHT
-from scenes import MainGame, EndScene
+from scenes import MainGame, EndMenu
 
 class GameManager:
     def __init__(self):
@@ -15,6 +15,7 @@ class GameManager:
         self.dt = self.clock.tick_busy_loop() / 1000
         self.events = []
         self.scene = MainGame(self, None)
+        self.scene.setup()
 
     def run(self):
         while self.scene.running:
@@ -39,7 +40,8 @@ class GameManager:
         
     def new_scene(self, scene_class):
         self.scene = self.Scenes[scene_class].value(self, self.scene)
+        self.scene.setup()
         
     class Scenes(Enum):
         MainGame = MainGame
-        EndScene = EndScene
+        EndMenu = EndMenu

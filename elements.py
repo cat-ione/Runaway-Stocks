@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import pygame
 import time
 
@@ -6,9 +7,22 @@ from pygame.locals import SRCALPHA
 from constants import BOLD_FONTS, VEC, Anchors
 from utils import Sprite, pygame_draw_pie
 
-class Label(Sprite):
-    def __init__(self, scene, pos, text, font, color, anchor=Anchors.CENTER):
-        scene.elements.append(self)
+class Element(Sprite):
+    def __init__(self, manager):
+        super().__init__(manager)
+        self.scene.elements.append(self)
+
+    @abstractmethod
+    def update(self, dt):
+        pass
+
+    @abstractmethod
+    def draw(self, screen):
+        pass
+
+class Label(Element):
+    def __init__(self, manager, pos, text, font, color, anchor=Anchors.CENTER):
+        super().__init__(manager)
         self.surface = font.render(text, True, color)
         self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
@@ -19,9 +33,9 @@ class Label(Sprite):
     def draw(self, screen):
         screen.blit(self.surface, self.pos)
 
-class Image(Sprite):
-    def __init__(self, scene, pos, surface, anchor=Anchors.CENTER):
-        scene.elements.append(self)
+class Image(Element):
+    def __init__(self, manager, pos, surface, anchor=Anchors.CENTER):
+        super().__init__(manager)
         self.surface = surface
         self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
@@ -31,30 +45,29 @@ class Image(Sprite):
 
     def draw(self, screen):
         screen.blit(self.surface, self.pos)
-        
+
 class Timer:
     def __init__(self, max_time):
         self.max_time = max_time
         self.start_time = time.time()
         self.current_time = self.max_time - (time.time() - self.start_time)
         self.ended = False
-        
+
     def update(self):
         self.current_time = self.max_time - (time.time() - self.start_time)
         if self.current_time <= 0:
             self.ended = True
 
-class MainGameTimer(Timer, Sprite):
-    def __init__(self, scene):
-        scene.elements.append(self)
-        self.scene = scene
-        super().__init__(60)
+class MainGameTimer(Timer, Element):
+    def __init__(self, manager):
+        Element.__init__(self, manager)
+        Timer.__init__(self, 60)
 
     def update(self, dt=None):
         super().update()
         if self.ended:
             self.scene.running = False
-            self.scene.manager.new_scene("EndScene")
+            self.scene.manager.new_scene("EndMenu")
 
     def draw(self, screen):
         self.text_surface = BOLD_FONTS[40].render(" " + str(int(self.current_time)) + " ", True, (230, 230, 230))
@@ -74,15 +87,13 @@ class MainGameTimer(Timer, Sprite):
             screen.blit(tmp_surf, (0, 0))
 
 class TimeIndicator(Timer, Sprite):
-    def __init__(self, scene, max_time):
-        scene.elements.append(self)
-        self.scene = scene
-        super().__init__(max_time)
-        
+    def __init__(self, manager, max_time):
+        super().__init__(manager=manager, max_time=max_time)
+
     def update(self, dt=None):
         super().update()
         if self.ended:
             pass
-        
+
     def draw(self, screen):
         pygame_draw_pie(screen, (255, 255, 255, 100), self.scene.manager.player.pos, 50, 0, self.current_time / self.max_time * 360)
