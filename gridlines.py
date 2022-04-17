@@ -12,7 +12,7 @@ class HorizontalGridline(Sprite):
     instances = {}
 
     @classmethod
-    def update_all(cls, manager, dt):
+    def update_all(cls, manager):
         player = manager.scene.player
         on_screen_lines = set()
         for y in range(int(player.pos.y / GRID_SPACE.y - WIDTH / GRID_SPACE.y / 2 - 1), int(player.pos.y / GRID_SPACE.y + WIDTH / GRID_SPACE.y / 2 + 2)):
@@ -22,32 +22,32 @@ class HorizontalGridline(Sprite):
         for unrendered_line in set(cls.instances.keys()) - on_screen_lines:
             del cls.instances[unrendered_line]
         for instance in cls.instances.copy().values():
-            instance.update(dt)
+            instance.update()
             
     @classmethod
-    def draw_all(cls, screen):
+    def draw_all(cls):
         for instance in cls.instances.values():
-            instance.draw(screen)
+            instance.draw()
 
     def __init__(self, manager, y):
         super().__init__(manager)
         __class__.instances[y] = self
         self.y = y
         for _ in range(randint(1, 3)):
-            Points(self.scene.player, randint(-10, 10), (GRID_SPACE.x * randint(int(self.scene.player.pos.x / GRID_SPACE.x - HEIGHT / GRID_SPACE.x - 10), int(self.scene.player.pos.x / GRID_SPACE.x + HEIGHT / GRID_SPACE.x + 10)), GRID_SPACE.y * self.y))
+            Points(self.manager, randint(-10, 10), (GRID_SPACE.x * randint(int(self.scene.player.pos.x / GRID_SPACE.x - HEIGHT / GRID_SPACE.x - 10), int(self.scene.player.pos.x / GRID_SPACE.x + HEIGHT / GRID_SPACE.x + 10)), GRID_SPACE.y * self.y))
 
-    def update(self, dt):
+    def update(self):
         self.on_screen_start = VEC(0, self.y * GRID_SPACE.y - self.scene.player.camera.offset.y)
         self.on_screen_end = VEC(WIDTH, self.y * GRID_SPACE.y - self.scene.player.camera.offset.y)
 
-    def draw(self, screen):
-        pygame.draw.line(screen, (150, 150, 150), self.on_screen_start, self.on_screen_end)
+    def draw(self):
+        pygame.draw.line(self.manager.screen, (150, 150, 150), self.on_screen_start, self.on_screen_end)
 
 class VerticalGridline(Sprite):
     instances = {}
 
     @classmethod
-    def update_all(cls, manager, dt):
+    def update_all(cls, manager):
         player = manager.scene.player
         on_screen_lines = set()
         for x in range(int(player.pos.x / GRID_SPACE.x - WIDTH / GRID_SPACE.x / 2 - 1), int(player.pos.x / GRID_SPACE.x + WIDTH / GRID_SPACE.x / 2 + 2)):
@@ -59,23 +59,23 @@ class VerticalGridline(Sprite):
         for unrendered_line in set(cls.instances.keys()) - on_screen_lines:
             del cls.instances[unrendered_line]
         for instance in cls.instances.copy().values():
-            instance.update(dt)
+            instance.update()
 
     @classmethod
-    def draw_all(cls, screen):
+    def draw_all(cls):
         for instance in cls.instances.values():
-            instance.draw(screen)
+            instance.draw()
 
     def __init__(self, manager, x):
         super().__init__(manager)
         __class__.instances[x] = self
         self.x = x
         for _ in range(randint(1, 4)):
-            Points(self.scene.player, randint(-10, 10), (GRID_SPACE.x * self.x, GRID_SPACE.y * randint(int(self.scene.player.pos.y / GRID_SPACE.y - HEIGHT / GRID_SPACE.y / 2 - 10), int(self.scene.player.pos.y / GRID_SPACE.y + HEIGHT / GRID_SPACE.y / 2 + 10))))
+            Points(self.manager, randint(-10, 10), (GRID_SPACE.x * self.x, GRID_SPACE.y * randint(int(self.scene.player.pos.y / GRID_SPACE.y - HEIGHT / GRID_SPACE.y / 2 - 10), int(self.scene.player.pos.y / GRID_SPACE.y + HEIGHT / GRID_SPACE.y / 2 + 10))))
         self.on_screen_start = VEC(0, 0)
         self.on_screen_end = VEC(0, 0)
 
-    def update(self, dt):
+    def update(self):
         self.on_screen_start = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, 0)
         self.on_screen_end = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, HEIGHT)
         if self.on_screen_start.x < -100:
@@ -85,21 +85,21 @@ class VerticalGridline(Sprite):
                 pass
             del self
 
-    def draw(self, screen):
-        pygame.draw.line(screen, (150, 150, 150), self.on_screen_start, self.on_screen_end)
+    def draw(self):
+        pygame.draw.line(self.manager.screen, (150, 150, 150), self.on_screen_start, self.on_screen_end)
 
 class Barrier(VerticalGridline):
     instance = None
 
     @classmethod
-    def update_all(cls, dt):
+    def update_all(cls):
         if cls.instance:
-            cls.instance.update(dt)
+            cls.instance.update()
 
     @classmethod
-    def draw_all(cls, screen):
+    def draw_all(cls):
         if cls.instance:
-            cls.instance.draw(screen)
+            cls.instance.draw()
 
     def __init__(self, manager, x, power):
         Sprite.__init__(self, manager)
@@ -107,12 +107,12 @@ class Barrier(VerticalGridline):
         self.x = x
         self.power = power
 
-    def update(self, dt):
+    def update(self):
         if self.x * GRID_SPACE.x < self.scene.player.pos.x < self.x * GRID_SPACE.x + 25:
-            self.power(player=self.scene.player)
+            self.power(self.manager)
             for _ in range(400):
-                Particle(self.scene.player, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
-            Shockwave(self.scene.player, self.scene.player.pos, (180, 180, 180), 10, 160, 14)
+                Particle(self.manager, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
+            Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 10, 160, 14)
             self.__class__.instance = None
             del self
             return
@@ -120,7 +120,7 @@ class Barrier(VerticalGridline):
             self.__class__.instance = None
             del self
             return
-        super().update(dt)
+        super().update()
 
-    def draw(self, screen):
-        pygame.draw.line(screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
+    def draw(self):
+        pygame.draw.line(self.manager.screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)

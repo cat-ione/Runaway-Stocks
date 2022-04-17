@@ -9,14 +9,14 @@ class Points(Sprite):
     instances = {}
     
     @classmethod
-    def update_all(cls, dt):
+    def update_all(cls):
         for instance in cls.instances.copy().values():
-            instance.update(dt)
+            instance.update()
 
     @classmethod
-    def draw_all(cls, screen):
+    def draw_all(cls):
         for instance in cls.instances.values():
-            instance.draw(screen)
+            instance.draw()
 
     def __init__(self, manager, val, pos):
         super().__init__(manager)
@@ -25,7 +25,7 @@ class Points(Sprite):
         self.color = (232, 87, 87) if self.val > 0 else (12, 120, 38)
         self.pos = VEC(pos)
 
-    def update(self, dt):
+    def update(self):
         if self.pos.distance_to(self.scene.player.pos) < 10:
             self.scene.player.score += self.val
             self.kill()
@@ -34,14 +34,14 @@ class Points(Sprite):
         if screen_pos.x < -50:
             self.delete()
 
-    def draw(self, screen):
-        pygame.draw.circle(screen, self.color, self.pos - self.scene.player.camera.offset, 4)
-        screen.blit(FONTS[16].render(str(self.val), True, self.color), self.pos - self.scene.player.camera.offset + VEC(3, 1))
+    def draw(self):
+        pygame.draw.circle(self.manager.screen, self.color, self.pos - self.scene.player.camera.offset, 4)
+        self.manager.screen.blit(FONTS[16].render(str(self.val), True, self.color), self.pos - self.scene.player.camera.offset + VEC(3, 1))
 
     def kill(self):
         for _ in range(randint(80, 100)):
-            Particle(self.scene.player, self.pos, self.color)
-        Shockwave(self.scene.player, self.pos, self.color, 5, 50, 6)
+            Particle(self.manager, self.pos, self.color)
+        Shockwave(self.manager, self.pos, self.color, 5, 50, 6)
         self.delete()
 
     def delete(self):

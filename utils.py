@@ -22,9 +22,9 @@ class Sprite(AbstractClass):
         self.scene = self.manager.scene
 
     @abstractmethod
-    def update(self, dt) -> None:
+    def update(self) -> None:
         pass
 
     @abstractmethod
-    def draw(self, screen) -> None:
+    def draw(self) -> None:
         pass

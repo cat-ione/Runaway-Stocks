@@ -20,11 +20,11 @@ class Scene:
 
     def update(self):
         for element in self.elements:
-            element.update(self.manager.dt)
+            element.update()
 
     def draw(self):
         for element in self.elements:
-            element.draw(self.manager.screen)
+            element.draw()
 
 class MainGame(Scene):
     def __init__(self, manager, previous_scene):
@@ -42,29 +42,26 @@ class MainGame(Scene):
         self.running = True
 
     def update(self):
-        dt = self.manager.dt
-
-        HorizontalGridline.update_all(self.player, dt)
-        VerticalGridline.update_all(self.player, dt)
-        Barrier.update_all(dt)
-        Points.update_all(dt)
-        Particle.update_all(dt)
-        Shockwave.update_all(dt)
-        self.player.update(dt)
+        HorizontalGridline.update_all(self.manager)
+        VerticalGridline.update_all(self.manager)
+        Barrier.update_all()
+        Points.update_all()
+        Particle.update_all()
+        Shockwave.update_all()
+        self.player.update()
 
         super().update()
 
     def draw(self):
-        screen = self.manager.screen
-        screen.fill((30, 30, 30))
+        self.manager.screen.fill((30, 30, 30))
 
-        HorizontalGridline.draw_all(screen)
-        VerticalGridline.draw_all(screen)
-        Barrier.draw_all(screen)
-        Points.draw_all(screen)
-        Particle.draw_all(screen)
-        Shockwave.draw_all(screen)
-        self.player.draw(screen)
+        HorizontalGridline.draw_all()
+        VerticalGridline.draw_all()
+        Barrier.draw_all()
+        Points.draw_all()
+        Particle.draw_all()
+        Shockwave.draw_all()
+        self.player.draw()
 
         super().draw()
 

@@ -8,14 +8,14 @@ class Particle(Sprite):
     instances = []
     
     @classmethod
-    def update_all(cls, dt: float) -> None:
+    def update_all(cls):
         for instance in cls.instances:
-            instance.update(dt)
+            instance.update()
             
     @classmethod
-    def draw_all(cls, screen: pygame.Surface) -> None:
+    def draw_all(cls):
         for instance in cls.instances:
-            instance.draw(screen)
+            instance.draw()
 
     def __init__(self, manager, pos, color):
         super().__init__(manager)
@@ -27,29 +27,29 @@ class Particle(Sprite):
         self.size = randint(1, 2)
         self.color = color
 
-    def update(self, dt):
+    def update(self):
         if self.vel.x <= 2 and self.vel.y < 2:
             __class__.instances.remove(self)
             del self
             return
-        self.vel -= self.vel.normalize() * 30 * dt
-        self.pos += self.vel * dt
+        self.vel -= self.vel.normalize() * 30 * self.manager.dt
+        self.pos += self.vel * self.manager.dt
 
-    def draw(self, screen):
-        pygame.draw.circle(screen, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
+    def draw(self):
+        pygame.draw.circle(self.manager.screen, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
 
 class Shockwave(Sprite):
     instances = []
     
     @classmethod
-    def update_all(cls, dt):
+    def update_all(cls):
         for instance in cls.instances:
-            instance.update(dt)
+            instance.update()
 
     @classmethod
-    def draw_all(cls, screen):
+    def draw_all(cls):
         for instance in cls.instances:
-            instance.draw(screen)
+            instance.draw()
 
     def __init__(self, manager, pos, color, start_width, expansion_speed, thinnen_speed):
         super().__init__(manager)
@@ -61,12 +61,12 @@ class Shockwave(Sprite):
         self.expansion_speed = expansion_speed
         self.thinnen_speed = thinnen_speed
 
-    def update(self, dt):
-        self.radius += self.expansion_speed * dt
-        self.width -= self.thinnen_speed * dt
+    def update(self):
+        self.radius += self.expansion_speed * self.manager.dt
+        self.width -= self.thinnen_speed * self.manager.dt
         if self.width <= 0.6:
             __class__.instances.remove(self)
             del self
 
-    def draw(self, screen):
-        pygame.draw.circle(screen, self.color, self.pos - self.scene.player.camera.offset, self.radius, round(self.width))
+    def draw(self):
+        pygame.draw.circle(self.manager.screen, self.color, self.pos - self.scene.player.camera.offset, self.radius, round(self.width))

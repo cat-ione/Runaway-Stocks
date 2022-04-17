@@ -8,26 +8,27 @@ from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS
 from utils import intvec, Sprite, inttup
 
 class Camera:
-    def __init__(self, master):
+    def __init__(self, manager, master):
+        self.manager = manager
         self.master = master
         self.actual_offset = self.master.pos - VEC(WIDTH, HEIGHT) / 2
         self.offset = intvec(self.actual_offset)
 
-    def update(self, dt):
+    def update(self):
         tick_offset = self.master.pos - self.offset - VEC(WIDTH, HEIGHT) / 2
         if -1 < tick_offset.x < 1:
             tick_offset.x = 0
         if -1 < tick_offset.y < 1:
             tick_offset.y = 0
-        self.actual_offset += tick_offset * 5 * dt
+        self.actual_offset += tick_offset * 5 * self.manager.dt
         self.offset = intvec(self.actual_offset)
 
 class Player(Sprite):
     class Segment(Sprite):
         def __init__(self, manager, player):
             super().__init__(manager)
-            player.segments.append(self)
             self.player = player
+            self.player.segments.append(self)
             self.speed = player.speed
             self.direction = player.direction
             self.color = player.color
@@ -35,19 +36,19 @@ class Player(Sprite):
             self.start_pos = player.pos.copy()
             self.end_pos = self.start_pos.copy()
 
-        def update(self, dt):
+        def update(self):
             if self.start_pos.x - self.player.camera.offset.x < 0:
                 self.player.segments.remove(self)
                 del self
 
-        def draw(self, screen):
-            pygame.draw.line(screen, self.color, self.start_pos - self.player.camera.offset, self.end_pos - self.player.camera.offset, 6)
+        def draw(self):
+            pygame.draw.line(self.manager.screen, self.color, self.start_pos - self.player.camera.offset, self.end_pos - self.player.camera.offset, 6)
 
     def __init__(self, manager):
         super().__init__(manager)
         self.speed = 200
         self.pos = VEC(0, 0)
-        self.camera = Camera(self)
+        self.camera = Camera(self.manager, self)
         self.direction = Dir.UP
         self.color = (232, 87, 87)
         self.angle = 40
@@ -63,7 +64,7 @@ class Player(Sprite):
         self.reverse_timer = time.time()
         self.reverse_max_time = 5
 
-    def update(self, dt):
+    def update(self):
         keys = pygame.key.get_pressed()
         if not self.reverse:
             up_key, down_key = K_UP, K_DOWN
@@ -90,18 +91,18 @@ class Player(Sprite):
             self.score += -self.direction.value
             self.start_time = time.time()
 
-        self.pos.x += cos(radians(self.angle * self.direction.value)) * self.speed * dt
-        self.pos.y += sin(radians(self.angle * self.direction.value)) * self.speed * dt
+        self.pos.x += cos(radians(self.angle * self.direction.value)) * self.speed * self.manager.dt
+        self.pos.y += sin(radians(self.angle * self.direction.value)) * self.speed * self.manager.dt
 
         for segment in self.segments:
-            segment.update(dt)
+            segment.update()
         self.segments[-1].start_pos = self.pos.copy()
 
-        self.camera.update(dt)
+        self.camera.update()
 
-    def draw(self, screen):
+    def draw(self):
         for segment in self.segments:
-            segment.draw(screen)
-        pygame.draw.polygon(screen, self.color, list(map(self.tip_offset_func, self.tip_offsets)))
+            segment.draw()
+        pygame.draw.polygon(self.manager.screen, self.color, list(map(self.tip_offset_func, self.tip_offsets)))
         text_surf = BOLD_FONTS[18].render(str(self.score), True, (230, 230, 230))
-        screen.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))
+        self.manager.screen.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))
