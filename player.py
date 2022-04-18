@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING: from manager import GameManager
 
 from numpy import cos, radians, sin
@@ -10,6 +11,7 @@ from pygame.locals import K_UP, K_DOWN
 
 from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS
 from utils import intvec, Sprite, inttup
+from barrier_powers import Flip
 
 class Camera:
     def __init__(self, manager: GameManager, master: object) -> None:
@@ -64,19 +66,13 @@ class Player(Sprite):
         self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
         self.score = 0
         self.start_time = time.time()
-        self.reverse = False
-        self.reverse_timer = time.time()
-        self.reverse_max_time = 5
 
     def update(self) -> None:
         keys = pygame.key.get_pressed()
-        if not self.reverse:
+        if not Flip.init:
             up_key, down_key = K_UP, K_DOWN
-            self.reverse_timer = time.time()
         else:
             up_key, down_key = K_DOWN, K_UP
-            if time.time() - self.reverse_timer > self.reverse_max_time:
-                self.reverse = False
         if not (keys[up_key] and keys[down_key]):
             if keys[up_key] and self.direction != Dir.UP:
                 self.start_time = time.time()

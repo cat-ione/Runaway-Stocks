@@ -1,14 +1,14 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING: from manager import GameManager
 
 from random import randint, choices
 import pygame
 
-from barrier_powers import BarrierPower, barrier_powers
 from constants import WIDTH, HEIGHT, GRID_SPACE, VEC
+from barrier_powers import Power, barrier_powers
 from effects import Particle, Shockwave
-from elements import TimeIndicator
+from elements import PowerTimer
 from points import Points
 from utils import Sprite
 
@@ -58,8 +58,9 @@ class VerticalGridline(Sprite):
             on_screen_lines.add(x)
             if x not in cls.instances:
                 cls(manager, x)
-                if randint(0, 24) == 0 and not Barrier.instance:
-                    Barrier(manager, x, choices(list(barrier_powers.keys()), list(barrier_powers.values()))[0])
+                chosen_power = choices(list(barrier_powers.keys()), list(barrier_powers.values()))[0]
+                if randint(0, 50 - (x - Barrier.last_position) + (40 if chosen_power.init else 0)) == 0 and not Barrier.instance:
+                    Barrier(manager, x, chosen_power)
         for unrendered_line in set(cls.instances.keys()) - on_screen_lines:
             del cls.instances[unrendered_line]
         for instance in cls.instances.copy().values():
@@ -94,6 +95,7 @@ class VerticalGridline(Sprite):
 
 class Barrier(VerticalGridline):
     instance = None
+    last_position = 0
 
     @classmethod
     def update_all(cls) -> None:
@@ -105,15 +107,16 @@ class Barrier(VerticalGridline):
         if cls.instance:
             cls.instance.draw()
 
-    def __init__(self, manager: GameManager, x: int, power: BarrierPower) -> None:
+    def __init__(self, manager: GameManager, x: int, power: Power) -> None:
         Sprite.__init__(self, manager)
         self.__class__.instance = self
         self.x = x
         self.power = power
+        self.__class__.last_position = self.x
 
     def update(self) -> None:
         if self.x * GRID_SPACE.x < self.scene.player.pos.x < self.x * GRID_SPACE.x + 25:
-            self.power(self.manager)
+            PowerTimer(self.manager, self.power)
             for _ in range(400):
                 Particle(self.manager, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
             Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 10, 160, 14)

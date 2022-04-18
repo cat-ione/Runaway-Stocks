@@ -4,7 +4,7 @@ import sys
 
 from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF
 
-from constants import WIDTH, HEIGHT
+from constants import WIDTH, HEIGHT, FPS
 from scenes import MainGame, EndMenu
 
 class GameManager:
@@ -12,7 +12,7 @@ class GameManager:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), HWSURFACE | DOUBLEBUF)
         self.clock = pygame.time.Clock()
-        self.dt = self.clock.tick_busy_loop() / 1000
+        self.dt = self.clock.tick_busy_loop(FPS) / 1000
         self.events = []
         self.scene = MainGame(self, None)
         self.scene.setup()
@@ -24,7 +24,7 @@ class GameManager:
             self.scene.draw()
 
     def update(self) -> None:
-        self.dt = self.clock.tick_busy_loop() / 1000
+        self.dt = self.clock.tick_busy_loop(FPS) / 1000
         pygame.display.set_caption(f"游走股票 | FPS: {round(self.clock.get_fps())}")
 
         self.events = pygame.event.get()

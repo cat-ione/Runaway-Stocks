@@ -40,6 +40,7 @@ class MainGame(Scene):
         Points.instances.clear()
         VerticalGridline.instances.clear()
         HorizontalGridline.instances.clear()
+        Barrier.instance = None
         Particle.instances.clear()
         Shockwave.instances.clear()
 

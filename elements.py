@@ -1,5 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from numpy import cos, radians, sin
+
 if TYPE_CHECKING: from manager import GameManager
 
 from abc import abstractmethod
@@ -10,6 +13,8 @@ from pygame.locals import SRCALPHA
 
 from constants import BOLD_FONTS, VEC, Anchors, _pos, _color
 from utils import Sprite, pygame_draw_pie
+from barrier_powers import Power
+from effects import Shockwave
 
 class Element(Sprite):
     def __init__(self, manager: GameManager) -> None:
@@ -90,15 +95,25 @@ class MainGameTimer(Timer, Element):
             pygame.draw.rect(tmp_surf, (208, 52, 44, self.border_opacity), (0, 0, *self.size), 4)
             self.manager.screen.blit(tmp_surf, (0, 0))
 
-class TimeIndicator(Timer, Sprite):
-    def __init__(self, manager: GameManager, max_time: int) -> None:
-        super().__init__(manager=manager, max_time=max_time)
+class PowerTimer(Timer, Element):
+    def __init__(self, manager: GameManager, power: Power) -> None:
+        Element.__init__(self, manager)
+        self.power = power
+        self.power.init = True
+        Timer.__init__(self, self.power.max_time)
 
     def update(self) -> None:
         super().update()
         if self.ended:
-            # Unimplemented
-            pass
+            self.power.init = False
+            Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
+            self.scene.elements.remove(self)
+            del self
 
     def draw(self) -> None:
-        pygame_draw_pie(self.manager.screen, (255, 255, 255, 100), self.scene.manager.player.pos, 50, 0, self.current_time / self.max_time * 360)
+        center = self.scene.player.pos - self.scene.player.camera.offset
+        angle = int(self.current_time / self.max_time * 360)
+        rad = 35
+        pygame_draw_pie(self.manager.screen, (255, 255, 255, 100), center, rad, 0, angle)
+        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(0)), -cos(radians(0))) * rad, 2)
+        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 2)
