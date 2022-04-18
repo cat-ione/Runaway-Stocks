@@ -60,8 +60,9 @@ class VerticalGridline(Sprite):
                 cls(manager, x)
                 chosen_power = choices(list(barrier_powers.keys()), list(barrier_powers.values()))[0]
                 try:
-                    if randint(0, 50 - (x - Barrier.last_position) + (40 if chosen_power.init else 0)) == 0 and not Barrier.instance:
+                    if randint(0, 50 - (x - Barrier.last_position) + (50 if chosen_power.init else 0)) == 0 and not Barrier.instance:
                         Barrier(manager, x, chosen_power)
+                # There are cases where the randint range is negative thus erroring, in the case of that, create a Barrier
                 except ValueError:
                     Barrier(manager, x, chosen_power)
         for unrendered_line in set(cls.instances.keys()) - on_screen_lines:

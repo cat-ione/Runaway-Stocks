@@ -1,4 +1,5 @@
 from __future__ import annotations
+from turtle import update
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING: from manager import GameManager
@@ -11,7 +12,7 @@ from pygame.locals import K_UP, K_DOWN
 
 from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS
 from utils import intvec, Sprite, inttup
-from barrier_powers import Flip
+import barrier_powers as powers
 
 class Camera:
     def __init__(self, manager: GameManager, master: object) -> None:
@@ -69,23 +70,27 @@ class Player(Sprite):
 
     def update(self) -> None:
         keys = pygame.key.get_pressed()
-        if not Flip.init:
+        if not powers.Flip.init:
             up_key, down_key = K_UP, K_DOWN
         else:
             up_key, down_key = K_DOWN, K_UP
+        if powers.Angle.init:
+            self.angle = powers.Angle.angle
+            self.update_segments(self.direction)
+        else:
+            self.angle = 40
+            powers.Angle.reset()
+            self.update_segments(self.direction)
+        if powers.Speed.init:
+            self.speed = powers.Speed.speed
+        else:
+            self.speed = 200
+
         if not (keys[up_key] and keys[down_key]):
             if keys[up_key] and self.direction != Dir.UP:
-                self.start_time = time.time()
-                self.direction = Dir.UP
-                self.color = (232, 87, 87)
-                self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
-                self.Segment(self.manager, self)
+                self.update_segments(Dir.UP)
             elif keys[down_key] and self.direction != Dir.DOWN:
-                self.start_time = time.time()
-                self.direction = Dir.DOWN
-                self.color = (12, 120, 38)
-                self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
-                self.Segment(self.manager, self)
+                self.update_segments(Dir.DOWN)
 
         if time.time() - self.start_time > 1:
             self.score += -self.direction.value
@@ -106,3 +111,10 @@ class Player(Sprite):
         pygame.draw.polygon(self.manager.screen, self.color, list(map(self.tip_offset_func, self.tip_offsets)))
         text_surf = BOLD_FONTS[18].render(str(self.score), True, (230, 230, 230))
         self.manager.screen.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))
+        
+    def update_segments(self, direction: Dir):
+        self.start_time = time.time()
+        self.direction = direction
+        self.color = (232, 87, 87) if direction == Dir.UP else (12, 120, 38)
+        self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
+        self.Segment(self.manager, self)
