@@ -112,8 +112,8 @@ class PowerTimer(Timer, Element):
 
     def draw(self) -> None:
         center = self.scene.player.pos - self.scene.player.camera.offset
-        angle = int(self.current_time / self.max_time * 360)
+        angle = int(self.current_time / self.max_time * 360) + 180
         rad = 35
-        pygame_draw_pie(self.manager.screen, (255, 255, 255, 100), center, rad, 0, angle)
-        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(0)), -cos(radians(0))) * rad, 2)
-        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 2)
+        pygame_draw_pie(self.manager.screen, (255, 255, 255, 70), center, rad, 180, angle)
+        pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(180)), -cos(radians(180))) * rad, 1)
+        pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 1)
