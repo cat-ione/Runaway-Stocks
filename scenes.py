@@ -12,6 +12,7 @@ from pygame.locals import KEYDOWN, K_SPACE
 from gridlines import VerticalGridline, HorizontalGridline, Barrier
 from constants import HIGHSCORE_FILE, CENTER, BOLD_FONTS, Anchors
 from elements import Image, Label, MainGameTimer
+from barrier_powers import barrier_powers
 from effects import Particle, Shockwave
 from player import Player
 from points import Points
@@ -41,8 +42,11 @@ class MainGame(Scene):
         VerticalGridline.instances.clear()
         HorizontalGridline.instances.clear()
         Barrier.instance = None
+        Barrier.last_position = 0
         Particle.instances.clear()
         Shockwave.instances.clear()
+        for power in barrier_powers:
+            power.init = False
 
         self.running = True
 

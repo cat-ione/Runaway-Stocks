@@ -12,8 +12,8 @@ import time
 from pygame.locals import SRCALPHA
 
 from constants import BOLD_FONTS, VEC, Anchors, _pos, _color
+from barrier_powers import Power, barrier_powers
 from utils import Sprite, pygame_draw_pie
-from barrier_powers import Power
 from effects import Shockwave
 
 class Element(Sprite):
@@ -96,10 +96,14 @@ class MainGameTimer(Timer, Element):
             self.manager.screen.blit(tmp_surf, (0, 0))
 
 class PowerTimer(Timer, Element):
+    instances = {power: [] for power in barrier_powers}
+    
     def __init__(self, manager: GameManager, power: Power) -> None:
+        self.__class__.instances[power].append(self)
         Element.__init__(self, manager)
         self.power = power
         self.power.init = True
+        self.power.reset(manager)
         Timer.__init__(self, self.power.max_time)
 
     def update(self) -> None:
@@ -108,6 +112,7 @@ class PowerTimer(Timer, Element):
             self.power.init = False
             Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
             self.scene.elements.remove(self)
+            self.__class__.instances[self.power].remove(self)
             del self
 
     def draw(self) -> None:

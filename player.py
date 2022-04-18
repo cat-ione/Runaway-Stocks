@@ -79,7 +79,7 @@ class Player(Sprite):
             self.update_segments(self.direction)
         else:
             self.angle = 40
-            powers.Angle.reset()
+            powers.Angle.reset(self.manager)
             self.update_segments(self.direction)
         if powers.Speed.init:
             self.speed = powers.Speed.speed
@@ -88,8 +88,10 @@ class Player(Sprite):
 
         if not (keys[up_key] and keys[down_key]):
             if keys[up_key] and self.direction != Dir.UP:
+                self.start_time = time.time()
                 self.update_segments(Dir.UP)
             elif keys[down_key] and self.direction != Dir.DOWN:
+                self.start_time = time.time()
                 self.update_segments(Dir.DOWN)
 
         if time.time() - self.start_time > 1:
@@ -113,7 +115,6 @@ class Player(Sprite):
         self.manager.screen.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))
         
     def update_segments(self, direction: Dir):
-        self.start_time = time.time()
         self.direction = direction
         self.color = (232, 87, 87) if direction == Dir.UP else (12, 120, 38)
         self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))

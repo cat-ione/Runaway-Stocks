@@ -2,27 +2,34 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING: from manager import GameManager
 
-from random import randint
+from random import randint, uniform
 
 class Power:
     init = False
+    @staticmethod
+    def reset(manager: GameManager):
+        # Must-have method
+        pass
 
 class Flip(Power):
+    stackable = False
     max_time = 5
 
 class Angle(Power):
+    stackable = False
     max_time = 5
     angle = randint(20, 30) if randint(0, 1) else randint(50, 60)
     @staticmethod
-    def reset():
+    def reset(manager: GameManager):
         __class__.angle = randint(20, 30) if randint(0, 1) else randint(50, 60)
         
 class Speed(Power):
+    stackable = True
     max_time = 10
-    speed = randint(100, 150) if randint(0, 1) else randint(250, 300)
+    speed = uniform(1.2, 1.5)
     @staticmethod
-    def reset():
-        __class__.speed = randint(100, 150) if randint(0, 1) else randint(250, 300)
+    def reset(manager: GameManager):
+        __class__.speed = manager.scene.player.speed * uniform(1.2, 1.5)
 
 barrier_powers = {
     Flip: 1,
