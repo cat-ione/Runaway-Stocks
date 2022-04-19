@@ -120,12 +120,13 @@ class Barrier(VerticalGridline):
 
     def update(self) -> None:
         if self.x * GRID_SPACE.x < self.scene.player.pos.x < self.x * GRID_SPACE.x + 25:
-            if PowerTimer.instances[self.power] and not self.power.stackable:
+            if PowerTimer.sorted_instances[self.power] and not self.power.stackable:
+                self.power.init = False
                 try:
-                    self.manager.scene.elements.remove(PowerTimer.instances[self.power][0])
+                    self.manager.scene.elements.remove(PowerTimer.sorted_instances[self.power][0])
                 except ValueError: # Sometimes the PowerTimer no longer exists FSR so idk
                     pass
-                del PowerTimer.instances[self.power][0]
+                del PowerTimer.sorted_instances[self.power][0]
             else:
                 PowerTimer(self.manager, self.power)
             for _ in range(400):

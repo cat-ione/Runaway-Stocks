@@ -14,6 +14,7 @@ from pygame.locals import SRCALPHA
 from constants import BOLD_FONTS, VEC, Anchors, _pos, _color
 from barrier_powers import Power, barrier_powers
 from utils import Sprite, pygame_draw_pie
+from images import power_images
 from effects import Shockwave
 
 class Element(Sprite):
@@ -96,10 +97,12 @@ class MainGameTimer(Timer, Element):
             self.manager.screen.blit(tmp_surf, (0, 0))
 
 class PowerTimer(Timer, Element):
-    instances = {power: [] for power in barrier_powers}
+    instances = []
+    sorted_instances = {power: [] for power in barrier_powers}
     
     def __init__(self, manager: GameManager, power: Power) -> None:
-        self.__class__.instances[power].append(self)
+        self.__class__.instances.insert(0, self)
+        self.__class__.sorted_instances[power].append(self)
         Element.__init__(self, manager)
         self.power = power
         self.power.init = True
@@ -112,7 +115,8 @@ class PowerTimer(Timer, Element):
             self.power.init = False
             Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
             self.scene.elements.remove(self)
-            self.__class__.instances[self.power].remove(self)
+            self.__class__.instances.remove(self)
+            self.__class__.sorted_instances[self.power].remove(self)
             del self
 
     def draw(self) -> None:
@@ -122,3 +126,11 @@ class PowerTimer(Timer, Element):
         pygame_draw_pie(self.manager.screen, (255, 255, 255, 70), center, rad, 180, angle)
         pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(180)), -cos(radians(180))) * rad, 1)
         pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 1)
+
+        center = VEC(0 + 24, 50 + 24 + self.__class__.instances.index(self) * 50)
+        angle = angle - 180
+        rad = 24
+        pygame_draw_pie(self.manager.screen, (255, 255, 255, 120), center, rad, 0, angle)
+        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(0)), -cos(radians(0))) * rad, 2)
+        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 2)
+        self.manager.screen.blit(power_images[self.power.__name__.lower()], center - (16, 16))
