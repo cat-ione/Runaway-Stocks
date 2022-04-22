@@ -8,7 +8,7 @@ class Power:
     init = False
     @staticmethod
     def reset(manager: GameManager):
-        # Must-have method
+        # Must-have method so that .reset() can be called for all powers
         pass
 
 class Flip(Power):
