@@ -1,5 +1,7 @@
+from pathlib import Path
 from enum import Enum
 import pygame
+import os
 
 _pos = tuple[int, int]
 _color = tuple[int, int, int]
@@ -9,7 +11,12 @@ VEC = pygame.math.Vector2
 WIDTH, HEIGHT = 828, 512
 CENTER = VEC(WIDTH // 2, HEIGHT // 2)
 GRID_SPACE = VEC(48, 30)
-HIGHSCORE_FILE = "highscore.txt"
+
+
+DATA_DIR = os.path.join(str(Path.home()), ".runawaystocks")
+if not os.path.exists(DATA_DIR):
+    os.mkdir(DATA_DIR)
+HIGHSCORE_FILE = os.path.join(str(Path.home()), ".runawaystocks", "highscore.txt")
 
 class Dir(Enum):
     UP = -1
