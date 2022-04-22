@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING: from manager import GameManager
 
 from numpy import cos, radians, sin
+from random import uniform
 import pygame
 import time
 
@@ -20,6 +21,8 @@ class Camera:
         self.master = master
         self.actual_offset = self.master.pos - VEC(WIDTH, HEIGHT) / 2
         self.offset = intvec(self.actual_offset)
+        self.shaking = False
+        self.shaking_timer = time.time()
 
     def update(self) -> None:
         tick_offset = self.master.pos - self.offset - VEC(WIDTH, HEIGHT) / 2
@@ -28,6 +31,11 @@ class Camera:
         if -1 < tick_offset.y < 1:
             tick_offset.y = 0
         self.actual_offset += tick_offset * 5 * self.manager.dt
+        if self.shaking and time.time() - self.shaking_timer < 0.25:
+            self.actual_offset += VEC(uniform(-2, 2), uniform(-2, 2))
+        else:
+            self.shaking = False
+            self.shaking_timer = time.time()
         self.offset = intvec(self.actual_offset)
 
 class Player(Sprite):

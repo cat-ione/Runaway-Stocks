@@ -43,7 +43,7 @@ class Points(Sprite):
         self.manager.screen.blit(FONTS[16].render(str(self.val), True, self.color), self.pos - self.scene.player.camera.offset + VEC(3, 1))
 
     def kill(self) -> None:
-        for _ in range(randint(80, 100)):
+        for _ in range(randint(60, 80)):
             Particle(self.manager, self.pos, self.color)
         Shockwave(self.manager, self.pos, self.color, 5, 50, 6)
         self.delete()

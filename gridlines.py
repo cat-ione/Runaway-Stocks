@@ -129,17 +129,23 @@ class Barrier(VerticalGridline):
                 del PowerTimer.sorted_instances[self.power][0]
             else:
                 PowerTimer(self.manager, self.power)
-            for _ in range(400):
-                Particle(self.manager, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
-            Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 10, 160, 14)
-            self.__class__.instance = None
-            del self
+            self.effects()
+            self.kill()
             return
         if self.x * GRID_SPACE.x < -100:
-            self.__class__.instance = None
-            del self
+            self.kill()
             return
         super().update()
 
     def draw(self) -> None:
         pygame.draw.line(self.manager.screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
+        
+    def kill(self) -> None:
+        self.__class__.instance = None
+        del self
+        
+    def effects(self) -> None:
+        for _ in range(400):
+            Particle(self.manager, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
+        Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 10, 160, 14)
+        self.manager.scene.player.camera.shaking = True
