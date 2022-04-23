@@ -27,7 +27,7 @@ def create_blurred_bg(manager):
     - return the surface
     """
     pygame.image.save(manager.screen, TMP_BG_FILE)
-    bg_image = open_image(r"scene_blur_tmp.png").filter(BoxBlur(6))
+    bg_image = open_image(TMP_BG_FILE).filter(BoxBlur(6))
     bg_image = pygame.image.fromstring(bg_image.tobytes(), bg_image.size, bg_image.mode).convert_alpha()
     bg_image = Image(manager, (0, 0), bg_image, anchor=Anchors.TOPLEFT)
     os.remove(TMP_BG_FILE)
