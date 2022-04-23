@@ -50,6 +50,29 @@ class Scene:
         for element in self.elements:
             element.draw()
 
+class MainMenu(Scene):
+    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
+        super().__init__(manager, previous_scene)
+
+    def setup(self) -> None:
+        Label(self.manager, (WIDTH // 2, HEIGHT // 2 + 100), "Press space to start the game!", BOLD_FONTS[18], (230, 230, 230))
+
+        super().setup()
+
+    def update(self) -> None:
+        super().update()
+
+        for event in self.manager.events:
+            if event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    self.manager.new_scene("MainGame")
+                    break
+
+    def draw(self) -> None:
+        self.manager.screen.fill((30, 30, 30))
+
+        super().draw()
+
 class MainGame(Scene):
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         super().__init__(manager, previous_scene)
@@ -119,11 +142,6 @@ class PauseMenu(Scene):
                 if event.key == K_ESCAPE:
                     self.manager.switch_scene(self.previous_scene)
                     break
-
-    def draw(self) -> None:
-        self.manager.screen.fill((0, 0, 0))
-
-        super().draw()
 
 class EndMenu(Scene):
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:

@@ -4,7 +4,7 @@ import sys
 
 from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED
 
-from scenes import Scene, MainGame, PauseMenu, EndMenu
+from scenes import Scene, MainMenu, MainGame, PauseMenu, EndMenu
 from constants import VEC, WIDTH, HEIGHT, FPS
 from utils import inttup
 
@@ -18,7 +18,7 @@ class GameManager:
         self.dt = self.clock.tick_busy_loop(FPS) / 1000
         self.window_changing = False
         self.events = []
-        self.scene = MainGame(self, None)
+        self.scene = MainMenu(self, None)
         self.scene.setup()
 
     def run(self) -> None:
@@ -73,6 +73,7 @@ class GameManager:
         self.scene.running = True
 
     class Scenes(Enum):
+        MainMenu = MainMenu
         MainGame = MainGame
         PauseMenu = PauseMenu
         EndMenu = EndMenu
