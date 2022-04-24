@@ -35,5 +35,5 @@ class Anchors(Enum):
     BOTTOMRIGHT = VEC(1, 1)
 
 pygame.font.init()
-FONTS = [pygame.font.SysFont("arial", size) for size in range(1, 121)]
-BOLD_FONTS = [pygame.font.SysFont("arial", size, True) for size in range(1, 121)]
+FONTS = [pygame.font.SysFont("centurygothic", size) for size in range(1, 121)]
+BOLD_FONTS = [pygame.font.SysFont("centurygothic", size, True) for size in range(1, 121)]

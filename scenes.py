@@ -9,13 +9,15 @@ import os
 
 from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
 
-from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, TMP_BG_FILE, WIDTH, Anchors
+from constants import GRID_SPACE, HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, TMP_BG_FILE, WIDTH, Anchors
 from gridlines import VerticalGridline, HorizontalGridline, Barrier
 from elements import Image, Label, MainGameTimer, Timer
 from barrier_powers import barrier_powers
 from effects import Particle, Shockwave
 from player import Player
 from points import Points
+
+from images import title_1, title_2
 
 def create_blurred_bg(manager):
     """
@@ -55,11 +57,16 @@ class MainMenu(Scene):
         super().__init__(manager, previous_scene)
 
     def setup(self) -> None:
-        Label(self.manager, (WIDTH // 2, HEIGHT // 2 + 100), "Press space to start the game!", BOLD_FONTS[18], (230, 230, 230))
+        # Label(self.manager, (WIDTH // 2, HEIGHT // 2 + 100), "Press space to start the game!", BOLD_FONTS[18], (230, 230, 230))
+        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
+        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
+        self.player = Player(self.manager)
 
         super().setup()
 
     def update(self) -> None:
+        self.player.update()
+
         super().update()
 
         for event in self.manager.events:
@@ -70,6 +77,13 @@ class MainMenu(Scene):
 
     def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
+
+        for x in range(0, WIDTH, int(GRID_SPACE.x)):
+            pygame.draw.line(self.manager.screen, (150, 150, 150), (x, 0), (x, HEIGHT))
+        for y in range(0, HEIGHT, int(GRID_SPACE.y)):
+            pygame.draw.line(self.manager.screen, (150, 150, 150), (0, y), (WIDTH, y))
+
+        self.player.draw()
 
         super().draw()
 
