@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING: from manager import GameManager
 
 from PIL.Image import open as open_image
-from PIL.ImageFilter import BoxBlur
+from PIL.ImageFilter import GaussianBlur
+import PIL
 import pygame
 import os
 
@@ -28,12 +29,14 @@ def create_blurred_bg(manager):
     - remove the tmp file
     - return the surface
     """
-    pygame.image.save(manager.screen, TMP_BG_FILE)
-    bg_image = open_image(TMP_BG_FILE).filter(BoxBlur(6))
-    bg_image = pygame.image.fromstring(bg_image.tobytes(), bg_image.size, bg_image.mode).convert_alpha()
-    bg_image = Image(manager, (0, 0), bg_image, anchor=Anchors.TOPLEFT)
-    os.remove(TMP_BG_FILE)
-    return bg_image
+
+    bg_str = pygame.image.tostring(manager.screen, "RGB")
+    bg_img = PIL.Image.frombytes("RGB", (WIDTH, HEIGHT), bg_str)
+    blurred_bg_img = bg_img.filter(GaussianBlur(4))
+    blurred_bg_img = pygame.image.fromstring(blurred_bg_img.tobytes(), blurred_bg_img.size, blurred_bg_img.mode).convert_alpha()
+    blurred_bg_img = Image(manager, (0, 0), blurred_bg_img, anchor=Anchors.TOPLEFT)
+    # os.remove(TMP_BG_FILE)
+    return blurred_bg_img
 
 class Scene:
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
