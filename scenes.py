@@ -35,6 +35,7 @@ def create_blurred_bg(manager):
     blurred_bg_img = bg_img.filter(GaussianBlur(4))
     blurred_bg_img = pygame.image.fromstring(blurred_bg_img.tobytes(), blurred_bg_img.size, blurred_bg_img.mode).convert_alpha()
     blurred_bg_img = Image(manager, (0, 0), blurred_bg_img, anchor=Anchors.TOPLEFT)
+    # os.remove(TMP_BG_FILE)
     return blurred_bg_img
 
 class Scene:
