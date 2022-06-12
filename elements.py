@@ -30,6 +30,9 @@ class Element(Sprite):
     def draw(self) -> None:
         pass
 
+    def remove(self) -> None:
+        self.scene.elements.remove(self)
+
 class Label(Element):
     def __init__(self, manager: GameManager, pos: _pos, text: str, font: pygame.font.Font, color: _color, anchor: Anchors = Anchors.CENTER) -> None:
         super().__init__(manager)

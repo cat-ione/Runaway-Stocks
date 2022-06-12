@@ -10,7 +10,7 @@ import os
 
 from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
 
-from constants import GRID_SPACE, HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, TMP_BG_FILE, WIDTH, Anchors
+from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, TMP_BG_FILE, WIDTH, Anchors
 from gridlines import VerticalGridline, HorizontalGridline, Barrier
 from elements import Image, Label, MainGameTimer, Timer
 from barrier_powers import barrier_powers
@@ -20,23 +20,30 @@ from points import Points
 
 from images import title_1, title_2
 
-def create_blurred_bg(manager):
+def blur_surf(surf: pygame.Surface) -> pygame.Surface:
     """
-    - Saves the screen img as a tmp file
-    - blur it
-    - load it as string format
-    - convert to a surface
-    - remove the tmp file
-    - return the surface
+    - Convert the surface to bytestring
+    - Convert bytestring to parsable PIL image
+    - Blur image with GaussianBlur
+    - Convert PIL image to pygame surface
+    - Return pygame surface
+    """
+    surf_str = pygame.image.tostring(surf, "RGB")
+    surf_img = PIL.Image.frombytes("RGB", surf.get_size(), surf_str)
+    blurred_img = surf_img.filter(GaussianBlur(3))
+    blurred_img_surf = pygame.image.fromstring(blurred_img.tobytes(), blurred_img.size, blurred_img.mode).convert_alpha()
+    return blurred_img_surf
+
+def create_blurred_bg(manager: GameManager) -> Image:
+    """
+    - Blur screen as surface
+    - Create a custom Image object that will be displayed
+    - Also return the object for accessibility
     """
 
-    bg_str = pygame.image.tostring(manager.screen, "RGB")
-    bg_img = PIL.Image.frombytes("RGB", (WIDTH, HEIGHT), bg_str)
-    blurred_bg_img = bg_img.filter(GaussianBlur(4))
-    blurred_bg_img = pygame.image.fromstring(blurred_bg_img.tobytes(), blurred_bg_img.size, blurred_bg_img.mode).convert_alpha()
-    blurred_bg_img = Image(manager, (0, 0), blurred_bg_img, anchor=Anchors.TOPLEFT)
-    # os.remove(TMP_BG_FILE)
-    return blurred_bg_img
+    blurred_img_surf = blur_surf(manager.screen)
+    blurred_img_obj = Image(manager, (0, 0), blurred_img_surf, anchor=Anchors.TOPLEFT)
+    return blurred_img_obj
 
 class Scene:
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
@@ -69,6 +76,8 @@ class MainMenu(Scene):
 
     def update(self) -> None:
         self.player.update()
+        HorizontalGridline.update_all(self.manager)
+        VerticalGridline.update_all(self.manager)
 
         super().update()
 
@@ -81,12 +90,12 @@ class MainMenu(Scene):
     def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
 
-        for x in range(0, WIDTH, int(GRID_SPACE.x)):
-            pygame.draw.line(self.manager.screen, (150, 150, 150), (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, int(GRID_SPACE.y)):
-            pygame.draw.line(self.manager.screen, (150, 150, 150), (0, y), (WIDTH, y))
+        HorizontalGridline.draw_all()
+        VerticalGridline.draw_all()
 
         self.player.draw()
+
+        self.manager.screen.blit(blur_surf(self.manager.screen), (0, 0))
 
         super().draw()
 
