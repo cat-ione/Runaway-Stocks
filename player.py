@@ -57,7 +57,8 @@ class Player(Sprite):
                 del self
 
         def draw(self) -> None:
-            pygame.draw.line(self.manager.screen, self.color, self.start_pos - self.player.camera.offset, self.end_pos - self.player.camera.offset, 6)
+            for y in range(-3, 4):
+                pygame.draw.aaline(self.manager.screen, self.color, self.start_pos - self.player.camera.offset + (0, y), self.end_pos - self.player.camera.offset + (0, y))
 
     def __init__(self, manager: GameManager) -> None:
         super().__init__(manager)
