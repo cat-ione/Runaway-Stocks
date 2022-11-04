@@ -2,19 +2,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING: from manager import GameManager
 
+from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
 import pygame
 
-from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
-
-from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, TMP_BG_FILE, WIDTH, Anchors
-from gridlines import VerticalGridline, HorizontalGridline, Barrier
+from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, WIDTH, Anchors
+from gridlines import VerticalGridline, HorizontalGridline, GridManager, Barrier
 from effects import Particle, Shockwave, PowerTimerPlayerDisplay
-from elements import Image, Label, MainGameTimer, Timer
+from hud import Image, Label, MainGameTimer, Timer
 from barrier_powers import barrier_powers
+from images import title_1, title_2
+from sprite import SpriteManager
 from player import Player
 from points import Points
-
-from images import title_1, title_2
 
 def blur_surf(surf: pygame.Surface) -> pygame.Surface:
     """Smooth scale it down and up, then normal scale it down and up, to create a blur effect plus a pixelated effect"""
@@ -39,50 +38,38 @@ class Scene:
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         self.manager = manager
         self.previous_scene = previous_scene
-        self.elements = []
 
     def setup(self) -> None:
+        self.sprite_manager = SpriteManager(self.manager)
         self.running = True
 
     def update(self) -> None:
-        for element in self.elements:
-            element.update()
+        self.sprite_manager.update()
 
     def draw(self) -> None:
-        for element in self.elements:
-            element.draw()
+        self.sprite_manager.draw()
 
 class MainMenu(Scene):
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         super().__init__(manager, previous_scene)
 
     def setup(self) -> None:
+        super().setup()
+
+        self.grid_manager = GridManager(self.manager)
+
         Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
         Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
         self.player = Player(self.manager)
-        Points.instances.clear()
-        VerticalGridline.instances.clear()
-        HorizontalGridline.instances.clear()
         Barrier.instance = None
         Barrier.last_position = 0
-        Particle.instances.clear()
-        Shockwave.instances.clear()
-        PowerTimerPlayerDisplay.instances.clear()
         for power in barrier_powers:
             power.init = False
 
-        super().setup()
-
     def update(self) -> None:
-        HorizontalGridline.update_all(self.manager)
-        VerticalGridline.update_all(self.manager)
-        Barrier.update_all()
-        Points.update_all()
-        Particle.update_all()
-        Shockwave.update_all()
-        self.player.update()
-
         super().update()
+
+        self.grid_manager.update()
 
         for event in self.manager.events:
             if event.type == KEYDOWN:
@@ -93,50 +80,30 @@ class MainMenu(Scene):
     def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
 
-        HorizontalGridline.draw_all()
-        VerticalGridline.draw_all()
-        Barrier.draw_all()
-        Points.draw_all()
-        Particle.draw_all()
-        Shockwave.draw_all()
-        PowerTimerPlayerDisplay.draw_all()
-        self.player.draw()
-
-        self.manager.screen.blit(blur_surf(self.manager.screen), (0, 0))
-
         super().draw()
+        self.manager.screen.blit(blur_surf(self.manager.screen), (0, 0))
 
 class MainGame(Scene):
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         super().__init__(manager, previous_scene)
 
     def setup(self) -> None:
+        super().setup()
+
+        self.grid_manager = GridManager(self.manager)
+
         MainGameTimer(self.manager)
 
         self.player = Player(self.manager)
-        Points.instances.clear()
-        VerticalGridline.instances.clear()
-        HorizontalGridline.instances.clear()
         Barrier.instance = None
         Barrier.last_position = 0
-        Particle.instances.clear()
-        Shockwave.instances.clear()
-        PowerTimerPlayerDisplay.instances.clear()
         for power in barrier_powers:
             power.init = False
 
-        super().setup()
-
     def update(self) -> None:
-        HorizontalGridline.update_all(self.manager)
-        VerticalGridline.update_all(self.manager)
-        Barrier.update_all()
-        Points.update_all()
-        Particle.update_all()
-        Shockwave.update_all()
-        self.player.update()
-
         super().update()
+
+        self.grid_manager.update()
 
         for event in self.manager.events:
             if event.type == KEYDOWN:
@@ -147,15 +114,6 @@ class MainGame(Scene):
     def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
 
-        HorizontalGridline.draw_all()
-        VerticalGridline.draw_all()
-        Barrier.draw_all()
-        Points.draw_all()
-        Particle.draw_all()
-        Shockwave.draw_all()
-        PowerTimerPlayerDisplay.draw_all()
-        self.player.draw()
-
         super().draw()
 
 class PauseMenu(Scene):
@@ -163,12 +121,12 @@ class PauseMenu(Scene):
         super().__init__(manager, previous_scene)
 
     def setup(self) -> None:
+        super().setup()
+
         Timer.pause_all()
 
         create_blurred_bg(self.manager)
         Label(self.manager, (WIDTH // 2, HEIGHT // 2), "Game Paused", BOLD_FONTS[80], (230, 230, 230))
-
-        super().setup()
 
     def update(self) -> None:
         super().update()
@@ -184,6 +142,8 @@ class EndMenu(Scene):
         super().__init__(manager, previous_scene)
 
     def setup(self) -> None:
+        super().setup()
+
         create_blurred_bg(self.manager)
 
         try: # Try to open the highscore file and read the highscore
@@ -207,8 +167,6 @@ class EndMenu(Scene):
         # Create labels to display the score and a prompt
         Label(self.manager, CENTER - (0, 100), f"Score: {self.previous_scene.player.score}", BOLD_FONTS[64], (230, 230, 230))
         Label(self.manager, CENTER + (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
-
-        super().setup()
 
     def update(self) -> None:
         super().update()

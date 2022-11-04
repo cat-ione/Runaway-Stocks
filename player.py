@@ -11,7 +11,8 @@ import time
 from pygame.locals import K_UP, K_DOWN
 
 from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR
-from utils import intvec, Sprite, inttup
+from sprite import VisibleSprite, Layers
+from utils import intvec, inttup
 import barrier_powers as powers
 
 class Camera:
@@ -37,10 +38,10 @@ class Camera:
             self.shaking_timer = time.time()
         self.offset = intvec(self.actual_offset)
 
-class Player(Sprite):
-    class Segment(Sprite):
+class Player(VisibleSprite):
+    class Segment(VisibleSprite):
         def __init__(self, manager: GameManager, player: Player) -> None:
-            super().__init__(manager)
+            super().__init__(manager, Layers.PLAYER)
             self.player = player
             self.player.segments.append(self)
             self.speed = player.speed
@@ -52,15 +53,18 @@ class Player(Sprite):
 
         def update(self) -> None:
             if self.start_pos.x - self.player.camera.offset.x < 0:
-                self.player.segments.remove(self)
-                del self
+                self.kill()
 
         def draw(self) -> None:
             for y in range(-3, 4):
                 pygame.draw.aaline(self.manager.screen, self.color, self.start_pos - self.player.camera.offset + (0, y), self.end_pos - self.player.camera.offset + (0, y))
 
+        def kill(self) -> None:
+            self.player.segments.remove(self)
+            super().kill()
+
     def __init__(self, manager: GameManager) -> None:
-        super().__init__(manager)
+        super().__init__(manager, Layers.PLAYER)
         self.speed = 200
         self.pos = VEC(0, 0)
         self.camera = Camera(self.manager, self)

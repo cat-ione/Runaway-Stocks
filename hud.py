@@ -13,28 +13,13 @@ from pygame.locals import SRCALPHA
 from constants import BOLD_FONTS, VEC, Anchors, _pos, _color
 from effects import Shockwave, PowerTimerPlayerDisplay
 from barrier_powers import Power, barrier_powers
-from utils import Sprite, pygame_draw_pie
+from sprite import VisibleSprite, Layers
+from utils import pygame_draw_pie
 from images import power_images
 
-class Element(Sprite):
-    def __init__(self, manager: GameManager) -> None:
-        super().__init__(manager)
-        self.scene.elements.append(self)
-
-    @abstractmethod
-    def update(self) -> None:
-        pass
-
-    @abstractmethod
-    def draw(self) -> None:
-        pass
-
-    def remove(self) -> None:
-        self.scene.elements.remove(self)
-
-class Label(Element):
+class Label(VisibleSprite):
     def __init__(self, manager: GameManager, pos: _pos, text: str, font: pygame.font.Font, color: _color, anchor: Anchors = Anchors.CENTER) -> None:
-        super().__init__(manager)
+        super().__init__(manager, Layers.HUD)
         self.surface = font.render(text, True, color)
         self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
@@ -45,9 +30,9 @@ class Label(Element):
     def draw(self) -> None:
         self.manager.screen.blit(self.surface, self.pos)
 
-class Image(Element):
+class Image(VisibleSprite):
     def __init__(self, manager: GameManager, pos: _pos, surface: pygame.Surface, anchor: Anchors = Anchors.CENTER) -> None:
-        super().__init__(manager)
+        super().__init__(manager, Layers.HUD)
         self.surface = surface
         self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
@@ -82,10 +67,10 @@ class Timer:
         if self.current_time <= 0:
             self.ended = True
 
-class MainGameTimer(Timer, Element):
+class MainGameTimer(Timer, VisibleSprite):
     def __init__(self, manager: GameManager) -> None:
-        Element.__init__(self, manager)
-        Timer.__init__(self, 60)
+        VisibleSprite.__init__(self, manager, Layers.HUD)
+        Timer.__init__(self, 10)
 
     def update(self) -> None:
         super().update()
@@ -111,14 +96,14 @@ class MainGameTimer(Timer, Element):
             pygame.draw.rect(tmp_surf, (208, 52, 44, self.border_opacity), (0, 0, *self.size), 4)
             self.manager.screen.blit(tmp_surf, (0, 0))
 
-class PowerTimer(Timer, Element):
+class PowerTimer(Timer, VisibleSprite):
     instances = []
     sorted_instances = {power: [] for power in barrier_powers}
     
     def __init__(self, manager: GameManager, power: Power) -> None:
         self.__class__.instances.insert(0, self)
         self.__class__.sorted_instances[power].append(self)
-        Element.__init__(self, manager)
+        VisibleSprite.__init__(self, manager, Layers.HUD)
         self.power = power
         self.power.init = True
         self.power.reset(manager)
@@ -128,12 +113,7 @@ class PowerTimer(Timer, Element):
     def update(self) -> None:
         super().update()
         if self.ended:
-            self.power.init = False
-            Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
-            self.player_display.__class__.instances.remove(self.player_display)
-            self.scene.elements.remove(self)
-            self.__class__.instances.remove(self)
-            self.__class__.sorted_instances[self.power].remove(self)
+            self.kill()
 
     def draw(self) -> None:
         rad = 24
@@ -143,3 +123,11 @@ class PowerTimer(Timer, Element):
         pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(0)), -cos(radians(0))) * rad, 2)
         pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 2)
         self.manager.screen.blit(power_images[self.power.__name__.lower()], center - (16, 16))
+
+    def kill(self) -> None:
+        self.power.init = False
+        Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
+        self.player_display.kill()
+        self.__class__.instances.remove(self)
+        self.__class__.sorted_instances[self.power].remove(self)
+        super().kill()

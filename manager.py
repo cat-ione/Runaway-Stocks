@@ -8,6 +8,10 @@ from scenes import Scene, MainMenu, MainGame, PauseMenu, EndMenu
 from constants import VEC, WIDTH, HEIGHT, FPS
 from utils import inttup
 
+class AbortScene(Exception):
+    def __str__(self):
+        return "Scene aborted but not catched with a try/except block."
+
 class GameManager:
     def __init__(self) -> None:
         pygame.init()
@@ -23,9 +27,12 @@ class GameManager:
 
     def run(self) -> None:
         while self.scene.running:
-            self.update()
-            self.scene.update()
-            self.scene.draw()
+            try:
+                self.update()
+                self.scene.update()
+                self.scene.draw()
+            except AbortScene:
+                pass
 
     def update(self) -> None:
         self.dt = self.clock.tick_busy_loop(FPS) / 1000
@@ -35,7 +42,7 @@ class GameManager:
             self.dt = 0
             self.window_changing = False
 
-        pygame.display.set_caption(f"游走股票 | FPS: {round(self.clock.get_fps())}")
+        pygame.display.set_caption(f"Runaway Stocks | FPS: {round(self.clock.get_fps())}")
 
         self.events = pygame.event.get()
         for event in self.events:
@@ -66,6 +73,7 @@ class GameManager:
         self.scene.running = False
         self.scene = self.Scenes[scene_class].value(self, self.scene)
         self.scene.setup()
+        raise AbortScene
 
     def switch_scene(self, scene: Scene) -> None:
         self.scene.running = False

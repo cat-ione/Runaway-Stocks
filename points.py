@@ -7,25 +7,13 @@ from random import randint
 import pygame
 
 from constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR
+from sprite import VisibleSprite, Layers
 from effects import Particle, Shockwave
-from utils import Sprite, inttup
+from utils import inttup
 
-class Points(Sprite):
-    instances = {}
-    
-    @classmethod
-    def update_all(cls) -> None:
-        for instance in cls.instances.copy().values():
-            instance.update()
-
-    @classmethod
-    def draw_all(cls) -> None:
-        for instance in cls.instances.values():
-            instance.draw()
-
+class Points(VisibleSprite):
     def __init__(self, manager: GameManager, val: int, pos: _pos) -> None:
-        super().__init__(manager)
-        __class__.instances[pos] = self
+        super().__init__(manager, Layers.POINTS)
         self.val = val
         self.color = BULL_COLOR if self.val > 0 else BEAR_COLOR
         self.pos = VEC(pos)
@@ -53,7 +41,8 @@ class Points(Sprite):
             Particle(self.manager, self.pos, self.color)
         Shockwave(self.manager, self.pos, self.color, 5, 50, 6)
         self.delete()
+        super().kill()
 
     def delete(self) -> None:
-        del __class__.instances[inttup(self.pos)]
-        del self
+        # del self.__class__.instances[inttup(self.pos)]
+        pass

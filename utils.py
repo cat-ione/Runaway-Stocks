@@ -1,10 +1,4 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
-if TYPE_CHECKING: from manager import GameManager
-
-from abc import ABC as AbstractClass
 from numpy import sin, cos, radians
-from abc import abstractmethod
 import pygame.gfxdraw
 import pygame
 
@@ -22,16 +16,3 @@ def pygame_draw_pie(screen: pygame.Surface, color: _color, center: _pos, rad: in
     last_angle = radians(angle + end_ang % step)
     vertices.append(center + VEC(sin(last_angle), -cos(last_angle)) * rad)
     pygame.gfxdraw.filled_polygon(screen, vertices, color)
-
-class Sprite(AbstractClass):
-    def __init__(self, manager: GameManager) -> None:
-        self.manager = manager
-        self.scene = self.manager.scene
-
-    @abstractmethod
-    def update(self) -> None:
-        pass
-
-    @abstractmethod
-    def draw(self) -> None:
-        pass
