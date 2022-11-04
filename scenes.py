@@ -67,17 +67,29 @@ class MainMenu(Scene):
         super().__init__(manager, previous_scene)
 
     def setup(self) -> None:
-        # Label(self.manager, (WIDTH // 2, HEIGHT // 2 + 100), "Press space to start the game!", BOLD_FONTS[18], (230, 230, 230))
         Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
         Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
         self.player = Player(self.manager)
+        Points.instances.clear()
+        VerticalGridline.instances.clear()
+        HorizontalGridline.instances.clear()
+        Barrier.instance = None
+        Barrier.last_position = 0
+        Particle.instances.clear()
+        Shockwave.instances.clear()
+        for power in barrier_powers:
+            power.init = False
 
         super().setup()
 
     def update(self) -> None:
-        self.player.update()
         HorizontalGridline.update_all(self.manager)
         VerticalGridline.update_all(self.manager)
+        Barrier.update_all()
+        Points.update_all()
+        Particle.update_all()
+        Shockwave.update_all()
+        self.player.update()
 
         super().update()
 
@@ -92,7 +104,10 @@ class MainMenu(Scene):
 
         HorizontalGridline.draw_all()
         VerticalGridline.draw_all()
-
+        Barrier.draw_all()
+        Points.draw_all()
+        Particle.draw_all()
+        Shockwave.draw_all()
         self.player.draw()
 
         self.manager.screen.blit(blur_surf(self.manager.screen), (0, 0))
@@ -105,6 +120,7 @@ class MainGame(Scene):
 
     def setup(self) -> None:
         MainGameTimer(self.manager)
+
         self.player = Player(self.manager)
         Points.instances.clear()
         VerticalGridline.instances.clear()

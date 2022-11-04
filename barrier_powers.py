@@ -31,6 +31,7 @@ class Speed(Power):
     def reset(manager: GameManager):
         __class__.speed = manager.scene.player.speed * uniform(1.2, 1.5)
 
+# Values are weights
 barrier_powers = {
     Flip: 1,
     Angle: 1,
