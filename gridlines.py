@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING: from manager import GameManager
 
-from random import randint, choices
+from random import randint, choices, sample
 import pygame
 
 from constants import WIDTH, HEIGHT, GRID_SPACE, VEC
@@ -70,8 +70,6 @@ class HorizontalGridline(VisibleSprite):
         super().__init__(manager, Layers.GRID)
         self.__class__.instances[y] = self
         self.y = y
-        for _ in range(randint(1, 3)):
-            Points(self.manager, randint(-10, 10), (GRID_SPACE.x * randint(int(self.scene.player.pos.x / GRID_SPACE.x - HEIGHT / GRID_SPACE.x - 10), int(self.scene.player.pos.x / GRID_SPACE.x + HEIGHT / GRID_SPACE.x + 10)), GRID_SPACE.y * self.y))
 
     def update(self) -> None:
         self.on_screen_start = VEC(0, self.y * GRID_SPACE.y - self.scene.player.camera.offset.y)
@@ -94,8 +92,12 @@ class VerticalGridline(VisibleSprite):
         super().__init__(manager, Layers.GRID)
         self.__class__.instances[x] = self
         self.x = x
-        for _ in range(randint(1, 4)):
-            Points(self.manager, randint(-10, 10), (GRID_SPACE.x * self.x, GRID_SPACE.y * randint(int(self.scene.player.pos.y / GRID_SPACE.y - HEIGHT / GRID_SPACE.y / 2 - 10), int(self.scene.player.pos.y / GRID_SPACE.y + HEIGHT / GRID_SPACE.y / 2 + 10))))
+        y_range = (
+            int(self.scene.player.pos.y / GRID_SPACE.y - HEIGHT / GRID_SPACE.y / 2 - 18),
+            int(self.scene.player.pos.y / GRID_SPACE.y + HEIGHT / GRID_SPACE.y / 2 + 18)
+        )
+        for y in sample(range(*y_range), randint(4, 7)):
+            Points(self.manager, randint(-10, 10), (GRID_SPACE.x * self.x, GRID_SPACE.y * y))
 
     def update(self) -> None:
         self.on_screen_start = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, 0)

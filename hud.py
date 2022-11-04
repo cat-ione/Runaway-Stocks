@@ -70,7 +70,7 @@ class Timer:
 class MainGameTimer(Timer, VisibleSprite):
     def __init__(self, manager: GameManager) -> None:
         VisibleSprite.__init__(self, manager, Layers.HUD)
-        Timer.__init__(self, 10)
+        Timer.__init__(self, 60)
 
     def update(self) -> None:
         super().update()
