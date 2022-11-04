@@ -94,9 +94,11 @@ class MainGameTimer(Timer, Element):
 
     def draw(self) -> None:
         self.text_surface = BOLD_FONTS[40].render(" " + str(int(self.current_time)) + " ", True, (230, 230, 230))
-        self.size = self.text_surface.get_size()
+        self.size = self.text_surface.get_size() + VEC(0, 2)
 
-        pygame.draw.rect(self.manager.screen, (150, 150, 150), (0, 0, *self.size))
+        trans_surf = pygame.Surface(self.size, SRCALPHA)
+        trans_surf.fill((150, 150, 150, 150))
+        self.manager.screen.blit(trans_surf, (0, 0))
         self.manager.screen.blit(self.text_surface, (0, 0))
 
         if self.current_time < 10 and self.current_time % 1 > 0.5:

@@ -67,6 +67,7 @@ class MainMenu(Scene):
         Barrier.last_position = 0
         Particle.instances.clear()
         Shockwave.instances.clear()
+        PowerTimerPlayerDisplay.instances.clear()
         for power in barrier_powers:
             power.init = False
 
@@ -98,6 +99,7 @@ class MainMenu(Scene):
         Points.draw_all()
         Particle.draw_all()
         Shockwave.draw_all()
+        PowerTimerPlayerDisplay.draw_all()
         self.player.draw()
 
         self.manager.screen.blit(blur_surf(self.manager.screen), (0, 0))
