@@ -21,18 +21,12 @@ from points import Points
 from images import title_1, title_2
 
 def blur_surf(surf: pygame.Surface) -> pygame.Surface:
-    """
-    - Convert the surface to bytestring
-    - Convert bytestring to parsable PIL image
-    - Blur image with GaussianBlur
-    - Convert PIL image to pygame surface
-    - Return pygame surface
-    """
-    surf_str = pygame.image.tostring(surf, "RGB")
-    surf_img = PIL.Image.frombytes("RGB", surf.get_size(), surf_str)
-    blurred_img = surf_img.filter(GaussianBlur(3))
-    blurred_img_surf = pygame.image.fromstring(blurred_img.tobytes(), blurred_img.size, blurred_img.mode).convert_alpha()
-    return blurred_img_surf
+    """Smooth scale it down and up, then normal scale it down and up, to create a blur effect plus a pixelated effect"""
+    surf = pygame.transform.smoothscale_by(surf, 0.25)
+    surf = pygame.transform.smoothscale_by(surf, 4)
+    surf = pygame.transform.scale_by(surf, 0.25)
+    surf = pygame.transform.scale_by(surf, 4)
+    return surf
 
 def create_blurred_bg(manager: GameManager) -> Image:
     """

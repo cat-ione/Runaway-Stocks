@@ -10,7 +10,7 @@ import time
 
 from pygame.locals import K_UP, K_DOWN
 
-from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS
+from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR
 from utils import intvec, Sprite, inttup
 import barrier_powers as powers
 
@@ -65,7 +65,7 @@ class Player(Sprite):
         self.pos = VEC(0, 0)
         self.camera = Camera(self.manager, self)
         self.direction = Dir.UP
-        self.color = (232, 87, 87)
+        self.color = BULL_COLOR
         self.angle = 40
         self.segments = []
         self.Segment(self.manager, self)
@@ -124,6 +124,6 @@ class Player(Sprite):
 
     def update_segments(self, direction: Dir):
         self.direction = direction
-        self.color = (232, 87, 87) if direction == Dir.UP else (12, 120, 38)
+        self.color = BULL_COLOR if direction == Dir.UP else BEAR_COLOR
         self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
         self.Segment(self.manager, self)

@@ -5,8 +5,8 @@ if TYPE_CHECKING: from manager import GameManager
 from random import randint
 import pygame
 
+from constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR
 from effects import Particle, Shockwave
-from constants import FONTS, VEC, _pos
 from utils import Sprite, inttup
 
 class Points(Sprite):
@@ -26,7 +26,7 @@ class Points(Sprite):
         super().__init__(manager)
         __class__.instances[pos] = self
         self.val = val
-        self.color = (232, 87, 87) if self.val > 0 else (12, 120, 38)
+        self.color = BULL_COLOR if self.val > 0 else BEAR_COLOR
         self.pos = VEC(pos)
 
     def update(self) -> None:

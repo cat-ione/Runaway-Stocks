@@ -6,12 +6,13 @@ import os
 _pos = tuple[int, int]
 _color = tuple[int, int, int]
 
-FPS = 500
+FPS = float("inf")
 VEC = pygame.math.Vector2
 WIDTH, HEIGHT = 828, 512
+BULL_COLOR = (21, 153, 53)
+BEAR_COLOR = (214, 73, 73)
 CENTER = VEC(WIDTH // 2, HEIGHT // 2)
 GRID_SPACE = VEC(48, 30)
-
 
 DATA_DIR = os.path.join(str(Path.home()), ".runawaystocks")
 if not os.path.exists(DATA_DIR):
