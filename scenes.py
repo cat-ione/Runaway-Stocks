@@ -2,19 +2,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING: from manager import GameManager
 
-from PIL.Image import open as open_image
-from PIL.ImageFilter import GaussianBlur
-import PIL
 import pygame
-import os
 
 from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
 
 from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, TMP_BG_FILE, WIDTH, Anchors
 from gridlines import VerticalGridline, HorizontalGridline, Barrier
+from effects import Particle, Shockwave, PowerTimerPlayerDisplay
 from elements import Image, Label, MainGameTimer, Timer
 from barrier_powers import barrier_powers
-from effects import Particle, Shockwave
 from player import Player
 from points import Points
 
@@ -123,6 +119,7 @@ class MainGame(Scene):
         Barrier.last_position = 0
         Particle.instances.clear()
         Shockwave.instances.clear()
+        PowerTimerPlayerDisplay.instances.clear()
         for power in barrier_powers:
             power.init = False
 
@@ -154,6 +151,7 @@ class MainGame(Scene):
         Points.draw_all()
         Particle.draw_all()
         Shockwave.draw_all()
+        PowerTimerPlayerDisplay.draw_all()
         self.player.draw()
 
         super().draw()

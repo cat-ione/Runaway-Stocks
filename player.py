@@ -31,7 +31,7 @@ class Camera:
             tick_offset.y = 0
         self.actual_offset += tick_offset * 5 * self.manager.dt
         if self.shaking and time.time() - self.shaking_timer < 0.25:
-            self.actual_offset += VEC(uniform(-2, 2), uniform(-2, 2))
+            self.actual_offset += VEC(uniform(-3, 3), uniform(-3, 3))
         else:
             self.shaking = False
             self.shaking_timer = time.time()

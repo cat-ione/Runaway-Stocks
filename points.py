@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING: from manager import GameManager
 
+from pygame.locals import SRCALPHA
 from random import randint
 import pygame
 
@@ -39,8 +40,13 @@ class Points(Sprite):
             self.delete()
 
     def draw(self) -> None:
-        pygame.draw.circle(self.manager.screen, self.color, self.pos - self.scene.player.camera.offset, 4)
-        self.manager.screen.blit(FONTS[16].render(str(self.val), True, self.color), self.pos - self.scene.player.camera.offset + VEC(3, 1))
+        draw_center = self.pos - self.scene.player.camera.offset
+        r = 6
+        trans_surf = pygame.Surface((r * 2, r * 2), SRCALPHA)
+        pygame.draw.circle(trans_surf, (*self.color, 100), (r, r), r)
+        self.manager.screen.blit(trans_surf, draw_center - VEC(r, r))
+        pygame.draw.circle(self.manager.screen, self.color, draw_center, r - 2)
+        self.manager.screen.blit(FONTS[16].render(str(self.val), True, self.color), draw_center + VEC(3, 1))
 
     def kill(self) -> None:
         for _ in range(randint(60, 80)):

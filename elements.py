@@ -1,10 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from numpy import cos, radians, sin
-
 if TYPE_CHECKING: from manager import GameManager
 
+from numpy import cos, radians, sin
 from abc import abstractmethod
 import pygame
 import time
@@ -12,10 +11,10 @@ import time
 from pygame.locals import SRCALPHA
 
 from constants import BOLD_FONTS, VEC, Anchors, _pos, _color
+from effects import Shockwave, PowerTimerPlayerDisplay
 from barrier_powers import Power, barrier_powers
 from utils import Sprite, pygame_draw_pie
 from images import power_images
-from effects import Shockwave
 
 class Element(Sprite):
     def __init__(self, manager: GameManager) -> None:
@@ -122,28 +121,22 @@ class PowerTimer(Timer, Element):
         self.power.init = True
         self.power.reset(manager)
         Timer.__init__(self, self.power.max_time)
+        self.player_display = PowerTimerPlayerDisplay(manager, self)
 
     def update(self) -> None:
         super().update()
         if self.ended:
             self.power.init = False
             Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
+            self.player_display.__class__.instances.remove(self.player_display)
             self.scene.elements.remove(self)
             self.__class__.instances.remove(self)
             self.__class__.sorted_instances[self.power].remove(self)
-            del self
 
     def draw(self) -> None:
-        center = self.scene.player.pos - self.scene.player.camera.offset
-        angle = int(self.current_time / self.max_time * 360) + 180
-        rad = 35
-        pygame_draw_pie(self.manager.screen, (255, 255, 255, 70), center, rad, 180, angle)
-        pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(180)), -cos(radians(180))) * rad, 1)
-        pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 1)
-
-        center = VEC(0 + 24, 50 + 24 + self.__class__.instances.index(self) * 50)
-        angle = angle - 180
         rad = 24
+        center = VEC(0 + rad + 5, 50 + rad + 10 + self.__class__.instances.index(self) * 50)
+        angle = int(self.current_time / self.max_time * 360)
         pygame_draw_pie(self.manager.screen, (255, 255, 255, 120), center, rad, 0, angle)
         pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(0)), -cos(radians(0))) * rad, 2)
         pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 2)
