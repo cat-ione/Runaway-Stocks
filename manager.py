@@ -2,10 +2,11 @@ from enum import Enum
 import pygame
 import sys
 
-from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED
+from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED, KEYDOWN, K_F9
 
 from scene import Scene, MainMenu, MainGame, PauseMenu, EndMenu
 from constants import VEC, WIDTH, HEIGHT, FPS
+from profiling import profile
 from utils import inttup
 
 class AbortScene(Exception):
@@ -26,13 +27,18 @@ class GameManager:
         self.scene.setup()
 
     def run(self) -> None:
-        while self.scene.running:
+        def tick():
             try:
                 self.update()
                 self.scene.update()
                 self.scene.draw()
             except AbortScene:
                 pass
+        while self.scene.running:
+            if KEYDOWN in self.events and self.events[KEYDOWN].key == K_F9:
+                profile(tick)
+            else:
+                tick()
 
     def update(self) -> None:
         self.dt = self.clock.tick_busy_loop(FPS) / 1000
@@ -43,13 +49,13 @@ class GameManager:
             self.window_changing = False
 
         pygame.display.set_caption(f"Runaway Stocks | FPS: {round(self.clock.get_fps())}")
+        
+        self.events = {event.type: event for event in pygame.event.get()}
 
-        self.events = pygame.event.get()
-        for event in self.events:
-            if event.type == QUIT:
-                self.quit()
-            elif event.type == WINDOWRESIZED or event.type == WINDOWMOVED:
-                self.window_changing = True
+        if QUIT in self.events:
+            self.quit()
+        elif WINDOWRESIZED in self.events or WINDOWMOVED in self.events:
+            self.window_changing = True
 
         # If the display size is not the default
         if (display_size := pygame.display.get_surface().get_size()) != (WIDTH, HEIGHT):

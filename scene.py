@@ -69,11 +69,8 @@ class MainMenu(Scene):
 
         self.grid_manager.update()
 
-        for event in self.manager.events:
-            if event.type == KEYDOWN:
-                if event.key == K_SPACE:
-                    self.manager.new_scene("MainGame")
-                    break
+        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
+            self.manager.new_scene("MainGame")
 
     def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
@@ -103,11 +100,9 @@ class MainGame(Scene):
 
         self.grid_manager.update()
 
-        for event in self.manager.events:
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.manager.new_scene("PauseMenu")
-                    break
+        
+        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
+            self.manager.new_scene("PauseMenu")
 
     def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
@@ -129,11 +124,8 @@ class PauseMenu(Scene):
     def update(self) -> None:
         super().update()
 
-        for event in self.manager.events:
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.manager.switch_scene(self.previous_scene)
-                    break
+        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
+            self.manager.switch_scene(self.previous_scene)
 
 class EndMenu(Scene):
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
@@ -169,9 +161,6 @@ class EndMenu(Scene):
     def update(self) -> None:
         super().update()
 
-        for event in self.manager.events:
-            if event.type == KEYDOWN:
-                if event.key == K_SPACE:
-                    # Start new game
-                    self.manager.new_scene("MainGame")
-                    break
+        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
+            # Start new game
+            self.manager.new_scene("MainGame")

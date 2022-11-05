@@ -5,6 +5,7 @@ if TYPE_CHECKING: from manager import GameManager
 
 from numpy import cos, radians, sin
 from random import uniform
+from math import hypot
 import pygame
 import time
 
@@ -14,6 +15,18 @@ from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLO
 from sprite import VisibleSprite, Layers
 from utils import intvec, inttup
 import barrier_powers as powers
+
+def aaline(surface, color, p1, p2, width):
+    # points
+    p1_1 = (p1[0], p1[1] - width // 2)
+    p1_2 = (p1[0], p1[1] + width // 2)
+    p2_1 = (p2[0], p2[1] - width // 2)
+    p2_2 = (p2[0], p2[1] + width // 2)
+
+    # draw the polygon
+    pygame.draw.aaline(surface, color, p1_1, p2_1, 5)
+    pygame.draw.aaline(surface, color, p1_2, p2_2, 5)
+    pygame.gfxdraw.filled_polygon(surface, (p1_1, p1_2, p2_2, p2_1), color)
 
 class Camera:
     def __init__(self, manager: GameManager, master: object) -> None:
@@ -66,8 +79,17 @@ class Player(VisibleSprite):
                 self.kill()
 
         def draw(self) -> None:
-            for y in range(-3, 4):
-                pygame.draw.aaline(self.manager.screen, self.color, self.start_pos - self.player.camera.offset + (0, y), self.end_pos - self.player.camera.offset + (0, y))
+            width = 6
+            start_pos = self.start_pos - self.player.camera.offset
+            end_pos = self.end_pos - self.player.camera.offset
+            start_1 = (start_pos.x, start_pos.y - width // 2)
+            start_2 = (start_pos.x, start_pos.y + width // 2)
+            end_1 = (end_pos.x, end_pos.y - width // 2)
+            end_2 = (end_pos.x, end_pos.y + width // 2)
+
+            pygame.draw.aaline(self.manager.screen, self.color, start_1, end_1, 5)
+            pygame.draw.aaline(self.manager.screen, self.color, start_2, end_2, 5)
+            pygame.gfxdraw.filled_polygon(self.manager.screen, (start_1, start_2, end_2, end_1), self.color)
 
         def kill(self) -> None:
             self.player.segments.remove(self)
