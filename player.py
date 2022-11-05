@@ -9,7 +9,7 @@ from math import hypot
 import pygame
 import time
 
-from pygame.locals import K_UP, K_DOWN
+from pygame.locals import K_UP, K_DOWN, SRCALPHA, BLEND_RGB_SUB
 
 from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR
 from sprite import VisibleSprite, Layers
@@ -82,14 +82,14 @@ class Player(VisibleSprite):
             width = 6
             start_pos = self.start_pos - self.player.camera.offset
             end_pos = self.end_pos - self.player.camera.offset
-            start_1 = (start_pos.x, start_pos.y - width // 2)
-            start_2 = (start_pos.x, start_pos.y + width // 2)
-            end_1 = (end_pos.x, end_pos.y - width // 2)
-            end_2 = (end_pos.x, end_pos.y + width // 2)
+            start_1 = VEC(start_pos.x, start_pos.y - width // 2)
+            start_2 = VEC(start_pos.x, start_pos.y + width // 2)
+            end_1 = VEC(end_pos.x, end_pos.y - width // 2)
+            end_2 = VEC(end_pos.x, end_pos.y + width // 2)
 
-            pygame.draw.aaline(self.manager.screen, self.color, start_1, end_1, 5)
-            pygame.draw.aaline(self.manager.screen, self.color, start_2, end_2, 5)
-            pygame.gfxdraw.filled_polygon(self.manager.screen, (start_1, start_2, end_2, end_1), self.color)
+            pygame.draw.aaline(self.manager.screen, self.color, start_1, end_1)
+            pygame.draw.aaline(self.manager.screen, self.color, start_2, end_2)
+            pygame.gfxdraw.filled_polygon(self.manager.screen, tuple(map(lambda p: p + (0, 1), (start_1, start_2, end_2, end_1))), self.color)
 
         def kill(self) -> None:
             self.player.segments.remove(self)
@@ -124,7 +124,7 @@ class Player(VisibleSprite):
         else:
             self.angle = 40
             powers.Angle.reset(self.manager)
-            self.update_segments(self.direction)
+            self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
         if powers.Speed.init:
             self.speed = powers.Speed.speed
             self.camera.shake(0.1, 1)
