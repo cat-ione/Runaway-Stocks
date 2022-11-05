@@ -154,4 +154,4 @@ class Barrier(VerticalGridline):
         for _ in range(400):
             Particle(self.manager, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
         Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 10, 160, 14)
-        self.manager.scene.player.camera.shaking = True
+        self.manager.scene.player.camera.shake(0.3, 6)

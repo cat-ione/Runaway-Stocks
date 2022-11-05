@@ -25,7 +25,7 @@ class Points(VisibleSprite):
             return
         screen_pos = self.pos - self.scene.player.camera.offset
         if screen_pos.x < -50:
-            self.delete()
+            super().kill()
 
     def draw(self) -> None:
         draw_center = self.pos - self.scene.player.camera.offset
@@ -40,9 +40,4 @@ class Points(VisibleSprite):
         for _ in range(randint(60, 80)):
             Particle(self.manager, self.pos, self.color)
         Shockwave(self.manager, self.pos, self.color, 5, 50, 6)
-        self.delete()
         super().kill()
-
-    def delete(self) -> None:
-        # del self.__class__.instances[inttup(self.pos)]
-        pass

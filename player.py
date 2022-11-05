@@ -22,21 +22,31 @@ class Camera:
         self.actual_offset = self.master.pos - VEC(WIDTH, HEIGHT) / 2
         self.offset = intvec(self.actual_offset)
         self.shaking = False
-        self.shaking_timer = time.time()
+        self.shake_start = time.time()
+        self.shake_duration = 0
+        self.per_shake_start = time.time()
+        self.per_shake_duration = 0.05
+        self.shake_intensity = 0
 
     def update(self) -> None:
         tick_offset = self.master.pos - self.offset - VEC(WIDTH, HEIGHT) / 2
-        if -1 < tick_offset.x < 1:
-            tick_offset.x = 0
-        if -1 < tick_offset.y < 1:
-            tick_offset.y = 0
         self.actual_offset += tick_offset * 5 * self.manager.dt
-        if self.shaking and time.time() - self.shaking_timer < 0.25:
-            self.actual_offset += VEC(uniform(-3, 3), uniform(-3, 3))
+        if self.shaking and time.time() - self.shake_start < self.shake_duration:
+            if time.time() - self.per_shake_start < self.per_shake_duration:
+                self.actual_offset += VEC(uniform(-(si := self.shake_intensity), si), uniform(-si, si))
+            else:
+                self.per_shake_start = time.time()
         else:
             self.shaking = False
-            self.shaking_timer = time.time()
+            self.shake_duration = 0
+            self.shake_intensity = 0
+            self.shake_start = time.time()
         self.offset = intvec(self.actual_offset)
+
+    def shake(self, duration: float, intensity: int):
+        self.shaking = True
+        self.shake_duration = duration if duration > self.shake_duration else self.shake_duration
+        self.shake_intensity = intensity if intensity > self.shake_intensity else self.shake_intensity
 
 class Player(VisibleSprite):
     class Segment(VisibleSprite):
@@ -95,6 +105,7 @@ class Player(VisibleSprite):
             self.update_segments(self.direction)
         if powers.Speed.init:
             self.speed = powers.Speed.speed
+            self.camera.shake(0.1, 1)
         else:
             self.speed = 200
 

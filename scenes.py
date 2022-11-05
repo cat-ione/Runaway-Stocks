@@ -6,14 +6,12 @@ from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
 import pygame
 
 from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, WIDTH, Anchors
-from gridlines import VerticalGridline, HorizontalGridline, GridManager, Barrier
-from effects import Particle, Shockwave, PowerTimerPlayerDisplay
 from hud import Image, Label, MainGameTimer, Timer
+from gridlines import GridManager, Barrier
 from barrier_powers import barrier_powers
 from images import title_1, title_2
-from sprite import SpriteManager
+from sprite import SpriteManager, Layers
 from player import Player
-from points import Points
 
 def blur_surf(surf: pygame.Surface) -> pygame.Surface:
     """Smooth scale it down and up, then normal scale it down and up, to create a blur effect plus a pixelated effect"""

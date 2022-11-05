@@ -129,5 +129,8 @@ class PowerTimer(Timer, VisibleSprite):
         Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
         self.player_display.kill()
         self.__class__.instances.remove(self)
-        self.__class__.sorted_instances[self.power].remove(self)
+        try:
+            self.__class__.sorted_instances[self.power].remove(self)
+        except ValueError:
+            pass
         super().kill()
