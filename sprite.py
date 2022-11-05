@@ -8,6 +8,7 @@ from enum import Enum, auto
 
 class Layers(Enum):
     GRID = auto()
+    BARRIERS = auto()
     POINTS = auto()
     EFFECTS = auto()
     PLAYER_TIMER = auto()

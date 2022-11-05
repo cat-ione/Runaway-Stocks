@@ -29,11 +29,11 @@ class Points(VisibleSprite):
 
     def draw(self) -> None:
         draw_center = self.pos - self.scene.player.camera.offset
-        r = 6
+        r = 8
         trans_surf = pygame.Surface((r * 2, r * 2), SRCALPHA)
         pygame.draw.circle(trans_surf, (*self.color, 100), (r, r), r)
         self.manager.screen.blit(trans_surf, draw_center - VEC(r, r))
-        pygame.draw.circle(self.manager.screen, self.color, draw_center, r - 2)
+        pygame.draw.circle(self.manager.screen, self.color, draw_center, r - 3)
         self.manager.screen.blit(FONTS[16].render(str(self.val), True, self.color), draw_center + VEC(3, 1))
 
     def kill(self) -> None:

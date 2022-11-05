@@ -76,7 +76,7 @@ class HorizontalGridline(VisibleSprite):
         self.on_screen_end = VEC(WIDTH, self.y * GRID_SPACE.y - self.scene.player.camera.offset.y)
 
     def draw(self) -> None:
-        pygame.draw.line(self.manager.screen, (150, 150, 150), self.on_screen_start, self.on_screen_end)
+        pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
 
     def kill(self) -> None:
         try:
@@ -106,7 +106,7 @@ class VerticalGridline(VisibleSprite):
             self.kill()
 
     def draw(self) -> None:
-        pygame.draw.line(self.manager.screen, (150, 150, 150), self.on_screen_start, self.on_screen_end)
+        pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
 
     def kill(self) -> None:
         try:
@@ -120,7 +120,7 @@ class Barrier(VerticalGridline):
     last_position = 0
 
     def __init__(self, manager: GameManager, x: int, power: Power) -> None:
-        VisibleSprite.__init__(self, manager, Layers.GRID)
+        VisibleSprite.__init__(self, manager, Layers.BARRIERS)
         self.__class__.instance = self
         self.x = x
         self.power = power
@@ -144,6 +144,8 @@ class Barrier(VerticalGridline):
         super().update()
 
     def draw(self) -> None:
+        pygame.draw.line(self.manager.screen, (60, 60, 60), self.on_screen_start, self.on_screen_end, 10)
+        pygame.draw.line(self.manager.screen, (110, 110, 110), self.on_screen_start, self.on_screen_end, 6)
         pygame.draw.line(self.manager.screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
         
     def kill(self) -> None:

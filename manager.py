@@ -4,7 +4,7 @@ import sys
 
 from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED
 
-from scenes import Scene, MainMenu, MainGame, PauseMenu, EndMenu
+from scene import Scene, MainMenu, MainGame, PauseMenu, EndMenu
 from constants import VEC, WIDTH, HEIGHT, FPS
 from utils import inttup
 
