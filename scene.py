@@ -56,6 +56,7 @@ class MainMenu(Scene):
         super().setup()
 
         self.grid_manager = GridManager(self.manager)
+        self.bg_grid_manager = BGGridManager(self.manager)
 
         Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
         Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
@@ -69,6 +70,7 @@ class MainMenu(Scene):
         super().update()
 
         self.grid_manager.update()
+        self.bg_grid_manager.update()
 
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
             self.manager.new_scene("MainGame")
