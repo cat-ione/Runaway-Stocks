@@ -8,9 +8,7 @@ import pygame
 from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, WIDTH, Anchors
 from hud import Image, Label, MainGameTimer, Timer
 from gridlines import GridManager, Barrier
-from barrier_powers import barrier_powers
 from background import BGGridManager
-from images import title_1, title_2
 from sprite import SpriteManager
 from player import Player
 
@@ -77,10 +75,10 @@ class MainMenu(Scene):
         super().setup()
         self.background = MainMenuBG(self.manager, self.previous_scene)
         self.background.setup()
-        # self.player = self.background.player
 
-        Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
-        Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
+        # Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
+        # Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
+        Label(self, (WIDTH // 2, HEIGHT // 2), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230))
 
     def update(self) -> None:
         super().update()

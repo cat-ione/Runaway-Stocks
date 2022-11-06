@@ -2,9 +2,9 @@ from enum import Enum
 import pygame
 import sys
 
-from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED, KEYDOWN, K_F9
+from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED, KEYDOWN, K_F9, WINDOWRESTORED, WINDOWMAXIMIZED
 
-from scene import Scene, MainMenu, MainGame, PauseMenu, EndMenu, MainMenuBG
+from scene import Scene, MainMenu, MainGame, PauseMenu, EndMenu
 from constants import VEC, WIDTH, HEIGHT, FPS
 from profiling import profile
 from utils import inttup
@@ -18,7 +18,8 @@ class GameManager:
         pygame.init()
         self.screen = pygame.Surface((WIDTH, HEIGHT))
         self.resized_screen = self.screen.copy()
-        self.display = pygame.display.set_mode((WIDTH, HEIGHT), HWSURFACE | DOUBLEBUF | RESIZABLE)
+        self.flags = HWSURFACE | DOUBLEBUF | RESIZABLE
+        self.display = pygame.display.set_mode((WIDTH, HEIGHT), self.flags)
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick_busy_loop(FPS) / 1000
         self.window_changing = False
@@ -28,8 +29,8 @@ class GameManager:
 
     def run(self) -> None:
         def tick():
+            self.update()
             try:
-                self.update()
                 self.scene.update()
                 self.scene.draw()
             except AbortScene:
@@ -51,21 +52,34 @@ class GameManager:
         pygame.display.set_caption(f"Runaway Stocks | FPS: {round(self.clock.get_fps())}")
         
         self.events = {event.type: event for event in pygame.event.get()}
+        self.display_size = pygame.display.get_surface().get_size()
+        self.new_size = (WIDTH / HEIGHT * self.display_size[1], self.display_size[1])
 
         if QUIT in self.events:
             self.quit()
-        elif WINDOWRESIZED in self.events or WINDOWMOVED in self.events:
+        if WINDOWRESIZED in self.events or WINDOWMOVED in self.events:
+            self.dt = 0
             self.window_changing = True
+            if WINDOWRESIZED in self.events:
+                pygame.display.set_mode(self.new_size, self.flags)
+        if WINDOWRESTORED in self.events and WINDOWMAXIMIZED not in self.events:
+            self.new_size = (WIDTH, HEIGHT)
+            pygame.display.set_mode(self.new_size, self.flags)
 
         # If the display size is not the default
-        if (display_size := pygame.display.get_surface().get_size()) != (WIDTH, HEIGHT):
-            # Get the smallest ratio to resize the screen by in order to fit the entire thing on the current display
-            smallest_ratio = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
-            new_size = inttup(VEC(WIDTH, HEIGHT) * smallest_ratio)
-            # Scale the screen to the biggest fitting dimensions
-            self.resized_screen = pygame.transform.smoothscale(self.screen, new_size)
-            # Blit the new screen in the center of the display
-            self.display.blit(self.resized_screen, (display_size[0] // 2 - new_size[0] // 2, display_size[1] // 2 - new_size[1] // 2))
+        # if (display_size := pygame.display.get_surface().get_size()) != (WIDTH, HEIGHT):
+        #     # Get the smallest ratio to resize the screen by in order to fit the entire thing on the current display
+        #     smallest_ratio = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
+        #     new_size = inttup(VEC(WIDTH, HEIGHT) * smallest_ratio)
+        #     # Scale the screen to the biggest fitting dimensions
+        #     self.resized_screen = pygame.transform.smoothscale(self.screen, new_size)
+        #     # Blit the new screen in the center of the display
+        #     self.display.blit(self.resized_screen, (display_size[0] // 2 - new_size[0] // 2, display_size[1] // 2 - new_size[1] // 2))
+        # else:
+        #     self.display.blit(self.screen, (0, 0))
+        if self.new_size != (WIDTH, HEIGHT):
+            self.resized_screen = pygame.transform.smoothscale(self.screen, self.new_size)
+            self.display.blit(self.resized_screen, (0, 0))
         else:
             self.display.blit(self.screen, (0, 0))
 
