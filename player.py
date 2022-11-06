@@ -11,22 +11,10 @@ import time
 
 from pygame.locals import K_UP, K_DOWN, SRCALPHA, BLEND_RGB_SUB
 
-from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR
+from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR, SHADOW_OFFSET
 from sprite import VisibleSprite, Layers
 from utils import intvec, inttup
 import barrier_powers as powers
-
-def aaline(surface, color, p1, p2, width):
-    # points
-    p1_1 = (p1[0], p1[1] - width // 2)
-    p1_2 = (p1[0], p1[1] + width // 2)
-    p2_1 = (p2[0], p2[1] - width // 2)
-    p2_2 = (p2[0], p2[1] + width // 2)
-
-    # draw the polygon
-    pygame.draw.aaline(surface, color, p1_1, p2_1, 5)
-    pygame.draw.aaline(surface, color, p1_2, p2_2, 5)
-    pygame.gfxdraw.filled_polygon(surface, (p1_1, p1_2, p2_2, p2_1), color)
 
 class Camera:
     def __init__(self, manager: GameManager, master: object) -> None:
@@ -87,6 +75,8 @@ class Player(VisibleSprite):
             end_1 = VEC(end_pos.x, end_pos.y - width // 2)
             end_2 = VEC(end_pos.x, end_pos.y + width // 2)
 
+            pygame.draw.line(self.player.shadow.surface, (60, 60, 60), start_pos + SHADOW_OFFSET, end_pos + SHADOW_OFFSET, 8)
+
             pygame.draw.aaline(self.manager.screen, self.color, start_1, end_1)
             pygame.draw.aaline(self.manager.screen, self.color, start_2, end_2)
             pygame.gfxdraw.filled_polygon(self.manager.screen, tuple(map(lambda p: p + (0, 1), (start_1, start_2, end_2, end_1))), self.color)
@@ -94,6 +84,19 @@ class Player(VisibleSprite):
         def kill(self) -> None:
             self.player.segments.remove(self)
             super().kill()
+
+    class SegmentShadows(VisibleSprite):
+        def __init__(self, manager: GameManager) -> None:
+            super().__init__(manager, Layers.PLAYER_SHADOW)
+            self.surface = pygame.Surface((WIDTH, HEIGHT))
+
+        def update(self) -> None:
+            # Nothing to do in here
+            pass
+
+        def draw(self) -> None:
+            self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
+            self.surface = pygame.Surface((WIDTH, HEIGHT))
 
     def __init__(self, manager: GameManager) -> None:
         super().__init__(manager, Layers.PLAYER)
@@ -105,6 +108,7 @@ class Player(VisibleSprite):
         self.angle = 40
         self.segments = []
         self.Segment(self.manager, self)
+        self.shadow = self.SegmentShadows(self.manager)
         self.tip_offsets_upright = [VEC(0, 15), VEC(-6, -5), VEC(6, -5)]
         self.tip_offset_func = lambda c: inttup(self.pos + VEC(c) - self.camera.offset)
         self.tip_rotation_func = lambda c: c.rotate((90 - self.angle) * -self.direction.value) * self.direction.value
@@ -156,6 +160,7 @@ class Player(VisibleSprite):
         for segment in self.segments:
             segment.draw()
         pygame.draw.polygon(self.manager.screen, self.color, list(map(self.tip_offset_func, self.tip_offsets)))
+        pygame.draw.polygon(self.shadow.surface, (60, 60, 60), list(map(lambda c: self.tip_offset_func(c) + SHADOW_OFFSET, self.tip_offsets)))
         text_surf = BOLD_FONTS[18].render(str(self.score), True, (230, 230, 230))
         self.manager.screen.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))
 

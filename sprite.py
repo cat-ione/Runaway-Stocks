@@ -11,6 +11,7 @@ class Layers(Enum):
     BARRIERS = auto()
     POINTS = auto()
     EFFECTS = auto()
+    PLAYER_SHADOW = auto()
     PLAYER_TIMER = auto()
     PLAYER = auto()
     HUD = auto()
