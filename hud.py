@@ -1,7 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING: from manager import GameManager
+if TYPE_CHECKING:
+    from manager import GameManager
+    from scene import Scene
 
 from numpy import cos, radians, sin
 from abc import abstractmethod
@@ -18,8 +20,8 @@ from utils import pygame_draw_pie
 from images import power_images
 
 class Label(VisibleSprite):
-    def __init__(self, manager: GameManager, pos: _pos, text: str, font: pygame.font.Font, color: _color, anchor: Anchors = Anchors.CENTER) -> None:
-        super().__init__(manager, Layers.HUD)
+    def __init__(self, manager: GameManager, pos: _pos, text: str, font: pygame.font.Font, color: _color, anchor: Anchors = Anchors.CENTER, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.HUD, scene)
         self.surface = font.render(text, True, color)
         self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
@@ -31,8 +33,8 @@ class Label(VisibleSprite):
         self.manager.screen.blit(self.surface, self.pos)
 
 class Image(VisibleSprite):
-    def __init__(self, manager: GameManager, pos: _pos, surface: pygame.Surface, anchor: Anchors = Anchors.CENTER) -> None:
-        super().__init__(manager, Layers.HUD)
+    def __init__(self, manager: GameManager, pos: _pos, surface: pygame.Surface, anchor: Anchors = Anchors.CENTER, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.HUD, scene)
         self.surface = surface
         self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
@@ -68,8 +70,8 @@ class Timer:
             self.ended = True
 
 class MainGameTimer(Timer, VisibleSprite):
-    def __init__(self, manager: GameManager) -> None:
-        VisibleSprite.__init__(self, manager, Layers.HUD)
+    def __init__(self, manager: GameManager, scene: Scene = None) -> None:
+        VisibleSprite.__init__(self, manager, Layers.HUD, scene)
         Timer.__init__(self, 60)
 
     def update(self) -> None:
@@ -100,15 +102,15 @@ class PowerTimer(Timer, VisibleSprite):
     instances = []
     sorted_instances = {power: [] for power in barrier_powers}
     
-    def __init__(self, manager: GameManager, power: Power) -> None:
+    def __init__(self, manager: GameManager, power: Power, scene: Scene = None) -> None:
         self.__class__.instances.insert(0, self)
         self.__class__.sorted_instances[power].append(self)
-        VisibleSprite.__init__(self, manager, Layers.HUD)
+        VisibleSprite.__init__(self, manager, Layers.HUD, scene)
         self.power = power
         self.power.init = True
-        self.power.reset(manager)
+        self.power.reset(manager, self.scene)
         Timer.__init__(self, self.power.max_time)
-        self.player_display = PowerTimerPlayerDisplay(manager, self)
+        self.player_display = PowerTimerPlayerDisplay(manager, self, self.scene)
 
     def update(self) -> None:
         super().update()
@@ -126,7 +128,7 @@ class PowerTimer(Timer, VisibleSprite):
 
     def kill(self) -> None:
         self.power.init = False
-        Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
+        Shockwave(self.manager, self.scene.player.pos, (180, 180, 180), 8, 160, 14, self.scene)
         self.player_display.kill()
         self.__class__.instances.remove(self)
         try:

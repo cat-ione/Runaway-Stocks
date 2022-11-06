@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from manager import GameManager
+if TYPE_CHECKING:
+    from manager import GameManager
+    from scene import Scene
 
 from pygame.locals import SRCALPHA, BLEND_RGB_SUB
 from random import randint
@@ -12,8 +14,8 @@ from effects import Particle, Shockwave
 
 class Point(VisibleSprite):
     class PointShadows(VisibleSprite):
-        def __init__(self, manager: GameManager) -> None:
-            super().__init__(manager, Layers.PLAYER_SHADOW)
+        def __init__(self, manager: GameManager, scene: Scene = None) -> None:
+            super().__init__(manager, Layers.PLAYER_SHADOW, scene)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
         def update(self) -> None:
@@ -24,8 +26,8 @@ class Point(VisibleSprite):
             self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
-    def __init__(self, manager: GameManager, val: int, pos: _pos) -> None:
-        super().__init__(manager, Layers.POINTS)
+    def __init__(self, manager: GameManager, val: int, pos: _pos, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.POINTS, scene)
         self.val = val
         self.color = BULL_COLOR if self.val > 0 else BEAR_COLOR
         self.pos = VEC(pos)
@@ -57,6 +59,6 @@ class Point(VisibleSprite):
 
     def kill(self) -> None:
         for _ in range(randint(60, 80)):
-            Particle(self.manager, self.pos, self.color)
-        Shockwave(self.manager, self.pos, self.color, 5, 50, 6)
+            Particle(self.manager, self.pos, self.color, self.scene)
+        Shockwave(self.manager, self.pos, self.color, 5, 50, 6, self.scene)
         super().kill()

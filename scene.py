@@ -48,23 +48,14 @@ class Scene:
     def draw(self) -> None:
         self.sprite_manager.draw()
 
-class MainMenu(Scene):
-    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
-        super().__init__(manager, previous_scene)
-
+class MainMenuBG(Scene):
     def setup(self) -> None:
         super().setup()
 
-        self.grid_manager = GridManager(self.manager)
-        self.bg_grid_manager = BGGridManager(self.manager)
-
-        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
-        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
-        self.player = Player(self.manager)
-        Barrier.instance = None
-        Barrier.last_position = 0
-        for power in barrier_powers:
-            power.init = False
+        self.grid_manager = GridManager(self.manager, self)
+        self.bg_grid_manager = BGGridManager(self.manager, self)
+        self.player = Player(self.manager, self)
+        Barrier.reset()
 
     def update(self) -> None:
         super().update()
@@ -81,6 +72,29 @@ class MainMenu(Scene):
         super().draw()
         self.manager.screen.blit(blur_surf(self.manager.screen), (0, 0))
 
+class MainMenu(Scene):
+    def setup(self) -> None:
+        super().setup()
+        self.background = MainMenuBG(self.manager, self.previous_scene)
+        self.background.setup()
+        # self.player = self.background.player
+
+        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
+        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
+
+    def update(self) -> None:
+        super().update()
+        
+        self.background.update()
+
+        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
+            self.manager.new_scene("MainGame")
+
+    def draw(self) -> None:
+        self.background.draw()
+
+        super().draw()
+
 class MainGame(Scene):
     def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
         super().__init__(manager, previous_scene)
@@ -94,10 +108,7 @@ class MainGame(Scene):
         MainGameTimer(self.manager)
 
         self.player = Player(self.manager)
-        Barrier.instance = None
-        Barrier.last_position = 0
-        for power in barrier_powers:
-            power.init = False
+        Barrier.reset()
 
     def update(self) -> None:
         super().update()

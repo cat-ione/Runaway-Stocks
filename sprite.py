@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from manager import GameManager
+if TYPE_CHECKING:
+    from manager import GameManager
+    from scene import Scene
 
 from abc import ABC as AbstractClass
 from abc import abstractmethod
@@ -19,10 +21,10 @@ class Layers(Enum):
     HUD = auto()
 
 class Sprite(AbstractClass):
-    def __init__(self, manager: GameManager, layer: int | Layers) -> None:
+    def __init__(self, manager: GameManager, layer: int | Layers, scene: Scene = None) -> None:
         self._layer = Layers(layer)
         self.manager = manager
-        self.scene = self.manager.scene
+        self.scene = scene if scene else manager.scene
 
     @abstractmethod
     def update(self) -> None:
@@ -36,8 +38,8 @@ class Sprite(AbstractClass):
         self.scene.sprite_manager.remove(self)
 
 class VisibleSprite(Sprite):
-    def __init__(self, manager: GameManager, layer: Layers) -> None:
-        super().__init__(manager, layer)
+    def __init__(self, manager: GameManager, layer: Layers, scene: Scene = None) -> None:
+        super().__init__(manager, layer, scene)
         self.scene.sprite_manager.add(self)
 
     @abstractmethod

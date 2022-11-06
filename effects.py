@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from manager import GameManager
     from hud import PowerTimer
+    from scene import Scene
 
 from numpy import cos, radians, sin
 from random import uniform, randint
@@ -13,8 +14,8 @@ from sprite import VisibleSprite, Layers
 from constants import VEC, _pos, _color
 
 class Particle(VisibleSprite):
-    def __init__(self, manager: GameManager, pos: _pos, color: _color):
-        super().__init__(manager, Layers.EFFECTS)
+    def __init__(self, manager: GameManager, pos: _pos, color: _color, scene: Scene = None):
+        super().__init__(manager, Layers.EFFECTS, scene)
         self.pos = VEC(pos)
         self.vel = VEC(uniform(-30, 30), uniform(-30, 30))
         while self.vel.x == 0 and self.vel.y == 0:
@@ -33,8 +34,8 @@ class Particle(VisibleSprite):
         pygame.draw.circle(self.manager.screen, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
 
 class Shockwave(VisibleSprite):
-    def __init__(self, manager: GameManager, pos: _pos, color: _color, start_width: int, expansion_speed: float, thinnen_speed: float) -> None:
-        super().__init__(manager, Layers.EFFECTS)
+    def __init__(self, manager: GameManager, pos: _pos, color: _color, start_width: int, expansion_speed: float, thinnen_speed: float, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.EFFECTS, scene)
         self.pos = VEC(pos)
         self.color = color
         self.radius = 0
@@ -52,8 +53,8 @@ class Shockwave(VisibleSprite):
         pygame.draw.circle(self.manager.screen, self.color, self.pos - self.scene.player.camera.offset, self.radius, round(self.width))
 
 class PowerTimerPlayerDisplay(VisibleSprite):
-    def __init__(self, manager: GameManager, master: PowerTimer) -> None:
-        super().__init__(manager, Layers.PLAYER_TIMER)
+    def __init__(self, manager: GameManager, master: PowerTimer, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.PLAYER_TIMER, scene)
         self.master = master
 
     def update(self) -> None:

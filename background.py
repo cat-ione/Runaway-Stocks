@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Callable
-if TYPE_CHECKING: from manager import GameManager
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from manager import GameManager
+    from scene import Scene
 
 from random import randint, choice, sample
 import pygame
@@ -9,15 +11,16 @@ from constants import WIDTH, HEIGHT, BG_GRID_SPACE, VEC, BG_PARALLAX, _pos, _col
 from sprite import VisibleSprite, Layers
 
 class BGGridManager:
-    def __init__(self, manager: GameManager) -> None:
+    def __init__(self, manager: GameManager, scene: Scene = None) -> None:
         self.manager = manager
+        self.scene = scene if scene else self.manager.scene
         for line in BGVerticalGridline.instances.copy():
             BGVerticalGridline.instances[line].kill()
         for line in BGHorizontalGridline.instances.copy():
             BGHorizontalGridline.instances[line].kill()
 
     def update_horizontal(self) -> None:
-        player = self.manager.scene.player
+        player = self.scene.player
         on_screen_lines = set()
         lines_range = (
             int(player.pos.y / BG_GRID_SPACE.y - WIDTH / BG_GRID_SPACE.y / 2 - 1),
@@ -26,14 +29,14 @@ class BGGridManager:
         for y in range(*lines_range):
             on_screen_lines.add(y)
             if y not in BGHorizontalGridline.instances:
-                BGHorizontalGridline(self.manager, y)
+                BGHorizontalGridline(self.manager, y, self.scene)
         for unrendered_line in set(BGHorizontalGridline.instances.keys()) - on_screen_lines:
             del BGHorizontalGridline.instances[unrendered_line]
         for instance in BGHorizontalGridline.instances.copy().values():
             instance.update()
 
     def update_vertical(self) -> None:
-        player = self.manager.scene.player
+        player = self.scene.player
         on_screen_lines = set()
         lines_range = (
             int(player.pos.x / BG_GRID_SPACE.x - WIDTH / BG_GRID_SPACE.x / 2 - 1),
@@ -42,7 +45,7 @@ class BGGridManager:
         for x in range(*lines_range):
             on_screen_lines.add(x)
             if x not in BGVerticalGridline.instances:
-                BGVerticalGridline(self.manager, x)
+                BGVerticalGridline(self.manager, x, self.scene)
         for unrendered_line in set(BGVerticalGridline.instances.keys()) - on_screen_lines:
             del BGVerticalGridline.instances[unrendered_line]
         for instance in BGVerticalGridline.instances.copy().values():
@@ -55,8 +58,8 @@ class BGGridManager:
 class BGHorizontalGridline(VisibleSprite):
     instances = {}
 
-    def __init__(self, manager: GameManager, y: int) -> None:
-        super().__init__(manager, Layers.BACKGROUND_GRID)
+    def __init__(self, manager: GameManager, y: int, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.BACKGROUND_GRID, scene)
         self.__class__.instances[y] = self
         self.y = y
 
@@ -79,8 +82,8 @@ class BGHorizontalGridline(VisibleSprite):
 class BGVerticalGridline(VisibleSprite):
     instances = {}
 
-    def __init__(self, manager: GameManager, x: int) -> None:
-        super().__init__(manager, Layers.BACKGROUND_GRID)
+    def __init__(self, manager: GameManager, x: int, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.BACKGROUND_GRID, scene)
         self.__class__.instances[x] = self
         self.x = x
         y_range = (
@@ -88,7 +91,7 @@ class BGVerticalGridline(VisibleSprite):
             int(self.scene.player.pos.y / BG_GRID_SPACE.y + HEIGHT / BG_GRID_SPACE.y / 2 + 24)
         )
         for y in sample(range(*y_range), randint(3, 5)):
-            BGPoint(self.manager, (BG_GRID_SPACE.x * self.x, BG_GRID_SPACE.y * y), choice([BG_BULL_COLOR, BG_BEAR_COLOR]))
+            BGPoint(self.manager, (BG_GRID_SPACE.x * self.x, BG_GRID_SPACE.y * y), choice([BG_BULL_COLOR, BG_BEAR_COLOR]), self.scene)
 
     def update(self) -> None:
         self.on_screen_start = VEC(self.x * BG_GRID_SPACE.x - self.scene.player.camera.offset.x * BG_PARALLAX, 0)
@@ -107,8 +110,8 @@ class BGVerticalGridline(VisibleSprite):
         super().kill()
 
 class BGPoint(VisibleSprite):
-    def __init__(self, manager: GameManager, pos: _pos, color: _color) -> None:
-        super().__init__(manager, Layers.BACKGROUND_POINTS)
+    def __init__(self, manager: GameManager, pos: _pos, color: _color, scene: Scene = None) -> None:
+        super().__init__(manager, Layers.BACKGROUND_POINTS, scene)
         self.color = color
         self.pos = VEC(pos)
 
