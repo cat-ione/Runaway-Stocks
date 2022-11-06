@@ -52,8 +52,8 @@ class Camera:
 
 class Player(VisibleSprite):
     class Segment(VisibleSprite):
-        def __init__(self, manager: GameManager, player: Player, scene: Scene = None) -> None:
-            super().__init__(manager, Layers.PLAYER, scene)
+        def __init__(self, scene: Scene, player: Player) -> None:
+            super().__init__(scene, Layers.PLAYER)
             self.player = player
             self.player.segments.append(self)
             self.speed = player.speed
@@ -87,8 +87,8 @@ class Player(VisibleSprite):
             super().kill()
 
     class SegmentShadows(VisibleSprite):
-        def __init__(self, manager: GameManager, scene: Scene = None) -> None:
-            super().__init__(manager, Layers.PLAYER_SHADOW, scene)
+        def __init__(self, scene: Scene) -> None:
+            super().__init__(scene, Layers.PLAYER_SHADOW)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
         def update(self) -> None:
@@ -99,8 +99,8 @@ class Player(VisibleSprite):
             self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
-    def __init__(self, manager: GameManager, scene: Scene = None) -> None:
-        super().__init__(manager, Layers.PLAYER, scene)
+    def __init__(self, scene: Scene) -> None:
+        super().__init__(scene, Layers.PLAYER)
         self.speed = 200
         self.pos = VEC(0, 0)
         self.camera = Camera(self.manager, self)
@@ -108,8 +108,8 @@ class Player(VisibleSprite):
         self.color = BULL_COLOR
         self.angle = 40
         self.segments = []
-        self.Segment(self.manager, self, self.scene)
-        self.shadow = self.SegmentShadows(self.manager, self.scene)
+        self.Segment(self.scene, self)
+        self.shadow = self.SegmentShadows(self.scene)
         self.tip_offsets_upright = [VEC(0, 15), VEC(-6, -5), VEC(6, -5)]
         self.tip_offset_func = lambda c: inttup(self.pos + VEC(c) - self.camera.offset)
         self.tip_rotation_func = lambda c: c.rotate((90 - self.angle) * -self.direction.value) * self.direction.value
@@ -128,7 +128,7 @@ class Player(VisibleSprite):
             self.update_segments(self.direction)
         else:
             self.angle = 40
-            powers.Angle.reset(self.manager)
+            powers.Angle.reset(self.scene)
             self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
         if powers.Speed.init:
             self.speed = powers.Speed.speed
@@ -169,4 +169,4 @@ class Player(VisibleSprite):
         self.direction = direction
         self.color = BULL_COLOR if direction == Dir.UP else BEAR_COLOR
         self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
-        self.Segment(self.manager, self, self.scene)
+        self.Segment(self.scene, self)

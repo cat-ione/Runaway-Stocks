@@ -14,8 +14,8 @@ from effects import Particle, Shockwave
 
 class Point(VisibleSprite):
     class PointShadows(VisibleSprite):
-        def __init__(self, manager: GameManager, scene: Scene = None) -> None:
-            super().__init__(manager, Layers.PLAYER_SHADOW, scene)
+        def __init__(self, scene: Scene) -> None:
+            super().__init__(scene, Layers.PLAYER_SHADOW)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
         def update(self) -> None:
@@ -26,8 +26,8 @@ class Point(VisibleSprite):
             self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
-    def __init__(self, manager: GameManager, val: int, pos: _pos, scene: Scene = None) -> None:
-        super().__init__(manager, Layers.POINTS, scene)
+    def __init__(self, scene: Scene, val: int, pos: _pos) -> None:
+        super().__init__(scene, Layers.POINTS)
         self.val = val
         self.color = BULL_COLOR if self.val > 0 else BEAR_COLOR
         self.pos = VEC(pos)
@@ -59,6 +59,6 @@ class Point(VisibleSprite):
 
     def kill(self) -> None:
         for _ in range(randint(60, 80)):
-            Particle(self.manager, self.pos, self.color, self.scene)
-        Shockwave(self.manager, self.pos, self.color, 5, 50, 6, self.scene)
+            Particle(self.scene, self.pos, self.color)
+        Shockwave(self.scene, self.pos, self.color, 5, 50, 6)
         super().kill()

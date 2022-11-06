@@ -22,15 +22,15 @@ def blur_surf(surf: pygame.Surface) -> pygame.Surface:
     surf = pygame.transform.scale_by(surf, 4)
     return surf
 
-def create_blurred_bg(manager: GameManager) -> Image:
+def create_blurred_bg(scene: Scene) -> Image:
     """
     - Blur screen as surface
     - Create a custom Image object that will be displayed
     - Also return the object for accessibility
     """
 
-    blurred_img_surf = blur_surf(manager.screen)
-    blurred_img_obj = Image(manager, (0, 0), blurred_img_surf, anchor=Anchors.TOPLEFT)
+    blurred_img_surf = blur_surf(scene.manager.screen)
+    blurred_img_obj = Image(scene, (0, 0), blurred_img_surf, anchor=Anchors.TOPLEFT)
     return blurred_img_obj
 
 class Scene:
@@ -52,9 +52,9 @@ class MainMenuBG(Scene):
     def setup(self) -> None:
         super().setup()
 
-        self.grid_manager = GridManager(self.manager, self)
-        self.bg_grid_manager = BGGridManager(self.manager, self)
-        self.player = Player(self.manager, self)
+        self.grid_manager = GridManager(self)
+        self.bg_grid_manager = BGGridManager(self)
+        self.player = Player(self)
         Barrier.reset()
 
     def update(self) -> None:
@@ -79,8 +79,8 @@ class MainMenu(Scene):
         self.background.setup()
         # self.player = self.background.player
 
-        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
-        Image(self.manager, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
+        Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
+        Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
 
     def update(self) -> None:
         super().update()
@@ -96,18 +96,15 @@ class MainMenu(Scene):
         super().draw()
 
 class MainGame(Scene):
-    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
-        super().__init__(manager, previous_scene)
-
     def setup(self) -> None:
         super().setup()
 
-        self.grid_manager = GridManager(self.manager)
-        self.bg_grid_manager = BGGridManager(self.manager)
+        self.grid_manager = GridManager(self)
+        self.bg_grid_manager = BGGridManager(self)
 
-        MainGameTimer(self.manager)
+        MainGameTimer(self)
 
-        self.player = Player(self.manager)
+        self.player = Player(self)
         Barrier.reset()
 
     def update(self) -> None:
@@ -125,16 +122,13 @@ class MainGame(Scene):
         super().draw()
 
 class PauseMenu(Scene):
-    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
-        super().__init__(manager, previous_scene)
-
     def setup(self) -> None:
         super().setup()
 
         Timer.pause_all()
 
-        create_blurred_bg(self.manager)
-        Label(self.manager, (WIDTH // 2, HEIGHT // 2), "Game Paused", BOLD_FONTS[80], (230, 230, 230))
+        create_blurred_bg(self)
+        Label(self, (WIDTH // 2, HEIGHT // 2), "Game Paused", BOLD_FONTS[80], (230, 230, 230))
 
     def update(self) -> None:
         super().update()
@@ -143,13 +137,10 @@ class PauseMenu(Scene):
             self.manager.switch_scene(self.previous_scene)
 
 class EndMenu(Scene):
-    def __init__(self, manager: GameManager, previous_scene: Scene) -> None:
-        super().__init__(manager, previous_scene)
-
     def setup(self) -> None:
         super().setup()
 
-        create_blurred_bg(self.manager)
+        create_blurred_bg(self)
 
         try: # Try to open the highscore file and read the highscore
             with open(HIGHSCORE_FILE, "r") as f:
@@ -163,15 +154,15 @@ class EndMenu(Scene):
 
         # If it is a new highscore, display "New Highscore!"
         if self.previous_scene.player.score > self.highscore:
-            Label(self.manager, CENTER, "New Highscore!", BOLD_FONTS[64], (230, 230, 230))
+            Label(self, CENTER, "New Highscore!", BOLD_FONTS[64], (230, 230, 230))
             with open(HIGHSCORE_FILE, "w") as f:
                 f.write(str(self.previous_scene.player.score)) # Update the highscore in the file
         else: # If it is not a new highscore, display the current highscore
-            Label(self.manager, CENTER, f"Highscore: {self.highscore}", BOLD_FONTS[64], (230, 230, 230))
+            Label(self, CENTER, f"Highscore: {self.highscore}", BOLD_FONTS[64], (230, 230, 230))
 
         # Create labels to display the score and a prompt
-        Label(self.manager, CENTER - (0, 100), f"Score: {self.previous_scene.player.score}", BOLD_FONTS[64], (230, 230, 230))
-        Label(self.manager, CENTER + (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
+        Label(self, CENTER - (0, 100), f"Score: {self.previous_scene.player.score}", BOLD_FONTS[64], (230, 230, 230))
+        Label(self, CENTER + (0, 100), "Press space to restart", BOLD_FONTS[18], (230, 230, 230))
 
     def update(self) -> None:
         super().update()

@@ -21,10 +21,10 @@ class Layers(Enum):
     HUD = auto()
 
 class Sprite(AbstractClass):
-    def __init__(self, manager: GameManager, layer: int | Layers, scene: Scene = None) -> None:
+    def __init__(self, scene: Scene, layer: int | Layers) -> None:
         self._layer = Layers(layer)
-        self.manager = manager
-        self.scene = scene if scene else manager.scene
+        self.scene = scene
+        self.manager = scene.manager
 
     @abstractmethod
     def update(self) -> None:
@@ -38,8 +38,8 @@ class Sprite(AbstractClass):
         self.scene.sprite_manager.remove(self)
 
 class VisibleSprite(Sprite):
-    def __init__(self, manager: GameManager, layer: Layers, scene: Scene = None) -> None:
-        super().__init__(manager, layer, scene)
+    def __init__(self, scene: Scene, layer: Layers) -> None:
+        super().__init__(scene, layer)
         self.scene.sprite_manager.add(self)
 
     @abstractmethod
