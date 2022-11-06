@@ -7,6 +7,8 @@ from abc import abstractmethod
 from enum import Enum, auto
 
 class Layers(Enum):
+    BACKGROUND_GRID = auto()
+    BACKGROUND_POINTS = auto()
     GRID = auto()
     BARRIERS = auto()
     POINTS = auto()

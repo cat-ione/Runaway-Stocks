@@ -11,8 +11,12 @@ VEC = pygame.math.Vector2
 WIDTH, HEIGHT = 828, 512
 BULL_COLOR = (21, 153, 53)
 BEAR_COLOR = (214, 73, 73)
+BG_BULL_COLOR = (11, 103, 33)
+BG_BEAR_COLOR = (154, 43, 43)
 CENTER = VEC(WIDTH // 2, HEIGHT // 2)
 GRID_SPACE = VEC(48, 30)
+BG_GRID_SPACE = GRID_SPACE * 0.78
+BG_PARALLAX = 0.85
 SHADOW_OFFSET = VEC(3, 4)
 
 DATA_DIR = os.path.join(str(Path.home()), ".runawaystocks")

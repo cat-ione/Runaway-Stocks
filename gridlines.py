@@ -10,7 +10,7 @@ from barrier_powers import Power, barrier_powers
 from sprite import VisibleSprite, Layers
 from effects import Particle, Shockwave
 from hud import PowerTimer
-from points import Points
+from points import Point
 
 class GridManager:
     def __init__(self, manager: GameManager) -> None:
@@ -77,6 +77,9 @@ class HorizontalGridline(VisibleSprite):
 
     def draw(self) -> None:
         pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
+        pygame.draw.line(self.manager.screen, (80, 80, 80), self.on_screen_start + (0, 2), self.on_screen_end + (0, 2), 1)
+        if not -100 < self.on_screen_start.y < HEIGHT + 100:
+            self.kill()
 
     def kill(self) -> None:
         try:
@@ -97,16 +100,17 @@ class VerticalGridline(VisibleSprite):
             int(self.scene.player.pos.y / GRID_SPACE.y + HEIGHT / GRID_SPACE.y / 2 + 18)
         )
         for y in sample(range(*y_range), randint(4, 7)):
-            Points(self.manager, randint(-10, 10), (GRID_SPACE.x * self.x, GRID_SPACE.y * y))
+            Point(self.manager, randint(-10, 10), (GRID_SPACE.x * self.x, GRID_SPACE.y * y))
 
     def update(self) -> None:
         self.on_screen_start = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, 0)
         self.on_screen_end = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, HEIGHT)
-        if self.on_screen_start.x < -100:
+        if self.on_screen_start.x < -10:
             self.kill()
 
     def draw(self) -> None:
         pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
+        pygame.draw.line(self.manager.screen, (80, 80, 80), self.on_screen_start + (2, 0), self.on_screen_end + (2, 0), 1)
 
     def kill(self) -> None:
         try:

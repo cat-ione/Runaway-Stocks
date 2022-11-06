@@ -10,7 +10,7 @@ from constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, S
 from sprite import VisibleSprite, Layers
 from effects import Particle, Shockwave
 
-class Points(VisibleSprite):
+class Point(VisibleSprite):
     class PointShadows(VisibleSprite):
         def __init__(self, manager: GameManager) -> None:
             super().__init__(manager, Layers.PLAYER_SHADOW)
@@ -37,7 +37,7 @@ class Points(VisibleSprite):
             self.kill()
             return
         screen_pos = self.pos - self.scene.player.camera.offset
-        if screen_pos.x < -50:
+        if screen_pos.x < -20:
             super().kill()
 
     def draw(self) -> None:

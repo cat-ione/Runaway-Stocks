@@ -9,8 +9,9 @@ from constants import HEIGHT, HIGHSCORE_FILE, CENTER, BOLD_FONTS, WIDTH, Anchors
 from hud import Image, Label, MainGameTimer, Timer
 from gridlines import GridManager, Barrier
 from barrier_powers import barrier_powers
+from background import BGGridManager
 from images import title_1, title_2
-from sprite import SpriteManager, Layers
+from sprite import SpriteManager
 from player import Player
 
 def blur_surf(surf: pygame.Surface) -> pygame.Surface:
@@ -86,6 +87,7 @@ class MainGame(Scene):
         super().setup()
 
         self.grid_manager = GridManager(self.manager)
+        self.bg_grid_manager = BGGridManager(self.manager)
 
         MainGameTimer(self.manager)
 
@@ -99,8 +101,8 @@ class MainGame(Scene):
         super().update()
 
         self.grid_manager.update()
+        self.bg_grid_manager.update()
 
-        
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
             self.manager.new_scene("PauseMenu")
 
