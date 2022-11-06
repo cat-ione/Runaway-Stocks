@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from manager import GameManager
     from hud import PowerTimer
     from scene import Scene
 
+from random import uniform, randint, choice
+from pygame.locals import *
 from numpy import cos, radians, sin
-from random import uniform, randint
 import pygame
+import time
 
 from utils import inttup, pygame_draw_pie
 from sprite import VisibleSprite, Layers
@@ -68,3 +69,32 @@ class PowerTimerPlayerDisplay(VisibleSprite):
         pygame_draw_pie(self.manager.screen, (255, 255, 255, 70), center, rad, 180, angle)
         pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(180)), -cos(radians(180))) * rad, 1)
         pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 1)
+
+class Glitch(VisibleSprite):
+    def __init__(self, scene: Scene, pos: _pos) -> None:
+        super().__init__(scene, Layers.GLITCHES)
+        self.orig_pos = VEC(pos)
+        self.pos = self.orig_pos
+        self.glitch_count = 0
+        self.glitch_start = time.time()
+        self.glitch_duration = uniform(0.02, 0.08)
+        self.size = VEC(randint(30, 60), randint(6, 8))
+        self.on_screen_pos = self.pos - self.scene.player.camera.offset
+        try:
+            self.surface = self.manager.screen.subsurface(self.on_screen_pos, self.size).copy()
+        except ValueError:
+            self.kill()
+
+    def update(self) -> None:
+        self.on_screen_pos = self.pos - self.scene.player.camera.offset
+        if time.time() - self.glitch_start > self.glitch_duration:
+            self.glitch_count += 1
+            self.glitch_start = time.time()
+            self.glitch_duration = uniform(0.02, 0.08)
+            self.pos = self.orig_pos + VEC(choice([randint(-10, -5), randint(5, 10)]), randint(-2, 2))
+        if self.glitch_count >= 8:
+            self.kill()
+
+    def draw(self) -> None:
+        self.manager.screen.fill((30, 30, 30), (*self.on_screen_pos, *self.size))
+        self.manager.screen.blit(self.surface, self.on_screen_pos)

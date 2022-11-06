@@ -5,8 +5,7 @@ if TYPE_CHECKING:
     from scene import Scene
 
 from numpy import cos, radians, sin
-from random import uniform
-from math import hypot
+from random import uniform, choice
 import pygame
 import time
 
@@ -16,6 +15,7 @@ from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLO
 from sprite import VisibleSprite, Layers
 from utils import intvec, inttup
 import barrier_powers as powers
+from effects import Glitch
 
 class Camera:
     def __init__(self, manager: GameManager, master: object) -> None:
@@ -116,6 +116,8 @@ class Player(VisibleSprite):
         self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
         self.score = 0
         self.start_time = time.time()
+        self.spawn_glitch_start = time.time()
+        self.spawn_glitch_interval = uniform(0.05, 0.25)
 
     def update(self) -> None:
         keys = pygame.key.get_pressed()
@@ -123,6 +125,7 @@ class Player(VisibleSprite):
             up_key, down_key = K_UP, K_DOWN
         else:
             up_key, down_key = K_DOWN, K_UP
+            self.spawn_glitches()
         if powers.Angle.init:
             self.angle = powers.Angle.angle
             self.update_segments(self.direction)
@@ -133,6 +136,7 @@ class Player(VisibleSprite):
         if powers.Speed.init:
             self.speed = powers.Speed.speed
             self.camera.shake(0.1, 1)
+            self.spawn_glitches()
         else:
             self.speed = 200
 
@@ -170,3 +174,14 @@ class Player(VisibleSprite):
         self.color = BULL_COLOR if direction == Dir.UP else BEAR_COLOR
         self.tip_offsets = list(map(self.tip_rotation_func, self.tip_offsets_upright))
         self.Segment(self.scene, self)
+
+    def spawn_glitches(self):
+        if time.time() - self.spawn_glitch_start > self.spawn_glitch_interval:
+            self.spawn_glitch_start = time.time()
+            self.spawn_glitch_interval = uniform(0.05, 0.25)
+            segment = choice(self.segments)
+            spawn_pos = (VEC(
+                uniform(max(self.camera.offset.x, segment.end_pos.x), segment.start_pos.x),
+                uniform(min(segment.start_pos.y, segment.end_pos.y), max(segment.start_pos.y, segment.end_pos.y))
+            ))
+            Glitch(self.scene, spawn_pos - (60, 0))

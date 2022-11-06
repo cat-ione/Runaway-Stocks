@@ -18,6 +18,7 @@ class Layers(Enum):
     PLAYER_SHADOW = auto()
     PLAYER_TIMER = auto()
     PLAYER = auto()
+    GLITCHES = auto()
     HUD = auto()
 
 class Sprite(AbstractClass):
