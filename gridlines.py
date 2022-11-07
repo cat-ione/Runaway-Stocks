@@ -1,16 +1,17 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from manager import GameManager
     from scene import Scene
 
 from random import randint, choices, sample
+from math import ceil
 import pygame
 
 from constants import WIDTH, HEIGHT, GRID_SPACE, VEC
 from barrier_powers import Power, barrier_powers
 from sprite import VisibleSprite, Layers
 from effects import Particle, Shockwave
+from audio import break_barrier
 from hud import PowerTimer
 from points import Point
 
@@ -25,29 +26,29 @@ class GridManager:
 
     def update_horizontal(self) -> None:
         player = self.scene.player
-        on_screen_lines = set()
         lines_range = (
-            int(player.pos.y / GRID_SPACE.y - WIDTH / GRID_SPACE.y / 2 - 1),
-            int(player.pos.y / GRID_SPACE.y + WIDTH / GRID_SPACE.y / 2 + 2)
+            ceil(player.pos.y / GRID_SPACE.y - HEIGHT / GRID_SPACE.y / 2 - 1),
+            ceil(player.pos.y / GRID_SPACE.y + HEIGHT / GRID_SPACE.y / 2 + 2)
         )
+        for y in HorizontalGridline.instances.copy():
+            if not lines_range[0] <= y < lines_range[1]:
+                HorizontalGridline.instances[y].kill()
         for y in range(*lines_range):
-            on_screen_lines.add(y)
             if y not in HorizontalGridline.instances:
                 HorizontalGridline(self.scene, y)
-        for unrendered_line in set(HorizontalGridline.instances.keys()) - on_screen_lines:
-            del HorizontalGridline.instances[unrendered_line]
         for instance in HorizontalGridline.instances.copy().values():
             instance.update()
 
     def update_vertical(self) -> None:
         player = self.scene.player
-        on_screen_lines = set()
         lines_range = (
-            int(player.pos.x / GRID_SPACE.x - WIDTH / GRID_SPACE.x / 2 - 1),
-            int(player.pos.x / GRID_SPACE.x + WIDTH / GRID_SPACE.x / 2 + 2)
+            ceil(player.pos.x / GRID_SPACE.x - WIDTH / GRID_SPACE.x / 2 - 1),
+            ceil(player.pos.x / GRID_SPACE.x + WIDTH / GRID_SPACE.x / 2 + 2)
         )
+        for x in VerticalGridline.instances.copy():
+            if not lines_range[0] <= x < lines_range[1]:
+                VerticalGridline.instances[x].kill()
         for x in range(*lines_range):
-            on_screen_lines.add(x)
             if x not in VerticalGridline.instances:
                 VerticalGridline(self.scene, x)
                 chosen_power = choices(list(barrier_powers.keys()), list(barrier_powers.values()))[0]
@@ -57,8 +58,6 @@ class GridManager:
                 # There are cases where the randint range is negative thus erroring, in the case of that, create a Barrier
                 except ValueError:
                     Barrier(self.scene, x, chosen_power)
-        for unrendered_line in set(VerticalGridline.instances.keys()) - on_screen_lines:
-            del VerticalGridline.instances[unrendered_line]
         for instance in VerticalGridline.instances.copy().values():
             instance.update()
 
@@ -81,12 +80,10 @@ class HorizontalGridline(VisibleSprite):
     def draw(self) -> None:
         pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
         pygame.draw.line(self.manager.screen, (80, 80, 80), self.on_screen_start + (0, 2), self.on_screen_end + (0, 2), 1)
-        if not -100 < self.on_screen_start.y < HEIGHT + 100:
-            self.kill()
 
     def kill(self) -> None:
         try:
-            del __class__.instances[self.y]
+            del self.__class__.instances[self.y]
         except KeyError:
             pass
         super().kill()
@@ -108,8 +105,6 @@ class VerticalGridline(VisibleSprite):
     def update(self) -> None:
         self.on_screen_start = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, 0)
         self.on_screen_end = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, HEIGHT)
-        if self.on_screen_start.x < -10:
-            self.kill()
 
     def draw(self) -> None:
         pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
@@ -163,6 +158,7 @@ class Barrier(VerticalGridline):
         pygame.draw.line(self.manager.screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
         
     def kill(self) -> None:
+        break_barrier.play()
         self.__class__.instance = None
         super().kill()
         
