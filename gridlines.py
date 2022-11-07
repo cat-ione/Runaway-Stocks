@@ -158,11 +158,12 @@ class Barrier(VerticalGridline):
         pygame.draw.line(self.manager.screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
         
     def kill(self) -> None:
-        break_barrier.play()
         self.__class__.instance = None
         super().kill()
         
     def effects(self) -> None:
+        if self.scene.__class__.__name__ == "MainGame":
+            break_barrier.play()
         for _ in range(400):
             Particle(self.scene, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
         Shockwave(self.scene, self.scene.player.pos, (180, 180, 180), 10, 160, 14)

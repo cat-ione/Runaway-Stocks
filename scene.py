@@ -82,7 +82,7 @@ class MainMenu(Scene):
 
     def update(self) -> None:
         super().update()
-        
+
         self.background.update()
 
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
@@ -96,6 +96,10 @@ class MainMenu(Scene):
 class MainGame(Scene):
     def setup(self) -> None:
         super().setup()
+
+        pygame.mixer.music.load("res/audio/music.wav")
+        pygame.mixer.music.set_volume(0.08)
+        pygame.mixer.music.play(-1)
 
         self.grid_manager = GridManager(self)
         self.bg_grid_manager = BGGridManager(self)
@@ -123,6 +127,9 @@ class PauseMenu(Scene):
     def setup(self) -> None:
         super().setup()
 
+        pygame.mixer.fadeout(500)
+        pygame.mixer.music.pause()
+
         Timer.pause_all()
 
         create_blurred_bg(self)
@@ -132,11 +139,15 @@ class PauseMenu(Scene):
         super().update()
 
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
+            pygame.mixer.music.unpause()
             self.manager.switch_scene(self.previous_scene)
 
 class EndMenu(Scene):
     def setup(self) -> None:
         super().setup()
+
+        pygame.mixer.fadeout(500)
+        pygame.mixer.music.fadeout(1000)
 
         create_blurred_bg(self)
 

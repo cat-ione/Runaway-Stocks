@@ -11,6 +11,7 @@ import pygame
 from constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET
 from sprite import VisibleSprite, Layers
 from effects import Particle, Shockwave
+from audio import point_pickup
 
 class Point(VisibleSprite):
     class PointShadows(VisibleSprite):
@@ -58,6 +59,8 @@ class Point(VisibleSprite):
         self.manager.screen.blit(FONTS[16].render(str(self.val), True, self.color), draw_center + VEC(3, 1))
 
     def kill(self) -> None:
+        if self.scene.__class__.__name__ == "MainGame":
+            point_pickup.play()
         for _ in range(randint(60, 80)):
             Particle(self.scene, self.pos, self.color)
         Shockwave(self.scene, self.pos, self.color, 5, 50, 6)

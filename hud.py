@@ -6,7 +6,6 @@ if TYPE_CHECKING:
     from scene import Scene
 
 from numpy import cos, radians, sin
-from abc import abstractmethod
 import pygame
 import time
 
@@ -18,6 +17,7 @@ from barrier_powers import Power, barrier_powers
 from sprite import VisibleSprite, Layers
 from utils import pygame_draw_pie
 from images import power_images
+from audio import power_end
 
 class Label(VisibleSprite):
     def __init__(self, scene: Scene, pos: _pos, text: str, font: pygame.font.Font, color: _color, anchor: Anchors = Anchors.CENTER) -> None:
@@ -127,6 +127,8 @@ class PowerTimer(Timer, VisibleSprite):
         self.manager.screen.blit(power_images[self.power.__name__.lower()], center - (16, 16))
 
     def kill(self) -> None:
+        if self.scene.__class__.__name__ == "MainGame":
+            power_end.play()
         self.power.init = False
         Shockwave(self.scene, self.scene.player.pos, (180, 180, 180), 8, 160, 14)
         self.player_display.kill()

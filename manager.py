@@ -15,13 +15,15 @@ class AbortScene(Exception):
 
 class GameManager:
     def __init__(self) -> None:
+        pygame.mixer.pre_init(buffer=32)
         pygame.init()
+        pygame.mixer.init(buffer=32)
+
         self.screen = pygame.Surface((WIDTH, HEIGHT))
         self.resized_screen = self.screen.copy()
         self.flags = HWSURFACE | DOUBLEBUF | RESIZABLE
         self.display = pygame.display.set_mode((WIDTH, HEIGHT), self.flags)
         self.clock = pygame.time.Clock()
-        pygame.mixer.init()
         self.dt = self.clock.tick_busy_loop(FPS) / 1000
         self.window_changing = False
         self.events = []
@@ -89,6 +91,7 @@ class GameManager:
         self.scene.running = False
         self.scene = scene
         self.scene.running = True
+        raise AbortScene
 
     class Scenes(Enum):
         MainMenu = MainMenu
