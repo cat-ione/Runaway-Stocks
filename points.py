@@ -1,11 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from manager import GameManager
     from scene import Scene
 
 from pygame.locals import SRCALPHA, BLEND_RGB_SUB
-from random import randint
+from random import randint, choice
 import pygame
 
 from constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET
@@ -60,7 +59,7 @@ class Point(VisibleSprite):
 
     def kill(self) -> None:
         if self.scene.__class__.__name__ == "MainGame":
-            point_pickup.play()
+            choice(point_pickup).play()
         for _ in range(randint(60, 80)):
             Particle(self.scene, self.pos, self.color)
         Shockwave(self.scene, self.pos, self.color, 5, 50, 6)
