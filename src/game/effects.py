@@ -1,17 +1,17 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from hud import PowerTimer
-    from scene import Scene
+    from src.gui.hud import PowerTimer
+    from src.management.scene import Scene
 
 from random import uniform, randint, choice
 from numpy import cos, radians, sin
 import pygame
 import time
 
-from utils import inttup, pygame_draw_pie
-from sprite import VisibleSprite, Layers
-from constants import VEC, _pos, _color
+from src.management.sprite import VisibleSprite, Layers
+from src.common.utils import inttup, pygame_draw_pie
+from src.common.constants import VEC, _pos, _color
 
 class Particle(VisibleSprite):
     def __init__(self, scene: Scene, pos: _pos, color: _color):

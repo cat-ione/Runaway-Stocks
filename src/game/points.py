@@ -1,16 +1,16 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from scene import Scene
+    from src.management.scene import Scene
 
 from pygame.locals import SRCALPHA, BLEND_RGB_SUB
 from random import randint, choice
 import pygame
 
-from constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET
-from sprite import VisibleSprite, Layers
-from effects import Particle, Shockwave
-from audio import point_pickup
+from src.common.constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET
+from src.management.sprite import VisibleSprite, Layers
+from src.game.effects import Particle, Shockwave
+from src.common.audio import point_pickup
 
 class Point(VisibleSprite):
     class PointShadows(VisibleSprite):

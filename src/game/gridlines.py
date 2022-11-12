@@ -1,19 +1,19 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from scene import Scene
+    from src.management.scene import Scene
 
 from random import randint, choices, sample
 from math import ceil
 import pygame
 
-from constants import WIDTH, HEIGHT, GRID_SPACE, VEC
-from barrier_powers import Power, barrier_powers
-from sprite import VisibleSprite, Layers
-from effects import Particle, Shockwave
-from audio import break_barrier
-from hud import PowerTimer
-from points import Point
+from src.common.constants import WIDTH, HEIGHT, GRID_SPACE, VEC
+from src.game.barrier_powers import Power, barrier_powers
+from src.management.sprite import VisibleSprite, Layers
+from src.game.effects import Particle, Shockwave
+from src.common.audio import break_barrier
+from src.game.points import Point
+from src.gui.hud import PowerTimer
 
 class GridManager:
     def __init__(self, scene: Scene) -> None:

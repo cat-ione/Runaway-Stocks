@@ -1,76 +1,25 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from scene import Scene
+    from src.management.scene import Scene
 
 from numpy import cos, radians, sin
-import pygame
-import time
-
 from pygame.locals import SRCALPHA
+import pygame
 
-from constants import BOLD_FONTS, VEC, Anchors, _pos, _color
-from effects import Shockwave, PowerTimerPlayerDisplay
-from barrier_powers import Power, barrier_powers
-from sprite import VisibleSprite, Layers
-from utils import pygame_draw_pie
-from images import power_images
-from audio import power_end
+from src.game.effects import Shockwave, PowerTimerPlayerDisplay
+from src.game.barrier_powers import Power, barrier_powers
+from src.management.sprite import VisibleSprite, Layers
+from src.common.constants import BOLD_FONTS, VEC
+from src.common.utils import pygame_draw_pie
+from src.common.images import power_images
+from src.common.timer import ComplexTimer
+from src.common.audio import power_end
 
-class Label(VisibleSprite):
-    def __init__(self, scene: Scene, pos: _pos, text: str, font: pygame.font.Font, color: _color, anchor: Anchors = Anchors.CENTER) -> None:
-        super().__init__(scene, Layers.HUD)
-        self.surface = font.render(text, True, color)
-        self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
-
-    def update(self) -> None:
-        # ...
-        pass
-
-    def draw(self) -> None:
-        self.manager.screen.blit(self.surface, self.pos)
-
-class Image(VisibleSprite):
-    def __init__(self, scene: Scene, pos: _pos, surface: pygame.Surface, anchor: Anchors = Anchors.CENTER) -> None:
-        super().__init__(scene, Layers.HUD)
-        self.surface = surface
-        self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
-
-    def update(self) -> None:
-        # ...
-        pass
-
-    def draw(self) -> None:
-        self.manager.screen.blit(self.surface, self.pos)
-
-class Timer:
-    instances = []
-    
-    @staticmethod
-    def pause_all():
-        for instance in __class__.instances:
-            instance.pause_start = time.time()
-
-    def __init__(self, max_time: int) -> None:
-        __class__.instances.append(self)
-        self.max_time = max_time
-        self.start_time = time.time()
-        self.current_time = self.max_time - (time.time() - self.start_time)
-        self.ended = False
-        self.pause_start = None
-
-    def update(self) -> None:
-        if self.pause_start is not None:
-            self.start_time += time.time() - self.pause_start
-            self.pause_start = None
-        self.current_time = self.max_time - (time.time() - self.start_time)
-        if self.current_time <= 0:
-            self.ended = True
-
-class MainGameTimer(Timer, VisibleSprite):
+class MainGameTimer(ComplexTimer, VisibleSprite):
     def __init__(self, scene: Scene) -> None:
         VisibleSprite.__init__(self, scene, Layers.HUD)
-        Timer.__init__(self, 60)
+        ComplexTimer.__init__(self, 60)
 
     def update(self) -> None:
         super().update()
@@ -96,7 +45,7 @@ class MainGameTimer(Timer, VisibleSprite):
             pygame.draw.rect(tmp_surf, (208, 52, 44, self.border_opacity), (0, 0, *self.size), 4)
             self.manager.screen.blit(tmp_surf, (0, 0))
 
-class PowerTimer(Timer, VisibleSprite):
+class PowerTimer(ComplexTimer, VisibleSprite):
     instances = []
     sorted_instances = {power: [] for power in barrier_powers}
     
@@ -107,7 +56,7 @@ class PowerTimer(Timer, VisibleSprite):
         self.power = power
         self.power.init = True
         self.power.reset(scene)
-        Timer.__init__(self, self.power.max_time)
+        ComplexTimer.__init__(self, self.power.max_time)
         self.player_display = PowerTimerPlayerDisplay(scene, self)
 
     def update(self) -> None:

@@ -1,13 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from scene import Scene
+    from src.management.scene import Scene
 
 from random import randint, choice, sample
 import pygame
 
-from constants import WIDTH, HEIGHT, BG_GRID_SPACE, VEC, BG_PARALLAX, _pos, _color, BG_BULL_COLOR, BG_BEAR_COLOR
-from sprite import VisibleSprite, Layers
+from src.common.constants import WIDTH, HEIGHT, BG_GRID_SPACE, VEC, BG_PARALLAX, _pos, _color, BG_BULL_COLOR, BG_BEAR_COLOR
+from src.management.sprite import VisibleSprite, Layers
 
 class BGGridManager:
     def __init__(self, scene: Scene = None) -> None:

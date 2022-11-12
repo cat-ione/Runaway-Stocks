@@ -4,9 +4,10 @@ import sys
 
 from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED, KEYDOWN, K_F9, WINDOWRESTORED, WINDOWMAXIMIZED
 
-from scene import Scene, MainMenu, MainGame, PauseMenu, EndMenu
-from constants import WIDTH, HEIGHT, FPS
-from profiling import profile
+from src.scenes import MainMenu, MainGame, PauseMenu, EndMenu
+from src.common.constants import WIDTH, HEIGHT, FPS
+from src.common.profiling import profile
+from src.management.scene import Scene
 
 class AbortScene(Exception):
     def __str__(self):

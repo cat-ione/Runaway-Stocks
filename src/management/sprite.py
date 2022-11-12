@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from scene import Scene
+    from src.management.scene import Scene
 
 from abc import ABC as AbstractClass
 from abc import abstractmethod

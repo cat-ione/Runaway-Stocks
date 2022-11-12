@@ -1,20 +1,19 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from scene import Scene
+    from src.management.scene import Scene
 
+from pygame.locals import K_UP, K_DOWN, BLEND_RGB_SUB
 from numpy import cos, radians, sin
 from random import uniform, choice
 import pygame
 import time
 
-from pygame.locals import K_UP, K_DOWN, BLEND_RGB_SUB
-
-from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR, SHADOW_OFFSET
-from sprite import VisibleSprite, Layers
-from utils import intvec, inttup
-import barrier_powers as powers
-from effects import Glitch
+from src.common.constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR, SHADOW_OFFSET
+from src.management.sprite import VisibleSprite, Layers
+from src.common.utils import intvec, inttup
+import src.game.barrier_powers as powers
+from src.game.effects import Glitch
 
 class Camera:
     def __init__(self, scene: Scene, master: object) -> None:
@@ -103,7 +102,7 @@ class Player(VisibleSprite):
         super().__init__(scene, Layers.PLAYER)
         self.speed = 200
         self.pos = VEC(0, 0)
-        self.camera = Camera(self.manager, self)
+        self.camera = Camera(self.scene, self)
         self.direction = Dir.UP
         self.color = BULL_COLOR
         self.angle = 40
