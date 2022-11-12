@@ -97,7 +97,7 @@ class MainGame(Scene):
     def setup(self) -> None:
         super().setup()
 
-        pygame.mixer.music.load("res/audio/music2.wav")
+        pygame.mixer.music.load("res/audio/music.wav")
         pygame.mixer.music.set_volume(0.08)
         pygame.mixer.music.play(-1)
 
@@ -147,7 +147,7 @@ class EndMenu(Scene):
         super().setup()
 
         pygame.mixer.fadeout(500)
-        pygame.mixer.music.fadeout(2000)
+        pygame.mixer.music.fadeout(2500)
 
         create_blurred_bg(self)
 
