@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from manager import GameManager
+if TYPE_CHECKING:
+    from manager import GameManager
 
 from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
 import pygame
@@ -76,8 +77,6 @@ class MainMenu(Scene):
         self.background = MainMenuBG(self.manager, self.previous_scene)
         self.background.setup()
 
-        # Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_1)
-        # Image(self, (WIDTH // 2, HEIGHT // 2 - 100), title_2)
         Label(self, (WIDTH // 2, HEIGHT // 2), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230))
 
     def update(self) -> None:

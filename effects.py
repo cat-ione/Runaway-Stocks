@@ -5,7 +5,6 @@ if TYPE_CHECKING:
     from scene import Scene
 
 from random import uniform, randint, choice
-from pygame.locals import *
 from numpy import cos, radians, sin
 import pygame
 import time

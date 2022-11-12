@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from manager import GameManager
     from scene import Scene
 
 from abc import ABC as AbstractClass
@@ -52,9 +51,9 @@ class VisibleSprite(Sprite):
         pass
 
 class SpriteManager:
-    def __init__(self, manager: GameManager) -> None:
-        self.manager = manager
-        self.scene = self.manager.scene
+    def __init__(self, scene: Scene) -> None:
+        self.scene = scene
+        self.manager = scene.manager
         self.layers: dict[Layers, list[Sprite]] = {layer: [] for layer in Layers}
 
     def update(self) -> None:

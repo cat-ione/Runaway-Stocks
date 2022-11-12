@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from manager import GameManager
     from scene import Scene
 
 from numpy import cos, radians, sin
@@ -9,7 +8,7 @@ from random import uniform, choice
 import pygame
 import time
 
-from pygame.locals import K_UP, K_DOWN, SRCALPHA, BLEND_RGB_SUB
+from pygame.locals import K_UP, K_DOWN, BLEND_RGB_SUB
 
 from constants import VEC, WIDTH, HEIGHT, Dir, BOLD_FONTS, BULL_COLOR, BEAR_COLOR, SHADOW_OFFSET
 from sprite import VisibleSprite, Layers
@@ -18,8 +17,9 @@ import barrier_powers as powers
 from effects import Glitch
 
 class Camera:
-    def __init__(self, manager: GameManager, master: object) -> None:
-        self.manager = manager
+    def __init__(self, scene: Scene, master: object) -> None:
+        self.scene = scene
+        self.manager = scene.manager
         self.master = master
         self.actual_offset = self.master.pos - VEC(WIDTH, HEIGHT) / 2
         self.offset = intvec(self.actual_offset)
