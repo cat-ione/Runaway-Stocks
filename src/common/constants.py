@@ -18,6 +18,7 @@ GRID_SPACE = VEC(48, 30)
 BG_GRID_SPACE = GRID_SPACE * 0.78
 BG_PARALLAX = 0.85
 SHADOW_OFFSET = VEC(3, 4)
+MUSIC_VOLUME = 0.08
 
 DATA_DIR = os.path.join(str(Path.home()), ".runawaystocks")
 if not os.path.exists(DATA_DIR):

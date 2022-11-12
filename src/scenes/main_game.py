@@ -2,6 +2,7 @@ from pygame.locals import KEYDOWN, K_ESCAPE
 import pygame
 
 from src.game.gridlines import GridManager, Barrier
+from src.common.constants import MUSIC_VOLUME
 from src.game.background import BGGridManager
 from src.management.scene import Scene
 from src.game.player import Player
@@ -12,7 +13,7 @@ class MainGame(Scene):
         super().setup()
 
         pygame.mixer.music.load("res/audio/music.wav")
-        pygame.mixer.music.set_volume(0.08)
+        pygame.mixer.music.set_volume(MUSIC_VOLUME)
         pygame.mixer.music.play(-1)
 
         self.grid_manager = GridManager(self)

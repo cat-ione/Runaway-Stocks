@@ -1,4 +1,4 @@
-from pygame.locals import KEYDOWN, K_SPACE, K_ESCAPE
+from pygame.locals import KEYDOWN, K_SPACE
 import pygame
 
 from src.common.constants import HIGHSCORE_FILE, CENTER, BOLD_FONTS, Anchors
@@ -10,8 +10,8 @@ class EndMenu(Scene):
     def setup(self) -> None:
         super().setup()
 
+        self.volume = pygame.mixer.music.get_volume()
         pygame.mixer.fadeout(500)
-        pygame.mixer.music.fadeout(2500)
 
         Image(self, (0, 0), blur_surf(self.manager.screen), anchor=Anchors.TOPLEFT)
 
@@ -39,6 +39,13 @@ class EndMenu(Scene):
 
     def update(self) -> None:
         super().update()
+
+        if self.volume > 0:
+            self.volume -= 0.05 * self.manager.dt
+            pygame.mixer.music.set_volume(self.volume)
+        else:
+            self.volume = 0
+            pygame.mixer.music.pause()
 
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
             # Start new game
