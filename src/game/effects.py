@@ -11,10 +11,10 @@ import time
 
 from src.management.sprite import VisibleSprite, Layers
 from src.common.utils import inttup, pygame_draw_pie
-from src.common.constants import VEC, _pos, _color
+from src.common.constants import VEC, _pair, _color
 
 class Particle(VisibleSprite):
-    def __init__(self, scene: Scene, pos: _pos, color: _color):
+    def __init__(self, scene: Scene, pos: _pair, color: _color):
         super().__init__(scene, Layers.EFFECTS)
         self.pos = VEC(pos)
         self.vel = VEC(uniform(-30, 30), uniform(-30, 30))
@@ -34,7 +34,7 @@ class Particle(VisibleSprite):
         pygame.draw.circle(self.manager.screen, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
 
 class Shockwave(VisibleSprite):
-    def __init__(self, scene: Scene, pos: _pos, color: _color, start_width: int, expansion_speed: float, thinnen_speed: float) -> None:
+    def __init__(self, scene: Scene, pos: _pair, color: _color, start_width: int, expansion_speed: float, thinnen_speed: float) -> None:
         super().__init__(scene, Layers.EFFECTS)
         self.pos = VEC(pos)
         self.color = color
@@ -58,8 +58,7 @@ class PowerTimerPlayerDisplay(VisibleSprite):
         self.master = master
 
     def update(self) -> None:
-        # Nothing to do here lol
-        pass
+        ...
 
     def draw(self) -> None:
         center = self.scene.player.pos - self.scene.player.camera.offset
@@ -70,7 +69,7 @@ class PowerTimerPlayerDisplay(VisibleSprite):
         pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 1)
 
 class Glitch(VisibleSprite):
-    def __init__(self, scene: Scene, pos: _pos) -> None:
+    def __init__(self, scene: Scene, pos: _pair) -> None:
         super().__init__(scene, Layers.GLITCHES)
         self.orig_pos = VEC(pos)
         self.pos = self.orig_pos

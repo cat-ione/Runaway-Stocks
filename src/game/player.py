@@ -91,8 +91,7 @@ class Player(VisibleSprite):
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
         def update(self) -> None:
-            # Nothing to do in here
-            pass
+            ...
 
         def draw(self) -> None:
             self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)

@@ -10,7 +10,7 @@ class Power:
     @staticmethod
     def reset(scene: Scene):
         # Must-have method so that .reset() can be called for all powers
-        pass
+        ...
 
 class Flip(Power):
     stackable = False

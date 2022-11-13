@@ -1,13 +1,13 @@
 from pygame.locals import KEYDOWN, K_SPACE
 import pygame
 
-from src.common.constants import HEIGHT, BOLD_FONTS, WIDTH
 from src.game.gridlines import GridManager, Barrier
+from src.common.constants import BOLD_FONTS, WIDTH
 from src.game.background import BGGridManager
+from src.gui.elements import Label, Button
 from src.management.scene import Scene
 from src.common.utils import blur_surf
 from src.game.player import Player
-from src.gui.elements import Label
 
 class MainMenuBG(Scene):
     def setup(self) -> None:
@@ -39,7 +39,8 @@ class MainMenu(Scene):
         self.background = MainMenuBG(self.manager, self.previous_scene)
         self.background.setup()
 
-        Label(self, (WIDTH // 2, HEIGHT // 2), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230))
+        Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230))
+        Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), lambda: self.manager.new_scene("MainGame"))
 
     def update(self) -> None:
         super().update()

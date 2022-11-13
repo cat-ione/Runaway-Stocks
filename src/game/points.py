@@ -7,7 +7,7 @@ from pygame.locals import SRCALPHA, BLEND_RGB_SUB
 from random import randint, choice
 import pygame
 
-from src.common.constants import FONTS, VEC, _pos, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET
+from src.common.constants import FONTS, VEC, _pair, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET
 from src.management.sprite import VisibleSprite, Layers
 from src.game.effects import Particle, Shockwave
 from src.common.audio import point_pickup
@@ -19,14 +19,13 @@ class Point(VisibleSprite):
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
         def update(self) -> None:
-            # Nothing to do in here
-            pass
+            ...
 
         def draw(self) -> None:
             self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
-    def __init__(self, scene: Scene, val: int, pos: _pos) -> None:
+    def __init__(self, scene: Scene, val: int, pos: _pair) -> None:
         super().__init__(scene, Layers.POINTS)
         self.val = val
         self.color = BULL_COLOR if self.val > 0 else BEAR_COLOR

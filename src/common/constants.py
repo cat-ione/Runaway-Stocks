@@ -3,8 +3,9 @@ from enum import Enum
 import pygame
 import os
 
-_pos = tuple[int, int]
+_pair = tuple[int, int]
 _color = tuple[int, int, int]
+_font = pygame.font.FontType
 
 FPS = float("inf")
 VEC = pygame.math.Vector2

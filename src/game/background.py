@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 from random import randint, choice, sample
 import pygame
 
-from src.common.constants import WIDTH, HEIGHT, BG_GRID_SPACE, VEC, BG_PARALLAX, _pos, _color, BG_BULL_COLOR, BG_BEAR_COLOR
+from src.common.constants import WIDTH, HEIGHT, BG_GRID_SPACE, VEC, BG_PARALLAX, _pair, _color, BG_BULL_COLOR, BG_BEAR_COLOR
 from src.management.sprite import VisibleSprite, Layers
 
 class BGGridManager:
@@ -109,7 +109,7 @@ class BGVerticalGridline(VisibleSprite):
         super().kill()
 
 class BGPoint(VisibleSprite):
-    def __init__(self, scene: Scene, pos: _pos, color: _color) -> None:
+    def __init__(self, scene: Scene, pos: _pair, color: _color) -> None:
         super().__init__(scene, Layers.BACKGROUND_POINTS)
         self.color = color
         self.pos = VEC(pos)
