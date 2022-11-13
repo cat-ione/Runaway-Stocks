@@ -11,6 +11,7 @@ import pygame
 from src.common.constants import VEC, Anchors, _pair, _color, _font, BEAR_COLOR, BULL_COLOR
 from src.management.sprite import VisibleSprite, Layers
 from src.common.utils import aaline, inttup
+from src.common.audio import button_hover
 
 class Element(VisibleSprite):
     def __init__(self, scene: Scene, pos: _pair, anchor: Anchors = Anchors.CENTER) -> None:
@@ -47,6 +48,8 @@ class Button(Element):
         self.surface, self.mask = self.default_surf, self.default_mask = self.generate_image(self.factor)
         self.hover_surf, self.hover_mask = self.generate_image(self.hover_factor)
 
+        self.first_hover = True
+
         super().__init__(scene, pos, anchor)
 
     def update(self) -> None:
@@ -68,8 +71,12 @@ class Button(Element):
         else:
             self.surface, self.mask = self.generate_image(self.factor)
         self.pos = self.orig_pos - (VEC(self.surface.get_size()) - VEC(self.default_surf.get_size())) // 2
+        self.first_hover = True
 
     def hover(self) -> None:
+        if self.first_hover:
+            button_hover.play()
+            self.first_hover = False
         self.factor += 5 * self.manager.dt
         if self.factor > self.hover_factor:
             self.factor = self.hover_factor

@@ -24,9 +24,6 @@ class MainMenuBG(Scene):
         self.grid_manager.update()
         self.bg_grid_manager.update()
 
-        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
-            self.manager.new_scene("MainGame")
-
     def draw(self) -> None:
         self.manager.screen.fill((30, 30, 30))
 
@@ -46,9 +43,6 @@ class MainMenu(Scene):
         super().update()
 
         self.background.update()
-
-        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_SPACE:
-            self.manager.new_scene("MainGame")
 
     def draw(self) -> None:
         self.background.draw()
