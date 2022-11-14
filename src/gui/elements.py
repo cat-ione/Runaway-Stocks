@@ -45,8 +45,8 @@ class Button(Element):
 
         self.default_factor, self.hover_factor = 2.5, 2.8
         self.factor = self.default_factor
-        self.surface, self.mask = self.default_surf, self.default_mask = self.generate_image(self.factor)
-        self.hover_surf, self.hover_mask = self.generate_image(self.hover_factor)
+        self.surface, self.mask = self.default_surf, self.default_mask = self.generate_image(self.factor, False)
+        self.hover_surf, self.hover_mask = self.generate_image(self.hover_factor, True)
 
         self.first_hover = True
 
@@ -64,12 +64,12 @@ class Button(Element):
             self.default()
 
     def default(self) -> None:
-        self.factor -= 5 * self.manager.dt
+        self.factor -= 1.5 * self.manager.dt
         if self.factor < self.default_factor:
             self.factor = self.default_factor
             self.surface, self.mask = self.default_surf, self.default_mask
         else:
-            self.surface, self.mask = self.generate_image(self.factor)
+            self.surface, self.mask = self.generate_image(self.factor, False)
         self.pos = self.orig_pos - (VEC(self.surface.get_size()) - VEC(self.default_surf.get_size())) // 2
         self.first_hover = True
 
@@ -77,30 +77,40 @@ class Button(Element):
         if self.first_hover:
             button_hover.play()
             self.first_hover = False
-        self.factor += 5 * self.manager.dt
+        self.factor += 1.5 * self.manager.dt
         if self.factor > self.hover_factor:
             self.factor = self.hover_factor
             self.surface, self.mask = self.hover_surf, self.hover_mask
         else:
-            self.surface, self.mask = self.generate_image(self.factor)
+            self.surface, self.mask = self.generate_image(self.factor, False)
         self.pos = self.orig_pos - (VEC(self.surface.get_size()) - VEC(self.default_surf.get_size())) // 2
 
-    def generate_image(self, factor: float) -> tuple[pygame.Surface, pygame.Mask]:
+    def generate_image(self, factor: float, swapped: bool) -> tuple[pygame.Surface, pygame.Mask]:
         self.text_surf = self.font.render(self.text, True, self.color)
         text_size = VEC(self.text_surf.get_size())
         size = text_size * factor
+        factor_diff = self.hover_factor - self.default_factor
+        perc = (self.factor - self.default_factor) / factor_diff
 
         surf = pygame.Surface(size, SRCALPHA)
 
         # Create the top, right, bottom and left points (respectively) of the rhombus shaped button
         # +/- 2 for p1 and p3 (top and bottom) are to move the points inwards to avoid cutoff
         # +/- 2 for p2 and p4 (left and right) are to move the points outwards to cut off extra pixels
-        p1, p2, p3, p4 = (size.x // 2, 0 + 2), (size.x + 2, size.y // 2), (size.x // 2, size.y - 2), (0 - 2, size.y // 2)
+        p1, p2, p3, p4 = VEC(size.x // 2, 0 + 2), VEC(size.x + 2, size.y // 2), VEC(size.x // 2, size.y - 2), VEC(0 - 2, size.y // 2)
         pygame.gfxdraw.filled_polygon(surf, [p1, p2, p3, p4], (10, 10, 10))
-        aaline(surf, BEAR_COLOR, p1, p2, 6)
-        aaline(surf, BULL_COLOR, p2, p3, 6)
-        aaline(surf, BEAR_COLOR, p3, p4, 6)
-        aaline(surf, BULL_COLOR, p4, p1, 6)
+        # Draw the lines on the clockwise direction of each side
+        # +/- (1, 0) to patch up the slight gap on point 1
+        aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p1 - (1, 0) + (p2 - p1) * perc, p2, 6)
+        aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p2 + (p3 - p2) * perc, p3, 6)
+        aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p3 + (p4 - p3) * perc, p4, 6)
+        aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p4 + (p1 - p4) * perc, p1 + (1, 0), 6)
+        # Draw the lines on the counterclockwise direction of each side
+        if perc:
+            aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p1, p1 + (p2 - p1) * perc, 6)
+            aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p2, p2 + (p3 - p2) * perc, 6)
+            aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p3, p3 + (p4 - p3) * perc, 6)
+            aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p4, p4 + (p1 - p4) * perc, 6)
         surf.blit(self.text_surf, (size - text_size) // 2 - (0, 2))
 
         return surf, pygame.mask.from_surface(surf)

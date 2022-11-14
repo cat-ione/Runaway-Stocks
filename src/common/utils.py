@@ -74,6 +74,7 @@ def aaline(surf: pygame.Surface, color: _color, p1: _pair, p2: _pair, width: int
     """
     d = (p2[0] - p1[0], p2[1] - p1[1])
     dis = math.hypot(*d)
+    if not d: return
     sp = (-d[1] * width / (2 * dis), d[0] * width / (2 * dis))
 
     p1_1 = (p1[0] - sp[0], p1[1] - sp[1])
