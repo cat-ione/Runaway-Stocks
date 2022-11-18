@@ -4,6 +4,7 @@ if TYPE_CHECKING:
     from src.management.scene import Scene
 
 from random import randint, choice, sample
+import pygame.gfxdraw
 import pygame
 
 from src.common.constants import WIDTH, HEIGHT, BG_GRID_SPACE, VEC, BG_PARALLAX, _pair, _color, BG_BULL_COLOR, BG_BEAR_COLOR
@@ -69,7 +70,7 @@ class BGHorizontalGridline(VisibleSprite):
             self.kill()
 
     def draw(self) -> None:
-        pygame.draw.line(self.manager.screen, (50, 50, 50), self.on_screen_start, self.on_screen_end, 1)
+        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.y), int(self.on_screen_start.y), (50, 50, 50))
 
     def kill(self) -> None:
         try:
@@ -99,7 +100,7 @@ class BGVerticalGridline(VisibleSprite):
             self.kill()
 
     def draw(self) -> None:
-        pygame.draw.line(self.manager.screen, (50, 50, 50), self.on_screen_start, self.on_screen_end, 1)
+        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_start.y), int(self.on_screen_end.y), (50, 50, 50))
 
     def kill(self) -> None:
         try:

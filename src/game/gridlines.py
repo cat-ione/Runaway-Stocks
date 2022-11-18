@@ -4,6 +4,7 @@ if TYPE_CHECKING:
     from src.management.scene import Scene
 
 from random import randint, choices, sample
+import pygame.gfxdraw
 from math import ceil
 import pygame
 
@@ -12,8 +13,8 @@ from src.game.barrier_powers import Power, barrier_powers
 from src.management.sprite import VisibleSprite, Layers
 from src.game.effects import Particle, Shockwave
 from src.common.audio import break_barrier
-from src.game.points import Point
 from src.gui.hud import PowerTimer
+from src.game.points import Point
 
 class GridManager:
     def __init__(self, scene: Scene) -> None:
@@ -78,8 +79,9 @@ class HorizontalGridline(VisibleSprite):
         self.on_screen_end = VEC(WIDTH, self.y * GRID_SPACE.y - self.scene.player.camera.offset.y)
 
     def draw(self) -> None:
-        pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
-        pygame.draw.line(self.manager.screen, (80, 80, 80), self.on_screen_start + (0, 2), self.on_screen_end + (0, 2), 1)
+        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y), (120, 120, 120))
+        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y + 1), (120, 120, 120))
+        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y + 2), (80, 80, 80))
 
     def kill(self) -> None:
         try:
@@ -107,8 +109,9 @@ class VerticalGridline(VisibleSprite):
         self.on_screen_end = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, HEIGHT)
 
     def draw(self) -> None:
-        pygame.draw.line(self.manager.screen, (120, 120, 120), self.on_screen_start, self.on_screen_end, 2)
-        pygame.draw.line(self.manager.screen, (80, 80, 80), self.on_screen_start + (2, 0), self.on_screen_end + (2, 0), 1)
+        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_start.y), int(self.on_screen_end.y), (120, 120, 120))
+        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x + 1), int(self.on_screen_start.y), int(self.on_screen_end.y), (120, 120, 120))
+        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x + 2), int(self.on_screen_start.y), int(self.on_screen_end.y), (80, 80, 80))
 
     def kill(self) -> None:
         try:
