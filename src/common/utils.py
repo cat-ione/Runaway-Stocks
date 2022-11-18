@@ -4,16 +4,17 @@ if TYPE_CHECKING:
     from src.management.scene import Scene
     from src.gui.hud import Image
 
-from numpy import sin, cos, radians
+from numpy import sin, cos, radians, floor
 from pygame.locals import SRCALPHA
+from typing import Callable
 import pygame.gfxdraw
 import pygame
 import math
 
 from src.common.constants import VEC, _pair, _color, Anchors
 
-inttup = lambda tup: tuple(map(int, tuple(tup)))
-intvec = lambda vec: VEC(int(vec.x), int(vec.y))
+inttup = lambda tup: tuple(map(floor, tuple(tup)))
+intvec = lambda vec: VEC(floor(vec.x), floor(vec.y))
 
 def pygame_draw_pie(screen: pygame.Surface, color: _color, center: _pair, rad: int, start_ang: int, end_ang: int, step: int = 10):
     if end_ang <= start_ang:
@@ -74,7 +75,7 @@ def aaline(surf: pygame.Surface, color: _color, p1: _pair, p2: _pair, width: int
     """
     d = (p2[0] - p1[0], p2[1] - p1[1])
     dis = math.hypot(*d)
-    if not d: return
+    if not dis: return
     sp = (-d[1] * width / (2 * dis), d[0] * width / (2 * dis))
 
     p1_1 = (p1[0] - sp[0], p1[1] - sp[1])

@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 from pygame.locals import SRCALPHA
 from typing import Callable
+import pytweening as tween
 import pygame.gfxdraw
 import pygame
 
@@ -12,13 +13,13 @@ from src.common.constants import VEC, Anchors, _pair, _color, _font, BEAR_COLOR,
 from src.management.sprite import VisibleSprite, Layers
 from src.common.utils import aaline, inttup
 from src.common.audio import button_hover
+from src.common.tween import Tween
 
 class Element(VisibleSprite):
     def __init__(self, scene: Scene, pos: _pair, anchor: Anchors = Anchors.CENTER) -> None:
         super().__init__(scene, Layers.HUD)
-        self.orig_pos = VEC(pos)
-        self.orig_pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
-        self.pos = self.orig_pos.copy()
+        self.center_pos = VEC(pos)
+        self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
     def update(self) -> None:
         ...
@@ -50,11 +51,16 @@ class Button(Element):
 
         self.first_hover = True
 
+        self.tween_expand = Tween(scene.manager, self.default_factor, self.hover_factor, 0.7, tween.easeInOutBack, s=12)
+        self.tween_shrink = Tween(scene.manager, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
+
         super().__init__(scene, pos, anchor)
 
     def update(self) -> None:
         try:
-            if self.mask.get_at(inttup(pygame.mouse.get_pos() - self.pos)): # If the position of the cursor is part of the mask
+            # "- (self.center_pos - VEC(self.mask.get_size()) // 2)" to offset the detection to the proper place of the mask
+            # simply subtracting self.pos will not work properly as self.pos is dynamic to the easing, while the mask is not
+            if self.mask.get_at(inttup(pygame.mouse.get_pos() - (self.center_pos - VEC(self.mask.get_size()) // 2))): # If the position of the cursor is part of the mask
                 self.hover()
                 if pygame.mouse.get_pressed()[0]:
                     self.command()
@@ -64,26 +70,30 @@ class Button(Element):
             self.default()
 
     def default(self) -> None:
-        self.factor -= 1.5 * self.manager.dt
-        if self.factor < self.default_factor:
-            self.factor = self.default_factor
-            self.surface, self.mask = self.default_surf, self.default_mask
+        self.tween_expand.reset()
+        self.tween_shrink()
+        self.factor = self.tween_shrink.value
+        if self.factor == self.default_factor:
+            self.surface = self.default_surf
         else:
-            self.surface, self.mask = self.generate_image(self.factor, False)
-        self.pos = self.orig_pos - (VEC(self.surface.get_size()) - VEC(self.default_surf.get_size())) // 2
+            self.surface, _ = self.generate_image(self.factor, False)
+        self.mask = self.default_mask
+        self.pos = self.center_pos - VEC(self.surface.get_size()) // 2
         self.first_hover = True
 
     def hover(self) -> None:
         if self.first_hover:
             button_hover.play()
             self.first_hover = False
-        self.factor += 1.5 * self.manager.dt
-        if self.factor > self.hover_factor:
-            self.factor = self.hover_factor
-            self.surface, self.mask = self.hover_surf, self.hover_mask
+        self.tween_shrink.reset()
+        self.tween_expand()
+        self.factor = self.tween_expand.value
+        if self.factor == self.hover_factor:
+            self.surface = self.hover_surf
         else:
-            self.surface, self.mask = self.generate_image(self.factor, False)
-        self.pos = self.orig_pos - (VEC(self.surface.get_size()) - VEC(self.default_surf.get_size())) // 2
+            self.surface, _ = self.generate_image(self.factor, False)
+        self.mask = self.hover_mask
+        self.pos = self.center_pos - VEC(self.surface.get_size()) // 2
 
     def generate_image(self, factor: float, swapped: bool) -> tuple[pygame.Surface, pygame.Mask]:
         self.text_surf = self.font.render(self.text, True, self.color)
@@ -99,6 +109,8 @@ class Button(Element):
         # +/- 2 for p2 and p4 (left and right) are to move the points outwards to cut off extra pixels
         p1, p2, p3, p4 = VEC(size.x // 2, 0 + 2), VEC(size.x + 2, size.y // 2), VEC(size.x // 2, size.y - 2), VEC(0 - 2, size.y // 2)
         pygame.gfxdraw.filled_polygon(surf, [p1, p2, p3, p4], (10, 10, 10))
+        if perc < 0: perc = 0
+        if perc > 1: perc = 1
         # Draw the lines on the clockwise direction of each side
         # +/- (1, 0) to patch up the slight gap on point 1
         aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p1 - (1, 0) + (p2 - p1) * perc, p2, 6)
@@ -106,11 +118,10 @@ class Button(Element):
         aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p3 + (p4 - p3) * perc, p4, 6)
         aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p4 + (p1 - p4) * perc, p1 + (1, 0), 6)
         # Draw the lines on the counterclockwise direction of each side
-        if perc:
-            aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p1, p1 + (p2 - p1) * perc, 6)
-            aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p2, p2 + (p3 - p2) * perc, 6)
-            aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p3, p3 + (p4 - p3) * perc, 6)
-            aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p4, p4 + (p1 - p4) * perc, 6)
+        aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p1, p1 + (p2 - p1) * perc, 6)
+        aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p2, p2 + (p3 - p2) * perc, 6)
+        aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p3, p3 + (p4 - p3) * perc, 6)
+        aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p4, p4 + (p1 - p4) * perc, 6)
         surf.blit(self.text_surf, (size - text_size) // 2 - (0, 2))
 
         return surf, pygame.mask.from_surface(surf)
