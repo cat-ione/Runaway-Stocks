@@ -5,12 +5,17 @@ if TYPE_CHECKING:
 
 from pygame.locals import SRCALPHA, BLEND_RGB_SUB
 from random import randint, choice
+from functools import cache
 import pygame
 
-from src.common.constants import FONTS, VEC, _pair, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET
+from src.common.constants import FONTS, VEC, _pair, BULL_COLOR, BEAR_COLOR, WIDTH, HEIGHT, SHADOW_OFFSET, _color
 from src.management.sprite import VisibleSprite, Layers
 from src.game.effects import Particle, Shockwave
 from src.common.audio import point_pickup
+
+@cache
+def get_point_text(val: int, color: _color):
+    return FONTS[16].render(str(val), True, color)
 
 class Point(VisibleSprite):
     class PointShadows(VisibleSprite):
@@ -54,7 +59,7 @@ class Point(VisibleSprite):
         self.manager.screen.blit(trans_surf, draw_center - VEC(r, r))
 
         pygame.draw.circle(self.manager.screen, self.color, draw_center, r - 3)
-        self.manager.screen.blit(FONTS[16].render(str(self.val), True, self.color), draw_center + VEC(3, 1))
+        self.manager.screen.blit(get_point_text(self.val, self.color), draw_center + VEC(3, 1))
 
     def kill(self) -> None:
         if self.scene.__class__.__name__ == "MainGame":

@@ -6,7 +6,6 @@ if TYPE_CHECKING:
 
 from numpy import sin, cos, radians, floor
 from pygame.locals import SRCALPHA
-from typing import Callable
 import pygame.gfxdraw
 import pygame
 import math
