@@ -24,7 +24,14 @@ class MainGame(Scene):
         self.player = Player(self)
         Barrier.reset()
 
+        self.slowdown = 0
+
     def update(self) -> None:
+        self.slowdown += 0.6 * self.manager.dt
+        if self.slowdown > 1:
+            self.slowdown = 1
+        self.manager.dt *= self.slowdown
+
         super().update()
 
         self.grid_manager.update()

@@ -144,6 +144,7 @@ class Barrier(VerticalGridline):
                 del PowerTimer.sorted_instances[self.power][0]
             else:
                 PowerTimer(self.scene, self.power)
+            self.scene.slowdown = 0.5
             self.effects()
             self.kill()
             return

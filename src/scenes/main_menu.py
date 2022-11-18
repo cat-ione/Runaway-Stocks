@@ -33,11 +33,14 @@ class MainMenuBG(Scene):
 class MainMenu(Scene):
     def setup(self) -> None:
         super().setup()
+
         self.background = MainMenuBG(self.manager, self.previous_scene)
         self.background.setup()
 
+        self.ending = False
+
         Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230))
-        Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), lambda: self.manager.new_scene("MainGame"))
+        Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end)
 
     def update(self) -> None:
         super().update()
@@ -48,3 +51,7 @@ class MainMenu(Scene):
         self.background.draw()
 
         super().draw()
+
+    def end(self) -> None:
+        self.ending = True
+        self.manager.new_scene("MainGame")
