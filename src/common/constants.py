@@ -25,7 +25,6 @@ DATA_DIR = os.path.join(str(Path.home()), ".runawaystocks")
 if not os.path.exists(DATA_DIR):
     os.mkdir(DATA_DIR)
 HIGHSCORE_FILE = os.path.join(DATA_DIR, "highscore.txt")
-TMP_BG_FILE = os.path.join(DATA_DIR, "scene_blur_tmp.png")
 
 class Dir(Enum):
     UP = -1

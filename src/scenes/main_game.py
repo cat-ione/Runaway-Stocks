@@ -5,14 +5,15 @@ from src.game.gridlines import GridManager, Barrier
 from src.common.constants import MUSIC_VOLUME
 from src.game.background import BGGridManager
 from src.management.scene import Scene
-from src.game.player import Player
 from src.gui.hud import MainGameTimer
+from src.game.player import Player
+from src.common.exe import pathof
 
 class MainGame(Scene):
     def setup(self) -> None:
         super().setup()
 
-        pygame.mixer.music.load("res/audio/music.wav")
+        pygame.mixer.music.load(pathof("res/audio/music.wav"))
         pygame.mixer.music.set_volume(MUSIC_VOLUME)
         pygame.mixer.music.play(-1)
 
