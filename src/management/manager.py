@@ -2,7 +2,7 @@ from enum import Enum
 import pygame
 import sys
 
-from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED, KEYDOWN, K_F9, WINDOWRESTORED, WINDOWMAXIMIZED
+from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED, KEYDOWN, K_F9, WINDOWRESTORED, WINDOWMAXIMIZED, SCALED
 
 from src.scenes import MainMenu, MainGame, PauseMenu, EndMenu
 from src.common.constants import WIDTH, HEIGHT, FPS
@@ -21,7 +21,7 @@ class GameManager:
 
         self.screen = pygame.Surface((WIDTH, HEIGHT))
         self.resized_screen = self.screen.copy()
-        self.flags = HWSURFACE | DOUBLEBUF | RESIZABLE
+        self.flags = HWSURFACE | DOUBLEBUF | RESIZABLE | SCALED
         self.display = pygame.display.set_mode((WIDTH, HEIGHT), self.flags)
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick_busy_loop(FPS) / 1000
