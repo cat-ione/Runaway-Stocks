@@ -29,7 +29,7 @@ HIGHSCORE_FILE = os.path.join(DATA_DIR, "highscore.txt")
 class Dir(Enum):
     UP = -1
     DOWN = 1
-    
+
 class Anchors(Enum):
     TOP = VEC(0, -1)
     BOTTOM = VEC(0, 1)
