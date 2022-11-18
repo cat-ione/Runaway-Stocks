@@ -16,6 +16,7 @@ class Tween:
         self.kwargs = kwargs
 
         self.linear_val = self.value = self.start
+        self.perc = 0
 
     def reset(self) -> None:
         self.linear_val = self.value = self.start if self.speed > 0 else self.end
@@ -24,5 +25,5 @@ class Tween:
         self.linear_val += self.speed * self.manager.dt
         if self.linear_val < self.start: self.linear_val = self.start
         if self.linear_val > self.end: self.linear_val = self.end
-        perc = (self.linear_val - self.start) / self.range
-        self.value = self.start + self.tween_func(perc, **self.kwargs) * self.range
+        self.perc = (self.linear_val - self.start) / self.range
+        self.value = self.start + self.tween_func(self.perc, **self.kwargs) * self.range

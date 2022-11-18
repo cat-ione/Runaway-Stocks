@@ -45,7 +45,7 @@ class Button(Element):
         self.color = color
 
         self.default_factor, self.hover_factor = 2.5, 2.8
-        self.factor = self.default_factor
+        self.factor = self.line_factor = self.default_factor
         self.surface, self.mask = self.default_surf, self.default_mask = self.generate_image(self.factor, False)
         self.hover_surf, self.hover_mask = self.generate_image(self.hover_factor, True)
 
@@ -53,6 +53,8 @@ class Button(Element):
 
         self.tween_expand = Tween(scene.manager, self.default_factor, self.hover_factor, 0.7, tween.easeInOutBack, s=12)
         self.tween_shrink = Tween(scene.manager, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
+        self.tween_line_expand = Tween(scene.manager, self.default_factor, self.hover_factor, 0.9, tween.easeInOutQuint)
+        self.tween_line_shrink = Tween(scene.manager, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
 
         super().__init__(scene, pos, anchor)
 
@@ -70,14 +72,19 @@ class Button(Element):
             self.default()
 
     def default(self) -> None:
+        self.tween_line_expand.reset()
         self.tween_expand.reset()
         self.tween_shrink()
+        self.tween_line_shrink()
+
         self.factor = self.tween_shrink.value
+        self.line_factor = self.tween_line_shrink.value
         if self.factor == self.default_factor:
             self.surface = self.default_surf
         else:
             self.surface, _ = self.generate_image(self.factor, False)
         self.mask = self.default_mask
+
         self.pos = self.center_pos - VEC(self.surface.get_size()) // 2
         self.first_hover = True
 
@@ -85,14 +92,20 @@ class Button(Element):
         if self.first_hover:
             button_hover.play()
             self.first_hover = False
+
         self.tween_shrink.reset()
+        self.tween_line_shrink.reset()
         self.tween_expand()
+        self.tween_line_expand()
+
         self.factor = self.tween_expand.value
-        if self.factor == self.hover_factor:
+        self.line_factor = self.tween_line_expand.value
+        if self.tween_expand == self.hover_factor:
             self.surface = self.hover_surf
         else:
             self.surface, _ = self.generate_image(self.factor, False)
         self.mask = self.hover_mask
+
         self.pos = self.center_pos - VEC(self.surface.get_size()) // 2
 
     def generate_image(self, factor: float, swapped: bool) -> tuple[pygame.Surface, pygame.Mask]:
@@ -100,7 +113,7 @@ class Button(Element):
         text_size = VEC(self.text_surf.get_size())
         size = text_size * factor
         factor_diff = self.hover_factor - self.default_factor
-        perc = (self.factor - self.default_factor) / factor_diff
+        perc = (self.line_factor - self.default_factor) / factor_diff
 
         surf = pygame.Surface(size, SRCALPHA)
 
@@ -108,7 +121,9 @@ class Button(Element):
         # +/- 2 for p1 and p3 (top and bottom) are to move the points inwards to avoid cutoff
         # +/- 2 for p2 and p4 (left and right) are to move the points outwards to cut off extra pixels
         p1, p2, p3, p4 = VEC(size.x // 2, 0 + 2), VEC(size.x + 2, size.y // 2), VEC(size.x // 2, size.y - 2), VEC(0 - 2, size.y // 2)
+
         pygame.gfxdraw.filled_polygon(surf, [p1, p2, p3, p4], (10, 10, 10))
+
         if perc < 0: perc = 0
         if perc > 1: perc = 1
         # Draw the lines on the clockwise direction of each side
@@ -117,6 +132,7 @@ class Button(Element):
         aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p2 + (p3 - p2) * perc, p3, 6)
         aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p3 + (p4 - p3) * perc, p4, 6)
         aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p4 + (p1 - p4) * perc, p1 + (1, 0), 6)
+
         # Draw the lines on the counterclockwise direction of each side
         aaline(surf, BEAR_COLOR if swapped else BULL_COLOR, p1, p1 + (p2 - p1) * perc, 6)
         aaline(surf, BULL_COLOR if swapped else BEAR_COLOR, p2, p2 + (p3 - p2) * perc, 6)
