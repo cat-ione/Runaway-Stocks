@@ -2,7 +2,7 @@ from enum import Enum
 import pygame
 import sys
 
-from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, WINDOWRESIZED, WINDOWMOVED, KEYDOWN, K_F9, WINDOWRESTORED, WINDOWMAXIMIZED, SCALED
+from pygame.locals import QUIT, HWSURFACE, DOUBLEBUF, RESIZABLE, KEYDOWN, K_F9, SCALED, WINDOWRESIZED, WINDOWMOVED
 
 from src.scenes import MainMenu, MainGame, PauseMenu, EndMenu
 from src.common.constants import WIDTH, HEIGHT, FPS
@@ -55,25 +55,14 @@ class GameManager:
         pygame.display.set_caption(f"Runaway Stocks | FPS: {round(self.clock.get_fps())}")
         
         self.events = {event.type: event for event in pygame.event.get()}
-        self.display_size = pygame.display.get_surface().get_size()
-        self.new_size = (WIDTH / HEIGHT * self.display_size[1], self.display_size[1])
 
         if QUIT in self.events:
             self.quit()
         if WINDOWRESIZED in self.events or WINDOWMOVED in self.events:
-            self.dt = 0
             self.window_changing = True
-            if WINDOWRESIZED in self.events:
-                pygame.display.set_mode(self.new_size, self.flags)
-        if WINDOWRESTORED in self.events and WINDOWMAXIMIZED not in self.events:
-            self.new_size = (WIDTH, HEIGHT)
-            pygame.display.set_mode(self.new_size, self.flags)
+            self.dt = 0
 
-        if self.new_size != (WIDTH, HEIGHT):
-            self.resized_screen = pygame.transform.smoothscale(self.screen, self.new_size)
-            self.display.blit(self.resized_screen, (0, 0))
-        else:
-            self.display.blit(self.screen, (0, 0))
+        self.display.blit(self.screen, (0, 0))
 
         pygame.display.flip()
 
