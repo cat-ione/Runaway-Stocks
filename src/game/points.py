@@ -48,7 +48,7 @@ class Point(VisibleSprite):
 
     def draw(self) -> None:
         draw_center = self.pos - self.scene.player.camera.offset
-        if not -12 < draw_center.y < HEIGHT + 20: return
+        if not -20 < draw_center.y < HEIGHT + 10: return
         r = 8
 
         shadow_surf = pygame.Surface((r * 2, r * 2))

@@ -1,10 +1,10 @@
 from pygame.locals import KEYDOWN, K_SPACE
 import pygame
 
+from src.gui.elements import Label, Button, Element
 from src.game.gridlines import GridManager, Barrier
 from src.common.constants import BOLD_FONTS, WIDTH
 from src.game.background import BGGridManager
-from src.gui.elements import Label, Button
 from src.management.scene import Scene
 from src.common.utils import blur_surf
 from src.game.player import Player
@@ -39,13 +39,16 @@ class MainMenu(Scene):
 
         self.ending = False
 
-        Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230))
+        Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230)),
         Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end)
 
     def update(self) -> None:
         super().update()
 
         self.background.update()
+
+        if self.ending:
+            pass
 
     def draw(self) -> None:
         self.background.draw()

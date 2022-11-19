@@ -16,13 +16,15 @@ from src.common.audio import button_hover
 from src.common.tween import Tween
 
 class Element(VisibleSprite):
+    """All subclasses of Element must implement surface"""
     def __init__(self, scene: Scene, pos: _pair, anchor: Anchors = Anchors.CENTER) -> None:
         super().__init__(scene, Layers.HUD)
+        self.anchor = anchor
         self.center_pos = VEC(pos)
-        self.pos = VEC(pos) - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
+        self.pos = self.center_pos - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
 
     def update(self) -> None:
-        ...
+        self.pos = self.center_pos - VEC((self.anchor.value.x + 1) * self.surface.get_width(), (self.anchor.value.y + 1) * self.surface.get_height()) // 2
 
     def draw(self) -> None:
         self.manager.screen.blit(self.surface, self.pos)
@@ -50,6 +52,7 @@ class Button(Element):
         self.hover_surf, self.hover_mask = self.generate_image(self.hover_factor, True)
 
         self.first_hover = True
+        self.locked = False
 
         self.tween_expand = Tween(scene.manager, self.default_factor, self.hover_factor, 0.7, tween.easeInOutBack, s=12)
         self.tween_shrink = Tween(scene.manager, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
@@ -59,17 +62,20 @@ class Button(Element):
         super().__init__(scene, pos, anchor)
 
     def update(self) -> None:
-        try:
-            # "- (self.center_pos - VEC(self.mask.get_size()) // 2)" to offset the detection to the proper place of the mask
-            # simply subtracting self.pos will not work properly as self.pos is dynamic to the easing, while the mask is not
-            if self.mask.get_at(inttup(pygame.mouse.get_pos() - (self.center_pos - VEC(self.mask.get_size()) // 2))): # If the position of the cursor is part of the mask
-                self.hover()
-                if pygame.mouse.get_pressed()[0]:
-                    self.command()
-            else:
+        if not self.locked:
+            try:
+                # "- (self.center_pos - VEC(self.mask.get_size()) // 2)" to offset the detection to the proper place of the mask
+                # simply subtracting self.pos will not work properly as self.pos is dynamic to the easing, while the mask is not
+                if self.mask.get_at(inttup(pygame.mouse.get_pos() - (self.center_pos - VEC(self.mask.get_size()) // 2))): # If the position of the cursor is part of the mask
+                    self.hover()
+                    if pygame.mouse.get_pressed()[0]:
+                        self.command()
+                else:
+                    self.default()
+            except IndexError: # An index error means "get_at" failed, the cursor is outside the rect of the mask
                 self.default()
-        except IndexError: # An index error means "get_at" failed, the cursor is outside the rect of the mask
-            self.default()
+
+        super().update()
 
     def default(self) -> None:
         self.tween_line_expand.reset()
@@ -85,7 +91,6 @@ class Button(Element):
             self.surface, _ = self.generate_image(self.factor, False)
         self.mask = self.default_mask
 
-        self.pos = self.center_pos - VEC(self.surface.get_size()) // 2
         self.first_hover = True
 
     def hover(self) -> None:
@@ -105,8 +110,6 @@ class Button(Element):
         else:
             self.surface, _ = self.generate_image(self.factor, False)
         self.mask = self.hover_mask
-
-        self.pos = self.center_pos - VEC(self.surface.get_size()) // 2
 
     def generate_image(self, factor: float, swapped: bool) -> tuple[pygame.Surface, pygame.Mask]:
         self.text_surf = self.font.render(self.text, True, self.color)
