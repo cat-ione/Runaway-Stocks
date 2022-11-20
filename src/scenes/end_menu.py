@@ -13,7 +13,7 @@ class EndMenu(Scene):
         self.volume = pygame.mixer.music.get_volume()
         pygame.mixer.fadeout(500)
 
-        Image(self, (0, 0), blur_surf(self.manager.screen), anchor=Anchors.TOPLEFT)
+        Image(self, (0, 0), blur_surf(self.scene.surface), anchor=Anchors.TOPLEFT)
 
         try: # Try to open the highscore file and read the highscore
             with open(HIGHSCORE_FILE, "r") as f:

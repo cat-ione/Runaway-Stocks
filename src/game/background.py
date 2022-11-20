@@ -70,7 +70,7 @@ class BGHorizontalGridline(VisibleSprite):
             self.kill()
 
     def draw(self) -> None:
-        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y), (50, 50, 50))
+        pygame.gfxdraw.hline(self.scene.surface, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y), (50, 50, 50))
 
     def kill(self) -> None:
         try:
@@ -100,7 +100,7 @@ class BGVerticalGridline(VisibleSprite):
             self.kill()
 
     def draw(self) -> None:
-        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_start.y), int(self.on_screen_end.y), (50, 50, 50))
+        pygame.gfxdraw.vline(self.scene.surface, int(self.on_screen_start.x), int(self.on_screen_start.y), int(self.on_screen_end.y), (50, 50, 50))
 
     def kill(self) -> None:
         try:
@@ -121,4 +121,4 @@ class BGPoint(VisibleSprite):
 
     def draw(self) -> None:
         draw_center = self.pos - self.scene.player.camera.offset * BG_PARALLAX
-        pygame.draw.circle(self.manager.screen, self.color, draw_center, 4)
+        pygame.draw.circle(self.scene.surface, self.color, draw_center, 4)

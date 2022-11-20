@@ -19,10 +19,8 @@ class GameManager:
         pygame.init()
         pygame.mixer.init(buffer=32)
 
-        self.screen = pygame.Surface((WIDTH, HEIGHT))
-        self.resized_screen = self.screen.copy()
         self.flags = HWSURFACE | DOUBLEBUF | RESIZABLE | SCALED
-        self.display = pygame.display.set_mode((WIDTH, HEIGHT), self.flags)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), self.flags)
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick_busy_loop(FPS) / 1000
         self.window_changing = False
@@ -61,8 +59,6 @@ class GameManager:
         if WINDOWRESIZED in self.events or WINDOWMOVED in self.events:
             self.window_changing = True
             self.dt = 0
-
-        self.display.blit(self.screen, (0, 0))
 
         pygame.display.flip()
 

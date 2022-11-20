@@ -32,8 +32,8 @@ class MainGameTimer(ComplexTimer, VisibleSprite):
 
         trans_surf = pygame.Surface(self.size, SRCALPHA)
         trans_surf.fill((150, 150, 150, 150))
-        self.manager.screen.blit(trans_surf, (0, 0))
-        self.manager.screen.blit(self.text_surface, (0, 0))
+        self.scene.surface.blit(trans_surf, (0, 0))
+        self.scene.surface.blit(self.text_surface, (0, 0))
 
         if self.current_time < 10 and self.current_time % 1 > 0.5:
             if 0.5 < self.current_time % 1 < 0.625:
@@ -43,7 +43,7 @@ class MainGameTimer(ComplexTimer, VisibleSprite):
 
             tmp_surf = pygame.Surface(self.size, SRCALPHA)
             pygame.draw.rect(tmp_surf, (208, 52, 44, self.border_opacity), (0, 0, *self.size), 4)
-            self.manager.screen.blit(tmp_surf, (0, 0))
+            self.scene.surface.blit(tmp_surf, (0, 0))
 
 class PowerTimer(ComplexTimer, VisibleSprite):
     instances = []
@@ -68,10 +68,10 @@ class PowerTimer(ComplexTimer, VisibleSprite):
         rad = 24
         center = VEC(0 + rad + 5, 50 + rad + 10 + self.__class__.instances.index(self) * 50)
         angle = int(self.current_time / self.max_time * 360)
-        pygame_draw_pie(self.manager.screen, (255, 255, 255, 120), center, rad, 0, angle)
-        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(0)), -cos(radians(0))) * rad, 2)
-        pygame.draw.line(self.manager.screen, (200, 200, 200), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 2)
-        self.manager.screen.blit(power_images[self.power.__name__.lower()], center - (16, 16))
+        pygame_draw_pie(self.scene.surface, (255, 255, 255, 120), center, rad, 0, angle)
+        pygame.draw.line(self.scene.surface, (200, 200, 200), center, center + VEC(sin(radians(0)), -cos(radians(0))) * rad, 2)
+        pygame.draw.line(self.scene.surface, (200, 200, 200), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 2)
+        self.scene.surface.blit(power_images[self.power.__name__.lower()], center - (16, 16))
 
     def kill(self) -> None:
         if self.scene.__class__.__name__ == "MainGame":

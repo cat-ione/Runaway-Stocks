@@ -79,9 +79,9 @@ class HorizontalGridline(VisibleSprite):
         self.on_screen_end = VEC(WIDTH, self.y * GRID_SPACE.y - self.scene.player.camera.offset.y)
 
     def draw(self) -> None:
-        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y), (120, 120, 120))
-        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y + 1), (120, 120, 120))
-        pygame.gfxdraw.hline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y + 2), (80, 80, 80))
+        pygame.gfxdraw.hline(self.scene.surface, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y), (120, 120, 120))
+        pygame.gfxdraw.hline(self.scene.surface, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y + 1), (120, 120, 120))
+        pygame.gfxdraw.hline(self.scene.surface, int(self.on_screen_start.x), int(self.on_screen_end.x), int(self.on_screen_start.y + 2), (80, 80, 80))
 
     def kill(self) -> None:
         try:
@@ -109,9 +109,9 @@ class VerticalGridline(VisibleSprite):
         self.on_screen_end = VEC(self.x * GRID_SPACE.x - self.scene.player.camera.offset.x, HEIGHT)
 
     def draw(self) -> None:
-        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x), int(self.on_screen_start.y), int(self.on_screen_end.y), (120, 120, 120))
-        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x + 1), int(self.on_screen_start.y), int(self.on_screen_end.y), (120, 120, 120))
-        pygame.gfxdraw.vline(self.manager.screen, int(self.on_screen_start.x + 2), int(self.on_screen_start.y), int(self.on_screen_end.y), (80, 80, 80))
+        pygame.gfxdraw.vline(self.scene.surface, int(self.on_screen_start.x), int(self.on_screen_start.y), int(self.on_screen_end.y), (120, 120, 120))
+        pygame.gfxdraw.vline(self.scene.surface, int(self.on_screen_start.x + 1), int(self.on_screen_start.y), int(self.on_screen_end.y), (120, 120, 120))
+        pygame.gfxdraw.vline(self.scene.surface, int(self.on_screen_start.x + 2), int(self.on_screen_start.y), int(self.on_screen_end.y), (80, 80, 80))
 
     def kill(self) -> None:
         try:
@@ -157,9 +157,9 @@ class Barrier(VerticalGridline):
         super().update()
 
     def draw(self) -> None:
-        pygame.draw.line(self.manager.screen, (60, 60, 60), self.on_screen_start, self.on_screen_end, 10)
-        pygame.draw.line(self.manager.screen, (110, 110, 110), self.on_screen_start, self.on_screen_end, 6)
-        pygame.draw.line(self.manager.screen, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
+        pygame.draw.line(self.scene.surface, (60, 60, 60), self.on_screen_start, self.on_screen_end, 10)
+        pygame.draw.line(self.scene.surface, (110, 110, 110), self.on_screen_start, self.on_screen_end, 6)
+        pygame.draw.line(self.scene.surface, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
         
     def kill(self) -> None:
         self.__class__.instance = None

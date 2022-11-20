@@ -27,7 +27,7 @@ class Point(VisibleSprite):
             ...
 
         def draw(self) -> None:
-            self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
+            self.scene.surface.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
     def __init__(self, scene: Scene, val: int, pos: _pair) -> None:
@@ -53,14 +53,14 @@ class Point(VisibleSprite):
 
         shadow_surf = pygame.Surface((r * 2, r * 2))
         pygame.draw.circle(shadow_surf, (60, 60, 60), (r, r), r)
-        self.manager.screen.blit(shadow_surf, draw_center - (r, r) + SHADOW_OFFSET, special_flags=BLEND_RGB_SUB)
+        self.scene.surface.blit(shadow_surf, draw_center - (r, r) + SHADOW_OFFSET, special_flags=BLEND_RGB_SUB)
 
         trans_surf = pygame.Surface((r * 2, r * 2), SRCALPHA)
         pygame.draw.circle(trans_surf, (*self.color, 100), (r, r), r)
-        self.manager.screen.blit(trans_surf, draw_center - VEC(r, r))
+        self.scene.surface.blit(trans_surf, draw_center - VEC(r, r))
 
-        pygame.draw.circle(self.manager.screen, self.color, draw_center, r - 3)
-        self.manager.screen.blit(get_point_text(self.val, self.color), draw_center + VEC(3, 1))
+        pygame.draw.circle(self.scene.surface, self.color, draw_center, r - 3)
+        self.scene.surface.blit(get_point_text(self.val, self.color), draw_center + VEC(3, 1))
 
     def kill(self) -> None:
         if self.scene.__class__.__name__ == "MainGame":

@@ -27,7 +27,7 @@ class Element(VisibleSprite):
         self.pos = self.center_pos - VEC((self.anchor.value.x + 1) * self.surface.get_width(), (self.anchor.value.y + 1) * self.surface.get_height()) // 2
 
     def draw(self) -> None:
-        self.manager.screen.blit(self.surface, self.pos)
+        self.scene.surface.blit(self.surface, self.pos)
 
 class Label(Element):
     def __init__(self, scene: Scene, pos: _pair, text: str, font: _font, color: _color, anchor: Anchors = Anchors.CENTER) -> None:

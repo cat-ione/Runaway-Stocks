@@ -16,7 +16,7 @@ class PauseMenu(Scene):
 
         ComplexTimer.pause_all()
 
-        Image(self, (0, 0), blur_surf(self.manager.screen), anchor=Anchors.TOPLEFT)
+        Image(self, (0, 0), blur_surf(self.previous_scene.surface), anchor=Anchors.TOPLEFT)
         Label(self, (WIDTH // 2, HEIGHT // 2), "Game Paused", BOLD_FONTS[80], (230, 230, 230))
 
     def update(self) -> None:

@@ -1,10 +1,10 @@
 from pygame.locals import KEYDOWN, K_SPACE
 import pygame
 
-from src.gui.elements import Label, Button, Element
 from src.game.gridlines import GridManager, Barrier
 from src.common.constants import BOLD_FONTS, WIDTH
 from src.game.background import BGGridManager
+from src.gui.elements import Label, Button
 from src.management.scene import Scene
 from src.common.utils import blur_surf
 from src.game.player import Player
@@ -24,17 +24,17 @@ class MainMenuBG(Scene):
         self.grid_manager.update()
         self.bg_grid_manager.update()
 
-    def draw(self) -> None:
-        self.manager.screen.fill((30, 30, 30))
+    def pre_sprite(self) -> None:
+        self.surface.fill((30, 30, 30))
 
-        super().draw()
-        self.manager.screen.blit(blur_surf(self.manager.screen), (0, 0))
+    def post_sprite(self) -> None:
+        self.surface.blit(blur_surf(self.surface), (0, 0))
 
 class MainMenu(Scene):
     def setup(self) -> None:
         super().setup()
 
-        self.background = MainMenuBG(self.manager, self.previous_scene)
+        self.background = MainMenuBG(self.manager, self.previous_scene, self)
         self.background.setup()
 
         self.ending = False
@@ -50,10 +50,8 @@ class MainMenu(Scene):
         if self.ending:
             pass
 
-    def draw(self) -> None:
+    def pre_sprite(self) -> None:
         self.background.draw()
-
-        super().draw()
 
     def end(self) -> None:
         self.ending = True

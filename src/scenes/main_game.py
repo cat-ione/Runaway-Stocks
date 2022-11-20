@@ -41,7 +41,5 @@ class MainGame(Scene):
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
             self.manager.new_scene("PauseMenu")
 
-    def draw(self) -> None:
-        self.manager.screen.fill((30, 30, 30))
-
-        super().draw()
+    def pre_sprite(self) -> None:
+        self.surface.fill((30, 30, 30))

@@ -31,7 +31,7 @@ class Particle(VisibleSprite):
         self.pos += self.vel * self.manager.dt
 
     def draw(self) -> None:
-        pygame.draw.circle(self.manager.screen, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
+        pygame.draw.circle(self.scene.surface, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
 
 class Shockwave(VisibleSprite):
     def __init__(self, scene: Scene, pos: _pair, color: _color, start_width: int, expansion_speed: float, thinnen_speed: float) -> None:
@@ -50,7 +50,7 @@ class Shockwave(VisibleSprite):
             self.kill()
 
     def draw(self) -> None:
-        pygame.draw.circle(self.manager.screen, self.color, self.pos - self.scene.player.camera.offset, self.radius, round(self.width))
+        pygame.draw.circle(self.scene.surface, self.color, self.pos - self.scene.player.camera.offset, self.radius, round(self.width))
 
 class PowerTimerPlayerDisplay(VisibleSprite):
     def __init__(self, scene: Scene, master: PowerTimer) -> None:
@@ -64,9 +64,9 @@ class PowerTimerPlayerDisplay(VisibleSprite):
         center = self.scene.player.pos - self.scene.player.camera.offset
         angle = int(self.master.current_time / self.master.max_time * 360) + 180
         rad = 35
-        pygame_draw_pie(self.manager.screen, (255, 255, 255, 70), center, rad, 180, angle)
-        pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(180)), -cos(radians(180))) * rad, 1)
-        pygame.draw.line(self.manager.screen, (150, 150, 150), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 1)
+        pygame_draw_pie(self.scene.surface, (255, 255, 255, 70), center, rad, 180, angle)
+        pygame.draw.line(self.scene.surface, (150, 150, 150), center, center + VEC(sin(radians(180)), -cos(radians(180))) * rad, 1)
+        pygame.draw.line(self.scene.surface, (150, 150, 150), center, center + VEC(sin(radians(angle)), -cos(radians(angle))) * rad, 1)
 
 class Glitch(VisibleSprite):
     def __init__(self, scene: Scene, pos: _pair) -> None:
@@ -79,7 +79,7 @@ class Glitch(VisibleSprite):
         self.size = VEC(randint(30, 60), randint(6, 8))
         self.on_screen_pos = self.pos - self.scene.player.camera.offset
         try:
-            self.surface = self.manager.screen.subsurface(self.on_screen_pos, self.size).copy()
+            self.surface = self.scene.surface.subsurface(self.on_screen_pos, self.size).copy()
         except ValueError:
             self.kill()
 
@@ -94,5 +94,5 @@ class Glitch(VisibleSprite):
             self.kill()
 
     def draw(self) -> None:
-        self.manager.screen.fill((30, 30, 30), (*self.on_screen_pos, *self.size))
-        self.manager.screen.blit(self.surface, self.on_screen_pos)
+        self.scene.surface.fill((30, 30, 30), (*self.on_screen_pos, *self.size))
+        self.scene.surface.blit(self.surface, self.on_screen_pos)

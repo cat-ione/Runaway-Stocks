@@ -77,9 +77,9 @@ class Player(VisibleSprite):
 
             pygame.draw.line(self.player.shadow.surface, (60, 60, 60), start_pos + SHADOW_OFFSET, end_pos + SHADOW_OFFSET, 8)
 
-            pygame.draw.aaline(self.manager.screen, self.color, start_1, end_1)
-            pygame.draw.aaline(self.manager.screen, self.color, start_2, end_2)
-            pygame.gfxdraw.filled_polygon(self.manager.screen, tuple(map(lambda p: p + (0, 1), (start_1, start_2, end_2, end_1))), self.color)
+            pygame.draw.aaline(self.scene.surface, self.color, start_1, end_1)
+            pygame.draw.aaline(self.scene.surface, self.color, start_2, end_2)
+            pygame.gfxdraw.filled_polygon(self.scene.surface, tuple(map(lambda p: p + (0, 1), (start_1, start_2, end_2, end_1))), self.color)
 
         def kill(self) -> None:
             self.player.segments.remove(self)
@@ -94,7 +94,7 @@ class Player(VisibleSprite):
             ...
 
         def draw(self) -> None:
-            self.manager.screen.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
+            self.scene.surface.blit(self.surface, (0, 0), special_flags=BLEND_RGB_SUB)
             self.surface = pygame.Surface((WIDTH, HEIGHT))
 
     def __init__(self, scene: Scene) -> None:
@@ -162,10 +162,10 @@ class Player(VisibleSprite):
     def draw(self) -> None:
         for segment in self.segments:
             segment.draw()
-        pygame.draw.polygon(self.manager.screen, self.color, list(map(self.tip_offset_func, self.tip_offsets)))
+        pygame.draw.polygon(self.scene.surface, self.color, list(map(self.tip_offset_func, self.tip_offsets)))
         pygame.draw.polygon(self.shadow.surface, (60, 60, 60), list(map(lambda c: self.tip_offset_func(c) + SHADOW_OFFSET, self.tip_offsets)))
         text_surf = BOLD_FONTS[18].render(str(self.score), True, (230, 230, 230))
-        self.manager.screen.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))
+        self.scene.surface.blit(text_surf, (self.pos - self.camera.offset - VEC(text_surf.get_size()) // 2 - VEC(0, 20)))
 
     def update_segments(self, direction: Dir):
         self.direction = direction
