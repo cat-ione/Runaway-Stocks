@@ -11,7 +11,7 @@ import pygame
 
 from src.common.constants import VEC, Anchors, _pair, _color, _font, BEAR_COLOR, BULL_COLOR
 from src.management.sprite import VisibleSprite, Layers
-from src.common.utils import aaline, inttup
+from src.common.utils import aaline, inttup, anchored
 from src.common.audio import button_hover
 from src.common.tween import Tween
 
@@ -20,11 +20,11 @@ class Element(VisibleSprite):
     def __init__(self, scene: Scene, pos: _pair, anchor: Anchors = Anchors.CENTER) -> None:
         super().__init__(scene, Layers.HUD)
         self.anchor = anchor
-        self.center_pos = VEC(pos)
-        self.pos = self.center_pos - VEC((anchor.value.x + 1) * self.surface.get_width(), (anchor.value.y + 1) * self.surface.get_height()) // 2
+        self.anchor_pos = VEC(pos)
+        self.pos = anchored(self.anchor_pos, VEC(self.surface.get_size()), self.anchor)
 
     def update(self) -> None:
-        self.pos = self.center_pos - VEC((self.anchor.value.x + 1) * self.surface.get_width(), (self.anchor.value.y + 1) * self.surface.get_height()) // 2
+        self.pos = anchored(self.anchor_pos, VEC(self.surface.get_size()), self.anchor)
 
     def draw(self) -> None:
         self.scene.surface.blit(self.surface, self.pos)
@@ -64,9 +64,9 @@ class Button(Element):
     def update(self) -> None:
         if not self.locked:
             try:
-                # "- (self.center_pos - VEC(self.mask.get_size()) // 2)" to offset the detection to the proper place of the mask
+                # "- (self.anchor_pos - VEC(self.mask.get_size()) // 2)" to offset the detection to the proper place of the mask
                 # simply subtracting self.pos will not work properly as self.pos is dynamic to the easing, while the mask is not
-                if self.mask.get_at(inttup(pygame.mouse.get_pos() - (self.center_pos - VEC(self.mask.get_size()) // 2))): # If the position of the cursor is part of the mask
+                if self.mask.get_at(inttup(pygame.mouse.get_pos() - (self.anchor_pos - VEC(self.mask.get_size()) // 2))): # If the position of the cursor is part of the mask
                     self.hover()
                     if pygame.mouse.get_pressed()[0]:
                         self.command()

@@ -30,29 +30,40 @@ class MainMenuBG(Scene):
     def post_sprite(self) -> None:
         self.surface.blit(blur_surf(self.surface), (0, 0))
 
-class MainMenu(Scene):
+class MainMenuGUI(Scene):
     def setup(self) -> None:
         super().setup()
-
-        self.background = MainMenuBG(self.manager, self.previous_scene, self)
-        self.background.setup()
+        self.surface.set_colorkey((0, 0, 0))
 
         self.ending = False
 
         Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230)),
         Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end)
 
-    def update(self) -> None:
-        super().update()
-
-        self.background.update()
-
-        if self.ending:
-            pass
-
     def pre_sprite(self) -> None:
-        self.background.draw()
+        self.surface.fill((0, 0, 0))
 
     def end(self) -> None:
         self.ending = True
         self.manager.new_scene("MainGame")
+
+class MainMenu(Scene):
+    def setup(self) -> None:
+        super().setup()
+
+        self.background = MainMenuBG(self.manager, self.previous_scene, self)
+        self.background.setup()
+        self.gui = MainMenuGUI(self.manager, self.previous_scene, self)
+        self.gui.setup()
+
+        self.ending = False
+
+    def update(self) -> None:
+        super().update()
+
+        self.background.update()
+        self.gui.update()
+
+    def pre_sprite(self) -> None:
+        self.background.draw()
+        self.gui.draw()

@@ -14,6 +14,7 @@ from src.common.constants import VEC, _pair, _color, Anchors
 
 inttup = lambda tup: tuple(map(floor, tuple(tup)))
 intvec = lambda vec: VEC(floor(vec.x), floor(vec.y))
+anchored = lambda pos, size, anchor: pos - VEC((anchor.value.x + 1) * size.x, (anchor.value.y + 1) * size.y) // 2
 
 def pygame_draw_pie(screen: pygame.Surface, color: _color, center: _pair, rad: int, start_ang: int, end_ang: int, step: int = 10):
     if end_ang <= start_ang:
