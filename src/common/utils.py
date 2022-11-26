@@ -26,12 +26,14 @@ def pygame_draw_pie(screen: pygame.Surface, color: _color, center: _pair, rad: i
     vertices.append(center + VEC(sin(last_angle), -cos(last_angle)) * rad)
     pygame.gfxdraw.filled_polygon(screen, vertices, color)
 
-def blur_surf(surf: pygame.Surface) -> pygame.Surface:
+def blur_surf(surf: pygame.Surface, factor: float = 0.25) -> pygame.Surface:
     """Smooth scale it down and up, then normal scale it down and up, to create a blur effect plus a pixelated effect"""
-    surf = pygame.transform.smoothscale_by(surf, 0.25)
-    surf = pygame.transform.smoothscale_by(surf, 4)
-    surf = pygame.transform.scale_by(surf, 0.25)
-    surf = pygame.transform.scale_by(surf, 4)
+    if factor == 1: return surf
+    orig_size = surf.get_size()
+    surf = pygame.transform.smoothscale_by(surf, factor)
+    surf = pygame.transform.smoothscale_by(surf, 1 / factor)
+    surf = pygame.transform.scale_by(surf, factor)
+    surf = pygame.transform.scale(surf, orig_size)
     return surf
 
 def create_blurred_bg(scene: Scene) -> Image:

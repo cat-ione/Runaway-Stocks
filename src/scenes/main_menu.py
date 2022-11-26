@@ -15,6 +15,10 @@ class MainMenuBG(Scene):
     def setup(self) -> None:
         super().setup()
 
+        self.blur_tween = Tween(self.manager, 0.03, 0.25, -0.1, tween.easeInExpo)
+        self.blur_tween.reset()
+        self.ending = False
+
         self.grid_manager = GridManager(self)
         self.bg_grid_manager = BGGridManager(self)
         self.player = Player(self)
@@ -26,11 +30,17 @@ class MainMenuBG(Scene):
         self.grid_manager.update()
         self.bg_grid_manager.update()
 
+        if self.super_scene.ending:
+            self.blur_tween()
+
+        if self.blur_tween.value < 0.033:
+            self.manager.new_scene("MainGame")
+
     def pre_sprite(self) -> None:
         self.surface.fill((30, 30, 30))
 
     def post_sprite(self) -> None:
-        self.surface.blit(blur_surf(self.surface), (0, 0))
+        self.surface.blit(blur_surf(self.surface, self.blur_tween.value), (0, 0))
 
 class MainMenuGUI(Scene):
     def setup(self) -> None:
@@ -38,24 +48,20 @@ class MainMenuGUI(Scene):
 
         self.surface.set_colorkey((0, 0, 0))
 
-        self.ending = False
-
         Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230)),
         Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end)
 
     def pre_sprite(self) -> None:
-        self.surface.fill((0, 0, 0, 0) if self.ending else (0, 0, 0))
+        self.surface.fill((0, 0, 0, 0) if self.super_scene.ending else (0, 0, 0))
 
     def post_sprite(self) -> None:
-        if not self.ending: return
+        if not self.super_scene.ending: return
         self.alpha_tween()
         self.surface.set_alpha(self.alpha_tween.value)
-        if self.surface.get_alpha() == 0:
-            self.manager.new_scene("MainGame")
 
     def end(self) -> None:
-        self.ending = True
-        self.alpha_tween = Tween(self.manager, 0, 255, -150, tween.easeInExpo)
+        self.super_scene.ending = True
+        self.alpha_tween = Tween(self.manager, 0, 255, -180, tween.easeInSine)
         self.alpha_tween.reset()
         self.surface = self.surface.convert_alpha()
 
