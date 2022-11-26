@@ -1,4 +1,5 @@
-from pygame.locals import KEYDOWN, K_SPACE
+from pygame.locals import SRCALPHA
+import pytweening as tween
 import pygame
 
 from src.game.gridlines import GridManager, Barrier
@@ -7,6 +8,7 @@ from src.game.background import BGGridManager
 from src.gui.elements import Label, Button
 from src.management.scene import Scene
 from src.common.utils import blur_surf
+from src.common.tween import Tween
 from src.game.player import Player
 
 class MainMenuBG(Scene):
@@ -33,6 +35,7 @@ class MainMenuBG(Scene):
 class MainMenuGUI(Scene):
     def setup(self) -> None:
         super().setup()
+
         self.surface.set_colorkey((0, 0, 0))
 
         self.ending = False
@@ -41,11 +44,20 @@ class MainMenuGUI(Scene):
         Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end)
 
     def pre_sprite(self) -> None:
-        self.surface.fill((0, 0, 0))
+        self.surface.fill((0, 0, 0, 0) if self.ending else (0, 0, 0))
+
+    def post_sprite(self) -> None:
+        if not self.ending: return
+        self.alpha_tween()
+        self.surface.set_alpha(self.alpha_tween.value)
+        if self.surface.get_alpha() == 0:
+            self.manager.new_scene("MainGame")
 
     def end(self) -> None:
         self.ending = True
-        self.manager.new_scene("MainGame")
+        self.alpha_tween = Tween(self.manager, 0, 255, -150, tween.easeInExpo)
+        self.alpha_tween.reset()
+        self.surface = self.surface.convert_alpha()
 
 class MainMenu(Scene):
     def setup(self) -> None:
