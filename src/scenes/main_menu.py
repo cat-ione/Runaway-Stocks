@@ -15,7 +15,7 @@ class MainMenuBG(Scene):
     def setup(self) -> None:
         super().setup()
 
-        self.blur_tween = Tween(self.manager, 0.03, 0.25, -0.1, tween.easeInExpo)
+        self.blur_tween = Tween(self, 0.03, 0.25, -0.2, tween.easeInExpo)
         self.blur_tween.reset()
         self.ending = False
 
@@ -33,7 +33,7 @@ class MainMenuBG(Scene):
         if self.super_scene.ending:
             self.blur_tween()
 
-        if self.blur_tween.value < 0.033:
+        if self.blur_tween.value < 0.031:
             self.manager.new_scene("MainGame")
 
     def pre_sprite(self) -> None:
@@ -51,6 +51,9 @@ class MainMenuGUI(Scene):
         Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230)),
         Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end)
 
+    def update(self) -> None:
+        super().update()
+
     def pre_sprite(self) -> None:
         self.surface.fill((0, 0, 0, 0) if self.super_scene.ending else (0, 0, 0))
 
@@ -61,7 +64,7 @@ class MainMenuGUI(Scene):
 
     def end(self) -> None:
         self.super_scene.ending = True
-        self.alpha_tween = Tween(self.manager, 0, 255, -180, tween.easeInSine)
+        self.alpha_tween = Tween(self, 0, 255, -200, tween.easeInSine)
         self.alpha_tween.reset()
         self.surface = self.surface.convert_alpha()
 

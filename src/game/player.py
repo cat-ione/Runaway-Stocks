@@ -31,7 +31,7 @@ class Camera:
 
     def update(self) -> None:
         tick_offset = self.master.pos - self.offset - VEC(WIDTH, HEIGHT) / 2
-        self.actual_offset += tick_offset * 5 * self.manager.dt
+        self.actual_offset += tick_offset * 5 * self.scene.dt
         if self.shaking and time.time() - self.shake_start < self.shake_duration:
             if time.time() - self.per_shake_start < self.per_shake_duration:
                 self.actual_offset += VEC(uniform(-(si := self.shake_intensity), si), uniform(-si, si))
@@ -150,8 +150,8 @@ class Player(VisibleSprite):
             self.score += -self.direction.value
             self.start_time = time.time()
 
-        self.pos.x += cos(radians(self.angle * self.direction.value)) * self.speed * self.manager.dt
-        self.pos.y += sin(radians(self.angle * self.direction.value)) * self.speed * self.manager.dt
+        self.pos.x += cos(radians(self.angle * self.direction.value)) * self.speed * self.scene.dt
+        self.pos.y += sin(radians(self.angle * self.direction.value)) * self.speed * self.scene.dt
 
         for segment in self.segments:
             segment.update()

@@ -41,7 +41,7 @@ class EndMenu(Scene):
         super().update()
 
         if self.volume > 0:
-            self.volume -= 0.05 * self.manager.dt
+            self.volume -= 0.05 * self.dt
             pygame.mixer.music.set_volume(self.volume)
         else:
             self.volume = 0

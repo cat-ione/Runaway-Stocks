@@ -24,12 +24,15 @@ class Scene:
         self.surface = pygame.Surface(self.size)
         self.sprite_manager = SpriteManager(self)
         self.running = True
+        self.dt = self.manager.dt
 
     def update(self) -> None:
         self.size = VEC(self.surface.get_size())
         self.pos = anchored(self.anchor_pos, self.size, self.anchor)
 
         self.sprite_manager.update()
+
+        self.dt = self.manager.dt
 
     def draw(self) -> None:
         self.pre_sprite()

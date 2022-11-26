@@ -54,10 +54,10 @@ class Button(Element):
         self.first_hover = True
         self.locked = False
 
-        self.tween_expand = Tween(scene.manager, self.default_factor, self.hover_factor, 0.7, tween.easeInOutBack, s=12)
-        self.tween_shrink = Tween(scene.manager, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
-        self.tween_line_expand = Tween(scene.manager, self.default_factor, self.hover_factor, 0.9, tween.easeInOutQuint)
-        self.tween_line_shrink = Tween(scene.manager, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
+        self.tween_expand = Tween(scene, self.default_factor, self.hover_factor, 0.7, tween.easeInOutBack, s=12)
+        self.tween_shrink = Tween(scene, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
+        self.tween_line_expand = Tween(scene, self.default_factor, self.hover_factor, 0.9, tween.easeInOutQuint)
+        self.tween_line_shrink = Tween(scene, self.default_factor, self.hover_factor, -0.3, tween.easeInOutExpo)
 
         super().__init__(scene, pos, anchor)
 

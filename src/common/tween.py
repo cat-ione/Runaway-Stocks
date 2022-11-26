@@ -1,13 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.management.manager import GameManager
+    from src.management.scene import Scene
 
 from typing import Callable
 
 class Tween:
-    def __init__(self, manager: GameManager, start: float, end: float, speed: float, tween_func: Callable, **kwargs) -> None:
-        self.manager = manager
+    def __init__(self, scene: Scene, start: float, end: float, speed: float, tween_func: Callable, **kwargs) -> None:
+        self.scene = scene
         self.start = start
         self.end = end
         self.range = self.end - self.start
@@ -22,7 +22,7 @@ class Tween:
         self.linear_val = self.value = self.start if self.speed > 0 else self.end
 
     def __call__(self) -> None:
-        self.linear_val += self.speed * self.manager.dt
+        self.linear_val += self.speed * self.scene.dt
         if self.linear_val < self.start: self.linear_val = self.start
         if self.linear_val > self.end: self.linear_val = self.end
         self.perc = (self.linear_val - self.start) / self.range

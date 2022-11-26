@@ -27,8 +27,8 @@ class Particle(VisibleSprite):
         if self.vel.x <= 2 and self.vel.y < 2:
             self.kill()
             return
-        self.vel -= self.vel.normalize() * 30 * self.manager.dt
-        self.pos += self.vel * self.manager.dt
+        self.vel -= self.vel.normalize() * 30 * self.scene.dt
+        self.pos += self.vel * self.scene.dt
 
     def draw(self) -> None:
         pygame.draw.circle(self.scene.surface, self.color, inttup(self.pos - self.scene.player.camera.offset), self.size)
@@ -44,8 +44,8 @@ class Shockwave(VisibleSprite):
         self.thinnen_speed = thinnen_speed
 
     def update(self) -> None:
-        self.radius += self.expansion_speed * self.manager.dt
-        self.width -= self.thinnen_speed * self.manager.dt
+        self.radius += self.expansion_speed * self.scene.dt
+        self.width -= self.thinnen_speed * self.scene.dt
         if self.width <= 0.6:
             self.kill()
 

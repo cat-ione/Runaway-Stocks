@@ -28,17 +28,17 @@ class MainGame(Scene):
         self.player = Player(self)
         Barrier.reset()
 
-        self.slowdown = 0
-        self.blur_tween = Tween(self.manager, 0.03, 1, 0.5, tween.easeOutSine)
+        self.slowdown_tween = Tween(self, 0, 1, 0.5, tween.easeInQuad)
+        self.slowdown_tween.reset()
+        # Cursed solution to make it use the manager dt instead of the scene dt
+        self.blur_tween = Tween(self.manager, 0.03, 1, 0.1, tween.easeOutExpo)
         self.blur_tween.reset()
 
     def update(self) -> None:
-        self.slowdown += 0.6 * self.manager.dt
-        if self.slowdown > 1:
-            self.slowdown = 1
-        self.manager.dt *= self.slowdown
-
         super().update()
+
+        self.slowdown_tween()
+        self.dt *= self.slowdown_tween.value
 
         self.grid_manager.update()
         self.bg_grid_manager.update()

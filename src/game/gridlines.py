@@ -4,6 +4,7 @@ if TYPE_CHECKING:
     from src.management.scene import Scene
 
 from random import randint, choices, sample
+import pytweening as tween
 import pygame.gfxdraw
 from math import ceil
 import pygame
@@ -14,6 +15,7 @@ from src.management.sprite import VisibleSprite, Layers
 from src.game.effects import Particle, Shockwave
 from src.common.audio import break_barrier
 from src.gui.hud import PowerTimer
+from src.common.tween import Tween
 from src.game.points import Point
 
 class GridManager:
@@ -147,7 +149,6 @@ class Barrier(VerticalGridline):
                 del PowerTimer.sorted_instances[self.power][0]
             else:
                 PowerTimer(self.scene, self.power)
-            self.scene.slowdown = 0.5
             self.effects()
             self.kill()
             return
@@ -167,6 +168,8 @@ class Barrier(VerticalGridline):
         
     def effects(self) -> None:
         if self.scene.__class__.__name__ == "MainGame":
+            self.scene.slowdown_tween = Tween(self.manager, 0.5, 1, 0.5, tween.easeInQuad)
+            self.scene.slowdown_tween.reset()
             break_barrier.play()
         for _ in range(400):
             Particle(self.scene, (self.x * GRID_SPACE.x, randint(self.on_screen_start.y - 100, self.on_screen_end.y + 100) + self.scene.player.camera.offset.y), (180, 180, 180))
