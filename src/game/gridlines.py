@@ -34,11 +34,11 @@ class GridManager:
             ceil(player.pos.y / GRID_SPACE.y + HEIGHT / GRID_SPACE.y / 2 + 2)
         )
         for y in HorizontalGridline.instances.copy():
-            if not lines_range[0] <= y < lines_range[1]:
-                HorizontalGridline.instances[y].kill()
+            if lines_range[0] <= y < lines_range[1]: continue
+            HorizontalGridline.instances[y].kill()
         for y in range(*lines_range):
-            if y not in HorizontalGridline.instances:
-                HorizontalGridline(self.scene, y)
+            if y in HorizontalGridline.instances: continue
+            HorizontalGridline(self.scene, y)
         for instance in HorizontalGridline.instances.copy().values():
             instance.update()
 
@@ -49,18 +49,19 @@ class GridManager:
             ceil(player.pos.x / GRID_SPACE.x + WIDTH / GRID_SPACE.x / 2 + 2)
         )
         for x in VerticalGridline.instances.copy():
-            if not lines_range[0] <= x < lines_range[1]:
-                VerticalGridline.instances[x].kill()
+            if lines_range[0] <= x < lines_range[1]: continue
+            VerticalGridline.instances[x].kill()
         for x in range(*lines_range):
-            if x not in VerticalGridline.instances:
-                VerticalGridline(self.scene, x)
-                chosen_power = choices(list(barrier_powers.keys()), list(barrier_powers.values()))[0]
-                try:
-                    if randint(0, 50 - (x - Barrier.last_position) + (50 if chosen_power.init else 0)) == 0 and not Barrier.instance:
-                        Barrier(self.scene, x, chosen_power)
-                # There are cases where the randint range is negative thus erroring, in the case of that, create a Barrier
-                except ValueError:
+            if x in VerticalGridline.instances: continue
+            VerticalGridline(self.scene, x)
+            if x < 10: continue
+            chosen_power = choices(list(barrier_powers.keys()), list(barrier_powers.values()))[0]
+            try:
+                if randint(0, 50 - (x - Barrier.last_position) + (50 if chosen_power.init else 0)) == 0 and not Barrier.instance:
                     Barrier(self.scene, x, chosen_power)
+            # There are cases where the randint range is negative thus erroring, in the case of that, create a Barrier
+            except ValueError:
+                Barrier(self.scene, x, chosen_power)
         for instance in VerticalGridline.instances.copy().values():
             instance.update()
 

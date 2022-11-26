@@ -32,9 +32,10 @@ class Point(VisibleSprite):
 
     def __init__(self, scene: Scene, val: int, pos: _pair) -> None:
         super().__init__(scene, Layers.POINTS)
+        self.pos = VEC(pos)
+        if self.pos == (0, 0): super().kill()
         self.val = val
         self.color = BULL_COLOR if self.val > 0 else BEAR_COLOR
-        self.pos = VEC(pos)
         self.surface = pygame.Surface((20, 20))
 
     def update(self) -> None:
