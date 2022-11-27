@@ -15,6 +15,8 @@ class MainMenuBG(Scene):
     def setup(self) -> None:
         super().setup()
 
+        self.slowdown_tween = Tween(self, 0, 1, 0.5, tween.easeOutCirc)
+        self.slowdown_tween.reset()
         self.blur_tween = Tween(self, 0.03, 0.25, -0.2, tween.easeInExpo)
         self.blur_tween.reset()
         self.ending = False
@@ -26,6 +28,9 @@ class MainMenuBG(Scene):
 
     def update(self) -> None:
         super().update()
+
+        self.slowdown_tween()
+        self.dt *= self.slowdown_tween.value
 
         self.grid_manager.update()
         self.bg_grid_manager.update()

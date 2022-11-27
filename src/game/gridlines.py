@@ -144,7 +144,7 @@ class Barrier(VerticalGridline):
         self.on_screen_end = VEC(0, 0)
 
     def update(self) -> None:
-        if self.x * GRID_SPACE.x < self.scene.player.pos.x < self.x * GRID_SPACE.x + 25:
+        if self.x * GRID_SPACE.x < self.scene.player.pos.x:
             if PowerTimer.sorted_instances[self.power] and not self.power.stackable:
                 self.power.init = False
                 del PowerTimer.sorted_instances[self.power][0]
@@ -153,20 +153,17 @@ class Barrier(VerticalGridline):
             self.effects()
             self.kill()
             return
-        if self.x * GRID_SPACE.x < -100:
-            self.kill()
-            return
         super().update()
 
     def draw(self) -> None:
         pygame.draw.line(self.scene.surface, (60, 60, 60), self.on_screen_start, self.on_screen_end, 10)
         pygame.draw.line(self.scene.surface, (110, 110, 110), self.on_screen_start, self.on_screen_end, 6)
         pygame.draw.line(self.scene.surface, (180, 180, 180), self.on_screen_start, self.on_screen_end, 4)
-        
+
     def kill(self) -> None:
         self.__class__.instance = None
         super().kill()
-        
+
     def effects(self) -> None:
         if self.scene.__class__.__name__ == "MainGame":
             self.scene.slowdown_tween = Tween(self.manager, 0.5, 1, 0.5, tween.easeInQuad)
