@@ -39,7 +39,8 @@ class PauseMenu(Scene):
         self.alpha_tween()
         self.text.surface.set_alpha(self.alpha_tween.value)
         self.blur_tween()
-        self.bg_img.surface = blur_surf(self.previous_scene.surface, self.blur_tween.value)
+        if not self.blur_tween.ended:
+            self.bg_img.surface = blur_surf(self.previous_scene.surface, self.blur_tween.value)
 
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
             self.alpha_tween = Tween(self, 0, 255, -500, tween.easeInSine)

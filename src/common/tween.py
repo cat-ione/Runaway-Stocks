@@ -29,6 +29,8 @@ class Tween:
         self.ended = False
 
     def __call__(self) -> None:
+        if self.ended: return
+
         self.linear_val += self.speed * self.scene.dt
         if self.linear_val < self.start:
             self.linear_val = self.start
