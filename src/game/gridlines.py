@@ -162,7 +162,7 @@ class Barrier(VerticalGridline):
 
     def kill(self) -> None:
         self.__class__.instance = None
-        super().kill()
+        VisibleSprite.kill(self)
 
     def effects(self) -> None:
         if self.scene.__class__.__name__ == "MainGame":
