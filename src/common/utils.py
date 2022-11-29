@@ -10,7 +10,7 @@ import pygame.gfxdraw
 import pygame
 import math
 
-from src.common.constants import VEC, _pair, _color, Anchors
+from src.common.constants import VEC, _pair, _color, Anchors, MIN_BLUR_THRESHOLD
 
 inttup = lambda tup: tuple(map(floor, tuple(tup)))
 intvec = lambda vec: VEC(floor(vec.x), floor(vec.y))
@@ -28,7 +28,7 @@ def pygame_draw_pie(screen: pygame.Surface, color: _color, center: _pair, rad: i
 
 def blur_surf(surf: pygame.Surface, factor: float = 0.25) -> pygame.Surface:
     """Smooth scale it down and up, then normal scale it down and up, to create a blur effect plus a pixelated effect"""
-    if factor == 1: return surf
+    if factor >= MIN_BLUR_THRESHOLD: return surf
     orig_size = surf.get_size()
     surf = pygame.transform.smoothscale_by(surf, factor)
     surf = pygame.transform.smoothscale_by(surf, 1 / factor)

@@ -2,8 +2,8 @@ from pygame.locals import KEYDOWN, K_ESCAPE
 import pytweening as tween
 import pygame
 
+from src.common.constants import MUSIC_VOLUME, MIN_BLUR_THRESHOLD
 from src.game.gridlines import GridManager, Barrier
-from src.common.constants import MUSIC_VOLUME
 from src.game.background import BGGridManager
 from src.common.utils import blur_surf
 from src.management.scene import Scene
@@ -31,7 +31,7 @@ class MainGame(Scene):
         self.slowdown_tween = Tween(self, 0, 1, 0.5, tween.easeInQuad)
         self.slowdown_tween.reset()
         # Cursed solution to make it use the manager dt instead of the scene dt
-        self.blur_tween = Tween(self.manager, 0.03, 1, 0.1, tween.easeOutExpo)
+        self.blur_tween = Tween(self.manager, 0.03, 1, 0.1, tween.easeOutQuart)
         self.blur_tween.reset()
 
     def update(self) -> None:
@@ -43,10 +43,7 @@ class MainGame(Scene):
         self.grid_manager.update()
         self.bg_grid_manager.update()
 
-        if self.blur_tween.value < 0.3:
-            self.blur_tween()
-        else:
-            self.blur_tween.value = 1
+        self.blur_tween()
 
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
             self.manager.new_scene("PauseMenu")
