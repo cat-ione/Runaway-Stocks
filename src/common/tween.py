@@ -6,10 +6,10 @@ if TYPE_CHECKING:
 from typing import Callable
 
 class Tween:
-    def __init__(self, scene: Scene, start: float, end: float, speed: float, tween_func: Callable, cutoff: float = None, **kwargs) -> None:
+    def __init__(self, scene: Scene, low: float, high: float, speed: float, tween_func: Callable, cutoff: float = None, **kwargs) -> None:
         self.scene = scene
-        self.start = start
-        self.end = end
+        self.start = low
+        self.end = high
         self.range = self.end - self.start
         self.speed = speed
         self.tween_func = tween_func
@@ -20,6 +20,10 @@ class Tween:
         self.perc = 0
         self.ended = False
 
+    # Call reset after init if speed is negative
+    # and if at the time of calling, the place where the value is used is supposed to be at the higher value
+    # If the place where the value is used is supposed to be at the lower value, don't call reset
+    # or else it would set the starting value to the higher value
     def reset(self) -> None:
         self.linear_val = self.value = self.start if self.speed > 0 else self.end
         self.ended = False
