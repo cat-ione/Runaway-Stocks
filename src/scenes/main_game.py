@@ -30,7 +30,7 @@ class MainGame(Scene):
 
         self.slowdown_tween = Tween(self, 0, 1, 0.5, tween.easeInQuad)
         # Cursed solution to make it use the manager dt instead of the scene dt
-        self.blur_tween = Tween(self.manager, 0.03, 1, 0.1, tween.easeOutQuart)
+        self.blur_tween = Tween(self.manager, 0.03, 1, 0.1, tween.easeOutQuart, cutoff=MIN_BLUR_THRESHOLD - 0.1)
 
     def update(self) -> None:
         super().update()
