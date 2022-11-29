@@ -17,7 +17,7 @@ class MainMenuBG(Scene):
 
         self.slowdown_tween = Tween(self, 0, 1, 0.5, tween.easeOutCirc)
         self.slowdown_tween.reset()
-        self.blur_tween = Tween(self, 0.03, 0.25, -0.2, tween.easeInExpo)
+        self.blur_tween = Tween(self, 0.03, 0.25, -0.2, tween.easeInExpo, cutoff=0.031)
         self.blur_tween.reset()
         self.ending = False
 
@@ -38,7 +38,7 @@ class MainMenuBG(Scene):
         if self.super_scene.ending:
             self.blur_tween()
 
-        if self.blur_tween.value < 0.031:
+        if self.blur_tween.ended:
             self.manager.new_scene("MainGame")
 
     def pre_sprite(self) -> None:

@@ -29,21 +29,19 @@ class MainGame(Scene):
         Barrier.reset()
 
         self.slowdown_tween = Tween(self, 0, 1, 0.5, tween.easeInQuad)
-        self.slowdown_tween.reset()
         # Cursed solution to make it use the manager dt instead of the scene dt
         self.blur_tween = Tween(self.manager, 0.03, 1, 0.1, tween.easeOutQuart)
-        self.blur_tween.reset()
 
     def update(self) -> None:
         super().update()
 
         self.slowdown_tween()
+        self.blur_tween()
+
         self.dt *= self.slowdown_tween.value
 
         self.grid_manager.update()
         self.bg_grid_manager.update()
-
-        self.blur_tween()
 
         if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
             self.manager.new_scene("PauseMenu")
