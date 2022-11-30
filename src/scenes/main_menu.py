@@ -1,4 +1,4 @@
-from pygame.locals import SRCALPHA
+from pygame.locals import K_SPACE
 import pytweening as tween
 import pygame
 
@@ -54,7 +54,7 @@ class MainMenuGUI(Scene):
         self.surface.set_colorkey((0, 0, 0))
 
         Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230)),
-        Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end)
+        Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.end, K_SPACE)
 
     def update(self) -> None:
         super().update()

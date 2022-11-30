@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.management.scene import Scene
 
-from pygame.locals import SRCALPHA
+from pygame.locals import SRCALPHA, KEYDOWN
 from typing import Callable
 import pytweening as tween
 import pygame.gfxdraw
@@ -40,11 +40,12 @@ class Image(Element):
         super().__init__(scene, pos, anchor)
 
 class Button(Element):
-    def __init__(self, scene: Scene, pos: _pair, text: str, font: _font, color: _color, command: Callable, anchor: Anchors = Anchors.CENTER) -> None:
+    def __init__(self, scene: Scene, pos: _pair, text: str, font: _font, color: _color, command: Callable, key: int = 0, anchor: Anchors = Anchors.CENTER) -> None:
         self.command = command
         self.font = font
         self.text = text
         self.color = color
+        self.key = key
 
         self.default_factor, self.hover_factor = 2.5, 2.8
         self.factor = self.line_factor = self.default_factor
@@ -74,6 +75,9 @@ class Button(Element):
                     self.default()
             except IndexError: # An index error means "get_at" failed, the cursor is outside the rect of the mask
                 self.default()
+
+        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == self.key:
+            self.command()
 
         super().update()
 
