@@ -48,7 +48,7 @@ class Scene:
 
 class MenuScene(Scene):
     class BG(Scene):
-        def setup(self, start_tween: Tween, end_tween: Tween) -> None:
+        def setup(self, start_tween: Tween, end_tween: Tween, anchor: Anchors = Anchors.CENTER) -> None:
             super().setup()
             self.surface = self.surface.convert_alpha()
 
@@ -67,7 +67,7 @@ class MenuScene(Scene):
             self.tween = self.end_tween
 
     class GUI(Scene):
-        def setup(self, start_tween: Tween, end_tween: Tween) -> None:
+        def setup(self, start_tween: Tween, end_tween: Tween, anchor: Anchors = Anchors.CENTER) -> None:
             super().setup()
             self.surface = self.surface.convert_alpha()
 
@@ -88,7 +88,7 @@ class MenuScene(Scene):
         def end(self) -> None:
             self.tween = self.end_tween
 
-    def setup(self) -> None:
+    def setup(self, size: tuple[int, int] = (WIDTH, HEIGHT), pos: tuple[int, int] = (WIDTH // 2, HEIGHT // 2), anchor: Anchors = Anchors.CENTER) -> None:
         super().setup()
 
         self.bg = self.BG(self.manager, self.previous_scene, self)
