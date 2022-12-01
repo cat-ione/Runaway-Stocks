@@ -3,7 +3,7 @@ import pytweening as tween
 import pygame
 
 from src.common.constants import HIGHSCORE_FILE, CENTER, BOLD_FONTS, Anchors, MIN_BLUR_THRESHOLD
-from src.management.menu_scene import MenuScene
+from src.management.scene import MenuScene
 from src.gui.elements import Label, Image
 from src.common.utils import blur_surf
 from src.common.tween import Tween

@@ -4,8 +4,8 @@ import pygame
 
 from src.game.gridlines import GridManager, Barrier
 from src.common.constants import BOLD_FONTS, WIDTH
-from src.management.menu_scene import MenuScene
 from src.game.background import BGGridManager
+from src.management.scene import MenuScene
 from src.gui.elements import Label, Button
 from src.common.utils import blur_surf
 from src.common.tween import Tween
