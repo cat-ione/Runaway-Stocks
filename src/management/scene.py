@@ -50,8 +50,6 @@ class MenuScene(Scene):
     class BG(Scene):
         def setup(self, start_tween: Tween, end_tween: Tween, anchor: Anchors = Anchors.CENTER) -> None:
             super().setup()
-            self.surface = self.surface.convert_alpha()
-
             self.start_tween = start_tween
             self.start_tween.reset()
             self.end_tween = end_tween
@@ -106,9 +104,6 @@ class MenuScene(Scene):
 
         if self.ending and self.gui.tween.ended and self.bg.tween.ended:
             self.kill()
-
-    def pre_sprite(self) -> None:
-        self.surface.fill((0, 0, 0, 0))
 
     def post_sprite(self) -> None:
         self.bg.draw()
