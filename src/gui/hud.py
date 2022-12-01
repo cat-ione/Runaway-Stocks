@@ -19,7 +19,7 @@ from src.common.audio import power_end
 class MainGameTimer(ComplexTimer, VisibleSprite):
     def __init__(self, scene: Scene) -> None:
         VisibleSprite.__init__(self, scene, Layers.HUD)
-        ComplexTimer.__init__(self, 60)
+        ComplexTimer.__init__(self, 10)
 
     def update(self) -> None:
         super().update()
