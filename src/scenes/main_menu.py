@@ -6,7 +6,7 @@ from src.game.gridlines import GridManager, Barrier
 from src.common.constants import BOLD_FONTS, WIDTH
 from src.game.background import BGGridManager
 from src.management.scene import MenuScene
-from src.gui.elements import Label, Button
+from src.gui.elements import Label, RhombusButton
 from src.common.utils import blur_surf
 from src.common.tween import Tween
 from src.game.player import Player
@@ -48,7 +48,7 @@ class MainMenu(MenuScene):
             super().setup(start_tween, end_tween)
 
             Label(self, (WIDTH // 2, 140), "Runaway Stocks", BOLD_FONTS[90], (230, 230, 230)),
-            Button(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.super_scene.end, K_SPACE)
+            RhombusButton(self, (WIDTH // 2, 360), "Start Game", BOLD_FONTS[20], (230, 230, 230), self.super_scene.end, K_SPACE)
 
         def update(self) -> None:
             super().update()

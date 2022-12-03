@@ -2,9 +2,10 @@ from pygame.locals import KEYDOWN, K_ESCAPE
 import pytweening as tween
 import pygame
 
-from src.common.constants import MUSIC_VOLUME, MIN_BLUR_THRESHOLD
+from src.common.constants import MUSIC_VOLUME, MIN_BLUR_THRESHOLD, HEIGHT, BOLD_FONTS, Anchors
 from src.game.gridlines import GridManager, Barrier
 from src.game.background import BGGridManager
+from src.gui.elements import RectButton
 from src.common.utils import blur_surf
 from src.management.scene import Scene
 from src.gui.hud import MainGameTimer
@@ -24,6 +25,11 @@ class MainGame(Scene):
         self.bg_grid_manager = BGGridManager(self)
 
         MainGameTimer(self)
+        RectButton(self, (300, 200), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.TOPLEFT)
+        RectButton(self, (600, 200), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.BOTTOMRIGHT)
+        RectButton(self, (300, 400), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.CENTER)
+        RectButton(self, (600, 400), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.RIGHT)
+        # RectButton(self, (10, HEIGHT - 10), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.LEFT)
 
         self.player = Player(self)
         Barrier.reset()

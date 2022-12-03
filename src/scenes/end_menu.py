@@ -3,7 +3,7 @@ import pytweening as tween
 import pygame
 
 from src.common.constants import HIGHSCORE_FILE, CENTER, BOLD_FONTS, Anchors, MIN_BLUR_THRESHOLD
-from src.gui.elements import Label, Image, Button
+from src.gui.elements import Label, Image, RhombusButton
 from src.management.scene import MenuScene
 from src.common.utils import blur_surf
 from src.common.tween import Tween
@@ -47,7 +47,7 @@ class EndMenu(MenuScene):
                 Label(self, CENTER, f"Highscore: {self.highscore}", BOLD_FONTS[64], (230, 230, 230))
 
             Label(self, CENTER - (0, 100), f"Score: {self.previous_scene.player.score}", BOLD_FONTS[64], (230, 230, 230))
-            Button(self, CENTER + (0, 100), "  Restart  ", BOLD_FONTS[20], (230, 230, 230), self.super_scene.end, K_SPACE)
+            RhombusButton(self, CENTER + (0, 100), "  Restart  ", BOLD_FONTS[20], (230, 230, 230), self.super_scene.end, K_SPACE)
 
         def update(self) -> None:
             super().update()
