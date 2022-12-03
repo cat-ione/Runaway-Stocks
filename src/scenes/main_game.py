@@ -25,11 +25,7 @@ class MainGame(Scene):
         self.bg_grid_manager = BGGridManager(self)
 
         MainGameTimer(self)
-        RectButton(self, (300, 200), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.TOPLEFT)
-        RectButton(self, (600, 200), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.BOTTOMRIGHT)
-        RectButton(self, (300, 400), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.CENTER)
-        RectButton(self, (600, 400), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.RIGHT)
-        # RectButton(self, (10, HEIGHT - 10), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: None, anchor=Anchors.LEFT)
+        RectButton(self, (10, HEIGHT - 10), "Pause", BOLD_FONTS[24], (230, 230, 230), lambda: self.manager.new_scene("PauseMenu"), K_ESCAPE, Anchors.BOTTOMLEFT)
 
         self.player = Player(self)
         Barrier.reset()
@@ -48,9 +44,6 @@ class MainGame(Scene):
 
         self.grid_manager.update()
         self.bg_grid_manager.update()
-
-        if KEYDOWN in self.manager.events and self.manager.events[KEYDOWN].key == K_ESCAPE:
-            self.manager.new_scene("PauseMenu")
 
     def pre_sprite(self) -> None:
         self.surface.fill((30, 30, 30))
