@@ -18,6 +18,7 @@ class GameManager:
         pygame.mixer.pre_init(buffer=32)
         pygame.init()
         pygame.mixer.init(buffer=32)
+        pygame.event.set_allowed([KEYDOWN, QUIT, WINDOWRESIZED, WINDOWMOVED])
 
         self.flags = HWSURFACE | DOUBLEBUF | RESIZABLE | SCALED
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), self.flags)
