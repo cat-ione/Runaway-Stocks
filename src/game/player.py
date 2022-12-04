@@ -105,6 +105,7 @@ class Player(VisibleSprite):
         self.direction = Dir.UP
         self.color = BULL_COLOR
         self.angle = 40
+        self.old_angle = self.angle
         self.segments = []
         self.Segment(self.scene, self)
         self.shadow = self.SegmentShadows(self.scene)
@@ -126,7 +127,6 @@ class Player(VisibleSprite):
             self.spawn_glitches()
         if powers.Angle.init:
             self.angle = powers.Angle.angle
-            self.update_segments(self.direction)
         else:
             self.angle = 40
             powers.Angle.reset(self.scene)
@@ -153,9 +153,14 @@ class Player(VisibleSprite):
         self.pos.x += cos(radians(self.angle * self.direction.value)) * self.speed * self.scene.dt
         self.pos.y += sin(radians(self.angle * self.direction.value)) * self.speed * self.scene.dt
 
+        if self.angle != self.old_angle:
+            self.update_segments(self.direction)
+
         for segment in self.segments:
             segment.update()
         self.segments[-1].start_pos = self.pos.copy()
+
+        self.old_angle = self.angle
 
         self.camera.update()
 
