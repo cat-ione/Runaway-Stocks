@@ -16,9 +16,8 @@ class Tween:
         self.cutoff = cutoff
         self.kwargs = kwargs
 
-        self.linear_val = self.value = self.start
         self.perc = 0
-        self.ended = False
+        self.reset()
 
     # Call reset after init if speed is negative
     # and if at the time of calling, the place where the value is used is supposed to be at the higher value

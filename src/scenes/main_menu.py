@@ -24,7 +24,6 @@ class MainMenu(MenuScene):
             Barrier.reset()
 
             self.slowdown_tween = Tween(self, 0, 1, 0.5, tween.easeOutCirc)
-            self.slowdown_tween.reset()
 
         def update(self) -> None:
             super().update()

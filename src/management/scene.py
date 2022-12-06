@@ -51,9 +51,7 @@ class MenuScene(Scene):
         def setup(self, start_tween: Tween, end_tween: Tween, anchor: Anchors = Anchors.CENTER) -> None:
             super().setup()
             self.start_tween = start_tween
-            self.start_tween.reset()
             self.end_tween = end_tween
-            self.end_tween.reset()
             self.tween = self.start_tween
 
         def update(self) -> None:
@@ -70,9 +68,7 @@ class MenuScene(Scene):
             self.surface = self.surface.convert_alpha()
 
             self.start_tween = start_tween
-            self.start_tween.reset()
             self.end_tween = end_tween
-            self.end_tween.reset()
             self.tween = self.start_tween
 
         def update(self) -> None:
